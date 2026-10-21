@@ -1,0 +1,623 @@
+import { useEffect, useMemo, useState } from 'react'
+import { Plus, Trash2, Pencil, Info, Gamepad2, Wallet, Calculator, Eye } from 'lucide-react'
+import { Badge, Button, Card, Chip, ConfirmDialog, EmptyState, ErrorNote, Field, IconButton, Modal, Segmented, SectionTitle, SourceLine } from '@/components/ui'
+import { AreaChart, Donut, seriesColor } from '@/components/ui/charts'
+import { actions, useData } from '@/data/store'
+import type { AssetKind, Portfolio, Transaction, WatchItem } from '@/data/types'
+import { cn, fmtEur, fmtMoney, fmtNum, fmtPct, parseNum } from '@/lib/utils'
+import { fmtDate, timeAgo, todayKey } from '@/lib/dates'
+import { useQuotes } from '@/services/hooks'
+import { searchSymbols, type Quote, type SymbolHit } from '@/services/server'
+import { toast } from '@/data/toasts'
+import { savingsPlan, summarize } from './portfolio'
+
+// ---------------------------------------------------------------- Kurs-Hinweis
+export function QuoteSourceNote({ error, code, fetchedAt, loading, reload }: { error: string | null; code?: string; fetchedAt: string | null; loading: boolean; reload: () => void }) {
+  if (error && /FINNHUB|Kursquelle|not_configured/i.test(error + (code ?? '')))
+    return (
+      <div className="flex items-start gap-3 rounded-2xl bg-surface-2 p-3 text-sm">
+        <Info className="mt-0.5 size-4 shrink-0 text-accent" />
+        <p className="text-muted">
+          <span className="font-semibold text-text">Keine Live-Kursquelle verbunden.</span> Du kannst Kurse manuell pflegen (Stift-Symbol). Für Live-Kurse einen kostenlosen Finnhub-Schlüssel in der Server-Datei <code>.env</code> eintragen.
+        </p>
+      </div>
+    )
+  if (error) return <ErrorNote error={error} onRetry={reload} compact />
+  if (fetchedAt) return <SourceLine source="Finnhub" href="https://finnhub.io" fetchedAt={fetchedAt} loading={loading} onReload={reload} />
+  return null
+}
+
+function usePriceMap(symbols: string[]) {
+  const q = useQuotes(symbols)
+  return { ...q, quotes: (q.data?.quotes ?? null) as Record<string, Quote> | null }
+}
+
+// ---------------------------------------------------------------- Manueller Kurs
+export function PriceEditor({ symbol, name, open, onClose }: { symbol: string; name: string; open: boolean; onClose: () => void }) {
+  const prices = useData('prices')
+  const current = prices.find((p) => p.id === symbol)
+  const [v, setV] = useState('')
+  useEffect(() => {
+    if (open) setV(current ? String(current.price).replace('.', ',') : '')
+  }, [open, current])
+  const n = parseNum(v)
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={`Kurs: ${name || symbol}`}
+      footer={
+        <>
+          {current && (
+            <Button variant="ghost" className="mr-auto" onClick={() => { actions().remove('prices', symbol, 'Manueller Kurs entfernt'); onClose() }}>
+              Kurs entfernen
+            </Button>
+          )}
+          <Button
+            variant="primary"
+            disabled={!Number.isFinite(n) || n <= 0}
+            onClick={() => {
+              const t = new Date().toISOString()
+              actions().upsert('prices', { id: symbol, price: n, createdAt: current?.createdAt ?? t, updatedAt: t })
+              onClose()
+            }}
+          >
+            Speichern
+          </Button>
+        </>
+      }
+    >
+      <Field label="Aktueller Kurs in €" hint="Manuell gepflegt – z. B. aus deiner Banking-App. Der Zeitpunkt wird mit angezeigt.">
+        <input className="field font-display text-2xl font-semibold" inputMode="decimal" value={v} onChange={(e) => setV(e.target.value)} placeholder="0,00" />
+      </Field>
+      {current && <p className="mt-2 text-xs text-faint">Zuletzt gepflegt {timeAgo(current.updatedAt)}</p>}
+    </Modal>
+  )
+}
+
+// ---------------------------------------------------------------- Watchlist
+function WatchEditor({ open, item, onClose }: { open: boolean; item: WatchItem | null; onClose: () => void }) {
+  const [symbol, setSymbol] = useState('')
+  const [name, setName] = useState('')
+  const [kind, setKind] = useState<AssetKind>('Aktie')
+  const [note, setNote] = useState('')
+  const [hits, setHits] = useState<SymbolHit[]>([])
+  const [searchErr, setSearchErr] = useState<string | null>(null)
+  useEffect(() => {
+    if (open) {
+      setSymbol(item?.symbol ?? '')
+      setName(item?.name ?? '')
+      setKind(item?.kind ?? 'Aktie')
+      setNote(item?.note ?? '')
+      setHits([])
+    }
+  }, [open, item])
+  const search = async () => {
+    if (!name.trim()) return
+    try {
+      const r = await searchSymbols(name.trim())
+      setHits(r.results)
+      setSearchErr(r.results.length ? null : 'Nichts gefunden.')
+    } catch (e) {
+      setSearchErr((e as Error).message)
+    }
+  }
+  const save = () => {
+    const s = symbol.trim().toUpperCase()
+    if (!s) return
+    const v = { symbol: s, name: name.trim() || s, kind, note }
+    if (item) actions().update('watchlist', item.id, v)
+    else actions().add('watchlist', v)
+    onClose()
+  }
+  return (
+    <Modal open={open} onClose={onClose} title={item ? 'Wert bearbeiten' : 'Zur Watchlist'} footer={<Button variant="primary" onClick={save} disabled={!symbol.trim()}>Speichern</Button>}>
+      <div className="space-y-4">
+        <Field label="Name" hint="Optional: Symbolsuche nutzt die verbundene Kursquelle.">
+          <div className="flex gap-2">
+            <input className="field" value={name} onChange={(e) => setName(e.target.value)} placeholder="z. B. Apple, SAP, MSCI World" />
+            <Button variant="secondary" onClick={search}>
+              Suchen
+            </Button>
+          </div>
+        </Field>
+        {searchErr && <p className="text-xs text-muted">{/not_configured|Kursquelle/.test(searchErr) ? 'Symbolsuche benötigt eine Kursquelle – trage das Kürzel einfach selbst ein.' : searchErr}</p>}
+        {hits.length > 0 && (
+          <div className="max-h-48 overflow-y-auto rounded-xl border border-line">
+            {hits.map((h) => (
+              <button key={h.symbol} onClick={() => { setSymbol(h.symbol); setName(h.name); setHits([]) }} className="flex w-full justify-between gap-3 px-3 py-2 text-left text-sm hover:bg-surface-2">
+                <span className="truncate">{h.name}</span>
+                <span className="font-bold">{h.symbol}</span>
+              </button>
+            ))}
+          </div>
+        )}
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Kürzel / ISIN">
+            <input className="field uppercase" value={symbol} onChange={(e) => setSymbol(e.target.value)} placeholder="AAPL" />
+          </Field>
+          <Field label="Art">
+            <select className="field" value={kind} onChange={(e) => setKind(e.target.value as AssetKind)}>
+              {(['Aktie', 'ETF', 'Fonds', 'Krypto', 'Sonstiges'] as AssetKind[]).map((k) => (
+                <option key={k}>{k}</option>
+              ))}
+            </select>
+          </Field>
+        </div>
+        <Field label="Notiz">
+          <input className="field" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Warum beobachte ich das?" />
+        </Field>
+      </div>
+    </Modal>
+  )
+}
+
+export function WatchlistView() {
+  const watch = useData('watchlist')
+  const prices = useData('prices')
+  const q = usePriceMap(watch.map((w) => w.symbol))
+  const [edit, setEdit] = useState<WatchItem | null>(null)
+  const [open, setOpen] = useState(false)
+  const [priceFor, setPriceFor] = useState<WatchItem | null>(null)
+  const [confirm, setConfirm] = useState<WatchItem | null>(null)
+
+  return (
+    <Card className="p-4 sm:p-5">
+      <SectionTitle action={<Button size="sm" variant="primary" icon={<Plus className="size-4" />} onClick={() => { setEdit(null); setOpen(true) }}>Wert</Button>}>Watchlist</SectionTitle>
+      {watch.length === 0 ? (
+        <EmptyState compact icon="👀" title="Watchlist ist leer" text="Füge Aktien oder ETFs hinzu, die du beobachten möchtest." />
+      ) : (
+        <>
+          <div className="mb-3">
+            <QuoteSourceNote error={q.error} fetchedAt={q.fetchedAt} loading={q.loading} reload={q.reload} />
+          </div>
+          <div className="divide-y divide-line">
+            {watch.map((w) => {
+              const live = q.quotes?.[w.symbol]
+              const manual = prices.find((p) => p.id === w.symbol)
+              return (
+                <div key={w.id} className="flex items-center gap-3 py-2.5">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-surface-2 text-xs font-bold">{w.symbol.slice(0, 4)}</span>
+                  <button className="min-w-0 flex-1 text-left" onClick={() => { setEdit(w); setOpen(true) }}>
+                    <span className="block truncate font-semibold">{w.name}</span>
+                    <span className="text-xs text-muted">
+                      {w.symbol} · {w.kind}
+                      {w.note && ` · ${w.note}`}
+                    </span>
+                  </button>
+                  <div className="text-right">
+                    {live ? (
+                      <>
+                        <p className="font-semibold tabular">{fmtMoney(live.price, live.currency)}</p>
+                        {live.changePct != null && <p className={cn('text-xs font-semibold tabular', live.changePct >= 0 ? 'text-success' : 'text-danger')}>{fmtPct(live.changePct)}</p>}
+                      </>
+                    ) : manual ? (
+                      <>
+                        <p className="font-semibold tabular">{fmtEur(manual.price)}</p>
+                        <p className="text-[11px] text-faint">manuell · {timeAgo(manual.updatedAt)}</p>
+                      </>
+                    ) : (
+                      <p className="text-xs text-faint">kein Kurs</p>
+                    )}
+                  </div>
+                  <IconButton label="Kurs manuell pflegen" size="sm" onClick={() => setPriceFor(w)}>
+                    <Pencil className="size-4" />
+                  </IconButton>
+                  <IconButton label="Entfernen" size="sm" onClick={() => setConfirm(w)}>
+                    <Trash2 className="size-4" />
+                  </IconButton>
+                </div>
+              )
+            })}
+          </div>
+        </>
+      )}
+      <WatchEditor open={open} item={edit} onClose={() => setOpen(false)} />
+      {priceFor && <PriceEditor open symbol={priceFor.symbol} name={priceFor.name} onClose={() => setPriceFor(null)} />}
+      <ConfirmDialog open={!!confirm} title="Von Watchlist entfernen?" message={confirm?.name} confirmLabel="Entfernen" onConfirm={() => confirm && actions().remove('watchlist', confirm.id, 'Von Watchlist entfernt')} onClose={() => setConfirm(null)} />
+    </Card>
+  )
+}
+
+// ---------------------------------------------------------------- Depot
+type TxDraft = Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>
+
+function TxEditor({ open, tx, portfolio, preset, onClose, cash }: { open: boolean; tx: Transaction | null; portfolio: Portfolio; preset?: Partial<TxDraft>; onClose: () => void; cash: number | null }) {
+  const prices = useData('prices')
+  const [d, setD] = useState<TxDraft>({ portfolioId: portfolio.id, symbol: '', name: '', type: 'buy', date: todayKey(), qty: 0, price: 0, fees: 0 })
+  const [qty, setQty] = useState('')
+  const [price, setPrice] = useState('')
+  const [fees, setFees] = useState('')
+  useEffect(() => {
+    if (!open) return
+    const init = tx ?? { portfolioId: portfolio.id, symbol: '', name: '', type: 'buy' as const, date: todayKey(), qty: 0, price: 0, fees: portfolio.kind === 'virtual' ? 1 : 0, ...preset }
+    setD(init)
+    setQty(init.qty ? String(init.qty).replace('.', ',') : '')
+    const mp = prices.find((p) => p.id === init.symbol)
+    setPrice(init.price ? String(init.price).replace('.', ',') : mp ? String(mp.price).replace('.', ',') : '')
+    setFees(init.fees ? String(init.fees).replace('.', ',') : '')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, tx?.id])
+  const nq = parseNum(qty)
+  const np = parseNum(price)
+  const nf = fees.trim() ? parseNum(fees) : 0
+  const total = nq * np + (d.type === 'buy' ? nf : -nf)
+  const valid = d.symbol.trim() && nq > 0 && np > 0 && Number.isFinite(nf) && nf >= 0
+  const tooExpensive = portfolio.kind === 'virtual' && d.type === 'buy' && !tx && cash != null && total > cash + 1e-6
+  const save = () => {
+    if (!valid || tooExpensive) return
+    const v = { ...d, symbol: d.symbol.trim().toUpperCase(), name: d.name.trim() || d.symbol.trim().toUpperCase(), qty: nq, price: np, fees: nf }
+    if (tx) actions().update('transactions', tx.id, v)
+    else {
+      actions().add('transactions', v)
+      toast(d.type === 'buy' ? 'Kauf erfasst' : 'Verkauf erfasst', 'success')
+    }
+    onClose()
+  }
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={tx ? 'Transaktion bearbeiten' : 'Neue Transaktion'}
+      footer={
+        <>
+          {tx && (
+            <Button variant="danger" className="mr-auto" icon={<Trash2 className="size-4" />} onClick={() => { actions().remove('transactions', tx.id, 'Transaktion gelöscht'); onClose() }}>
+              Löschen
+            </Button>
+          )}
+          <Button variant="primary" onClick={save} disabled={!valid || tooExpensive}>
+            Speichern
+          </Button>
+        </>
+      }
+    >
+      <div className="space-y-4">
+        <Segmented className="w-full" value={d.type} onChange={(v) => setD({ ...d, type: v })} options={[{ value: 'buy', label: 'Kauf' }, { value: 'sell', label: 'Verkauf' }]} />
+        <div className="grid grid-cols-[1fr_120px] gap-3">
+          <Field label="Name">
+            <input className="field" value={d.name} onChange={(e) => setD({ ...d, name: e.target.value })} placeholder="z. B. iShares Core MSCI World" />
+          </Field>
+          <Field label="Kürzel / ISIN">
+            <input className="field uppercase" value={d.symbol} onChange={(e) => setD({ ...d, symbol: e.target.value })} placeholder="EUNL" />
+          </Field>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Stückzahl">
+            <input className="field" inputMode="decimal" value={qty} onChange={(e) => setQty(e.target.value)} />
+          </Field>
+          <Field label="Kurs (€)">
+            <input className="field" inputMode="decimal" value={price} onChange={(e) => setPrice(e.target.value)} />
+          </Field>
+          <Field label="Gebühren (€)">
+            <input className="field" inputMode="decimal" value={fees} onChange={(e) => setFees(e.target.value)} placeholder="0" />
+          </Field>
+          <Field label="Datum">
+            <input type="date" className="field" value={d.date} onChange={(e) => setD({ ...d, date: e.target.value })} />
+          </Field>
+        </div>
+        {Number.isFinite(total) && total > 0 && (
+          <p className="rounded-xl bg-surface-2 p-3 text-sm">
+            Gesamt: <span className="font-bold tabular">{fmtEur(total)}</span>
+            {portfolio.kind === 'virtual' && cash != null && <span className="text-muted"> · Spielgeld verfügbar: {fmtEur(cash)}</span>}
+          </p>
+        )}
+        {tooExpensive && <p className="text-sm font-semibold text-danger">Nicht genug Spielgeld für diesen Kauf.</p>}
+      </div>
+    </Modal>
+  )
+}
+
+export function PortfolioView({ kind }: { kind: 'real' | 'virtual' }) {
+  const portfolios = useData('portfolios').filter((p) => p.kind === kind)
+  const allTx = useData('transactions')
+  const prices = useData('prices')
+  const [pid, setPid] = useState<string | null>(null)
+  const portfolio = portfolios.find((p) => p.id === pid) ?? portfolios[0]
+  const symbols = useMemo(() => [...new Set(allTx.filter((t) => t.portfolioId === portfolio?.id).map((t) => t.symbol))], [allTx, portfolio?.id])
+  const q = usePriceMap(symbols)
+  const [txOpen, setTxOpen] = useState(false)
+  const [tx, setTx] = useState<Transaction | null>(null)
+  const [preset, setPreset] = useState<Partial<TxDraft> | undefined>()
+  const [priceFor, setPriceFor] = useState<{ symbol: string; name: string } | null>(null)
+  const [resetOpen, setResetOpen] = useState(false)
+
+  useEffect(() => {
+    if (!portfolio && !actions().data.portfolios.some((p) => p.kind === kind)) actions().add('portfolios', { name: kind === 'real' ? 'Mein Depot' : 'Spieldepot', kind, startCash: kind === 'virtual' ? 10000 : 0 })
+  }, [portfolio, kind])
+
+  const s = useMemo(() => (portfolio ? summarize(portfolio, allTx, prices, q.quotes) : null), [portfolio, allTx, prices, q.quotes])
+  if (!portfolio || !s) return null
+  const txs = allTx.filter((t) => t.portfolioId === portfolio.id).sort((a, b) => b.date.localeCompare(a.date))
+  const gain = s.value - s.invested
+  const total = s.value + (s.cash ?? 0)
+
+  const openTx = (p?: Partial<TxDraft>) => {
+    setTx(null)
+    setPreset(p)
+    setTxOpen(true)
+  }
+
+  return (
+    <div className="space-y-4">
+      {kind === 'virtual' && (
+        <div className="flex items-start gap-3 rounded-2xl border border-dashed border-line-strong p-3 text-sm text-muted">
+          <Gamepad2 className="mt-0.5 size-4 shrink-0 text-accent" />
+          <p>
+            <span className="font-semibold text-text">Spieldepot mit virtuellem Geld.</span> Übe Strategien ohne Risiko: Startkapital {fmtEur(portfolio.startCash, true)}, Kurse trägst du beim Kauf selbst ein oder nutzt deine gepflegten Kurse.
+          </p>
+        </div>
+      )}
+      {portfolios.length > 1 && (
+        <div className="scroll-x flex gap-2">
+          {portfolios.map((p) => (
+            <Chip key={p.id} active={p.id === portfolio.id} onClick={() => setPid(p.id)}>
+              {p.name}
+            </Chip>
+          ))}
+        </div>
+      )}
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Card className="p-4 lg:col-span-2">
+          <p className="text-xs font-bold uppercase tracking-wider text-faint">{kind === 'virtual' ? 'Gesamtwert inkl. Spielgeld' : 'Depotwert'}</p>
+          <p className="font-display text-4xl font-bold tracking-tight tabular">{fmtEur(kind === 'virtual' ? total : s.value)}</p>
+          <p className={cn('mt-1 text-sm font-semibold tabular', gain >= 0 ? 'text-success' : 'text-danger')}>
+            {gain >= 0 ? '+' : ''}
+            {fmtEur(gain)} {s.invested > 0 && `(${fmtPct(gain / s.invested)})`} <span className="font-normal text-muted">unrealisiert</span>
+          </p>
+          {s.unpriced > 0 && <p className="mt-2 text-xs text-warn">{s.unpriced} Position(en) ohne aktuellen Kurs – dort wird der Einstandswert angesetzt.</p>}
+        </Card>
+        <Card className="p-4">
+          <p className="text-xs font-bold uppercase tracking-wider text-faint">Investiert</p>
+          <p className="font-display text-2xl font-bold tabular">{fmtEur(s.invested, true)}</p>
+          <p className="text-xs text-muted">Gebühren gesamt {fmtEur(s.fees)}</p>
+        </Card>
+        <Card className="p-4">
+          <p className="text-xs font-bold uppercase tracking-wider text-faint">{kind === 'virtual' ? 'Spielgeld' : 'Realisiert'}</p>
+          <p className={cn('font-display text-2xl font-bold tabular', kind === 'real' && (s.realized >= 0 ? 'text-success' : 'text-danger'))}>{kind === 'virtual' ? fmtEur(s.cash ?? 0, true) : fmtEur(s.realized, true)}</p>
+          {kind === 'virtual' && <p className="text-xs text-muted">Realisiert {fmtEur(s.realized)}</p>}
+        </Card>
+      </div>
+
+      {symbols.length > 0 && <QuoteSourceNote error={q.error} fetchedAt={q.fetchedAt} loading={q.loading} reload={q.reload} />}
+
+      <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+        <Card className="p-4 sm:p-5">
+          <SectionTitle action={<Button size="sm" variant="primary" icon={<Plus className="size-4" />} onClick={() => openTx()}>Transaktion</Button>}>Positionen</SectionTitle>
+          {s.positions.length === 0 ? (
+            <EmptyState compact icon={kind === 'virtual' ? '🎮' : '📈'} title="Noch keine Positionen" text={kind === 'virtual' ? 'Kauf deine erste virtuelle Aktie.' : 'Erfasse deine Käufe manuell – z. B. aus der Abrechnung deiner Bank.'} />
+          ) : (
+            <div className="divide-y divide-line">
+              {s.positions.map((p, i) => (
+                <div key={p.symbol} className="flex items-center gap-3 py-2.5">
+                  <span className="h-9 w-1 shrink-0 rounded-full" style={{ background: i < 7 ? seriesColor(i) : 'var(--faint)' }} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-semibold">{p.name}</p>
+                    <p className="text-xs text-muted tabular">
+                      {fmtNum(p.qty)} Stk. · Ø {fmtEur(p.avg)}
+                    </p>
+                  </div>
+                  <button className="text-right" onClick={() => setPriceFor({ symbol: p.symbol, name: p.name })} title="Kurs pflegen">
+                    <p className="font-semibold tabular">{fmtEur(p.value ?? p.cost)}</p>
+                    {p.gain != null ? (
+                      <p className={cn('text-xs font-semibold tabular', p.gain >= 0 ? 'text-success' : 'text-danger')}>
+                        {fmtPct(p.gainPct ?? 0)} · {p.priceSource}
+                      </p>
+                    ) : (
+                      <p className="text-xs text-warn">Kurs pflegen</p>
+                    )}
+                  </button>
+                  <div className="flex flex-col">
+                    <button className="rounded-md px-1.5 text-xs font-bold text-accent hover:bg-accent-soft" onClick={() => openTx({ symbol: p.symbol, name: p.name, type: 'buy' })}>
+                      Kauf
+                    </button>
+                    <button className="rounded-md px-1.5 text-xs font-bold text-muted hover:bg-surface-2" onClick={() => openTx({ symbol: p.symbol, name: p.name, type: 'sell', qty: p.qty })}>
+                      Verkauf
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+        <div className="space-y-4">
+          <Card className="p-4 sm:p-5">
+            <SectionTitle>Verteilung</SectionTitle>
+            {s.positions.length === 0 ? (
+              <p className="text-sm text-muted">Erscheint, sobald Positionen vorhanden sind.</p>
+            ) : (
+              <Donut slices={s.positions.map((p) => ({ label: p.name, value: p.value ?? p.cost }))} format={(v) => fmtEur(v, true)} centerLabel="Gesamt" centerValue={fmtEur(s.value, true)} />
+            )}
+          </Card>
+          <Card className="p-4 sm:p-5">
+            <SectionTitle>Investiertes Kapital</SectionTitle>
+            {s.history.length < 2 ? (
+              <p className="text-sm text-muted">Die Entwicklung erscheint ab zwei Transaktionen an unterschiedlichen Tagen.</p>
+            ) : (
+              <AreaChart
+                points={s.history.map((h) => ({ date: h.date, invested: h.invested }))}
+                series={[{ key: 'invested', label: 'Einstand', color: 'var(--accent)' }]}
+                stacked={false}
+                height={160}
+                xLabel={(p) => fmtDate(String(p.date), { month: 'short', year: '2-digit' })}
+                format={(v) => fmtEur(v, true)}
+              />
+            )}
+            <p className="mt-2 text-xs text-faint">Ein Kursverlauf des Depots braucht historische Kurse und folgt mit einer Kursquelle. <Badge tone="planned">Geplant</Badge></p>
+          </Card>
+        </div>
+      </div>
+
+      <Card className="p-4 sm:p-5">
+        <SectionTitle>Transaktionen</SectionTitle>
+        {txs.length === 0 ? (
+          <p className="text-sm text-muted">Noch keine Transaktionen.</p>
+        ) : (
+          <div className="divide-y divide-line">
+            {txs.map((t) => (
+              <button key={t.id} onClick={() => { setTx(t); setPreset(undefined); setTxOpen(true) }} className="flex min-h-12 w-full items-center gap-3 py-2 text-left hover:bg-surface-2">
+                <Badge tone={t.type === 'buy' ? 'accent' : 'warn'}>{t.type === 'buy' ? 'Kauf' : 'Verkauf'}</Badge>
+                <span className="min-w-0 flex-1 truncate font-semibold">{t.name}</span>
+                <span className="hidden text-sm text-muted sm:inline">{fmtDate(t.date, { day: '2-digit', month: '2-digit', year: 'numeric' })}</span>
+                <span className="text-sm tabular">
+                  {fmtNum(t.qty)} × {fmtEur(t.price)}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
+        {s.closed.length > 0 && (
+          <p className="mt-3 text-xs text-muted">
+            Geschlossen: {s.closed.map((c) => `${c.name} (${fmtEur(c.realized)})`).join(', ')}
+          </p>
+        )}
+      </Card>
+      {kind === 'virtual' && txs.length > 0 && (
+        <Button variant="ghost" className="text-danger" onClick={() => setResetOpen(true)}>
+          Spieldepot zurücksetzen
+        </Button>
+      )}
+
+      <TxEditor open={txOpen} tx={tx} portfolio={portfolio} preset={preset} cash={s.cash} onClose={() => setTxOpen(false)} />
+      {priceFor && <PriceEditor open symbol={priceFor.symbol} name={priceFor.name} onClose={() => setPriceFor(null)} />}
+      <ConfirmDialog
+        open={resetOpen}
+        title="Spieldepot zurücksetzen?"
+        message="Alle virtuellen Transaktionen werden gelöscht, das Spielgeld startet neu."
+        confirmLabel="Zurücksetzen"
+        onConfirm={() => actions().removeMany('transactions', txs.map((t) => t.id), 'Spieldepot zurückgesetzt')}
+        onClose={() => setResetOpen(false)}
+      />
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------- Sparplanrechner
+export function SavingsCalculator() {
+  const [start, setStart] = useState('1000')
+  const [monthly, setMonthly] = useState('150')
+  const [years, setYears] = useState(20)
+  const [rate, setRate] = useState('6')
+  const [dyn, setDyn] = useState('0')
+  const [infl, setInfl] = useState('2')
+  const rows = useMemo(
+    () =>
+      savingsPlan({
+        start: Math.max(0, parseNum(start) || 0),
+        monthly: Math.max(0, parseNum(monthly) || 0),
+        years,
+        ratePct: parseNum(rate) || 0,
+        dynamicPct: parseNum(dyn) || 0,
+        inflationPct: parseNum(infl) || 0,
+      }),
+    [start, monthly, years, rate, dyn, infl],
+  )
+  const last = rows[rows.length - 1]
+  return (
+    <div className="grid gap-4 lg:grid-cols-[340px_1fr]">
+      <Card className="space-y-4 p-4 sm:p-5">
+        <h3 className="font-display text-lg font-semibold">Sparplan & Zinseszins</h3>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Startkapital (€)">
+            <input className="field" inputMode="decimal" value={start} onChange={(e) => setStart(e.target.value)} />
+          </Field>
+          <Field label="Monatlich (€)">
+            <input className="field" inputMode="decimal" value={monthly} onChange={(e) => setMonthly(e.target.value)} />
+          </Field>
+          <Field label="Rendite p. a. (%)">
+            <input className="field" inputMode="decimal" value={rate} onChange={(e) => setRate(e.target.value)} />
+          </Field>
+          <Field label="Dynamik p. a. (%)" hint="Jährliche Erhöhung der Rate">
+            <input className="field" inputMode="decimal" value={dyn} onChange={(e) => setDyn(e.target.value)} />
+          </Field>
+          <Field label="Inflation p. a. (%)">
+            <input className="field" inputMode="decimal" value={infl} onChange={(e) => setInfl(e.target.value)} />
+          </Field>
+        </div>
+        <Field label={`Laufzeit: ${years} Jahre`}>
+          <input type="range" min={1} max={50} value={years} onChange={(e) => setYears(Number(e.target.value))} className="w-full accent-[var(--accent)]" />
+        </Field>
+        <p className="text-xs text-faint">Modellrechnung mit konstanter Rendite, monatlicher Verzinsung und Einzahlung am Monatsende. Steuern und Kosten sind nicht berücksichtigt – keine Anlageberatung.</p>
+      </Card>
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <Card className="col-span-2 p-4">
+            <p className="text-xs font-bold uppercase tracking-wider text-faint">Endkapital nach {years} Jahren</p>
+            <p className="font-display text-4xl font-bold tracking-tight tabular">{fmtEur(last.value, true)}</p>
+          </Card>
+          <Card className="p-4">
+            <p className="text-xs font-bold uppercase tracking-wider text-faint">Eingezahlt</p>
+            <p className="font-display text-xl font-bold tabular">{fmtEur(last.deposits, true)}</p>
+          </Card>
+          <Card className="p-4">
+            <p className="text-xs font-bold uppercase tracking-wider text-faint">Erträge</p>
+            <p className="font-display text-xl font-bold tabular text-success">{fmtEur(last.gains, true)}</p>
+          </Card>
+        </div>
+        <Card className="p-4 sm:p-5">
+          <AreaChart
+            points={rows.map((r) => ({ year: r.year, deposits: r.deposits, gains: Math.max(0, r.gains) }))}
+            series={[
+              { key: 'deposits', label: 'Einzahlungen', color: seriesColor(0) },
+              { key: 'gains', label: 'Zinsen & Erträge', color: seriesColor(2) },
+            ]}
+            xLabel={(p) => (Number(p.year) === 0 ? 'Start' : `Jahr ${p.year}`)}
+            format={(v) => fmtEur(v, true)}
+          />
+          <p className="mt-3 text-sm text-muted">
+            Kaufkraft heute (bei {rate || 0} % Rendite und {infl || 0} % Inflation): <span className="font-semibold text-text">{fmtEur(last.real, true)}</span>
+          </p>
+        </Card>
+        <Card className="overflow-x-auto p-0">
+          <table className="w-full text-sm">
+            <thead className="text-left text-xs uppercase tracking-wider text-faint">
+              <tr>
+                <th className="p-3">Jahr</th>
+                <th className="p-3 text-right">Eingezahlt</th>
+                <th className="p-3 text-right">Erträge</th>
+                <th className="p-3 text-right">Kapital</th>
+              </tr>
+            </thead>
+            <tbody className="tabular">
+              {rows
+                .filter((r) => r.year > 0 && (r.year % (years > 20 ? 5 : years > 10 ? 2 : 1) === 0 || r.year === years))
+                .map((r) => (
+                  <tr key={r.year} className="border-t border-line">
+                    <td className="p-3">{r.year}</td>
+                    <td className="p-3 text-right">{fmtEur(r.deposits, true)}</td>
+                    <td className="p-3 text-right">{fmtEur(r.gains, true)}</td>
+                    <td className="p-3 text-right font-semibold">{fmtEur(r.value, true)}</td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </Card>
+      </div>
+    </div>
+  )
+}
+
+export function MarketsView() {
+  const [tab, setTab] = useState<'watch' | 'depot' | 'rechner' | 'spiel'>('watch')
+  return (
+    <div>
+      <Segmented
+        className="mb-5 w-full sm:w-auto"
+        value={tab}
+        onChange={setTab}
+        options={[
+          { value: 'watch', label: 'Watchlist', icon: <Eye className="size-4" /> },
+          { value: 'depot', label: 'Depot', icon: <Wallet className="size-4" /> },
+          { value: 'rechner', label: 'Rechner', icon: <Calculator className="size-4" /> },
+          { value: 'spiel', label: 'Spiel', icon: <Gamepad2 className="size-4" /> },
+        ]}
+      />
+      <div key={tab} className="animate-rise">
+        {tab === 'watch' && <WatchlistView />}
+        {tab === 'depot' && <PortfolioView kind="real" />}
+        {tab === 'rechner' && <SavingsCalculator />}
+        {tab === 'spiel' && <PortfolioView kind="virtual" />}
+      </div>
+    </div>
+  )
+}
