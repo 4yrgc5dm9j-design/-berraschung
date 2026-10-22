@@ -70,10 +70,10 @@ export function NewsUnavailable({ error, onRetry }: { error: string; onRetry: ()
       <div className="flex items-start gap-3 rounded-2xl bg-surface-2 p-4 text-sm">
         <ServerOff className="mt-0.5 size-4 shrink-0 text-muted" />
         <div>
-          <p className="font-semibold">News brauchen den Dailybase-Server</p>
+          <p className="font-semibold">{STATIC_HOSTING ? 'News gerade nicht verfügbar' : 'News brauchen den Dailybase-Server'}</p>
           <p className="text-muted">
             {STATIC_HOSTING
-              ? 'In der installierbaren Web-Version läuft (noch) kein eigener Server, und Browser dürfen die News-Feeds nicht direkt abrufen. News kommen mit einem kleinen Server-Hosting – alles andere funktioniert bereits.'
+              ? 'Die Nachrichtendatei der Web-Version ist gerade nicht erreichbar. Sie wird alle 30 Minuten automatisch erneuert.'
               : 'Die Feeds werden über den eigenen Server geladen (Browser dürfen sie nicht direkt abrufen). Starte die App mit „npm run dev“ bzw. „npm start“.'}
           </p>
         </div>
@@ -156,7 +156,7 @@ export function NewsView() {
               ))}
             </div>
           )}
-          {news.error && <div className="mb-4">{news.data ? <SourceLine source="öffentliche RSS-Feeds" fetchedAt={news.fetchedAt} stale onReload={news.reload} /> : <NewsUnavailable error={news.error} onRetry={news.reload} />}</div>}
+          {news.error && <div className="mb-4">{news.data ? <SourceLine source="öffentliche RSS-Feeds" fetchedAt={news.data.fetchedAt} stale onReload={news.reload} /> : <NewsUnavailable error={news.error} onRetry={news.reload} />}</div>}
           {!news.data && news.loading ? (
             <div className="grid gap-3 lg:grid-cols-2">
               {Array.from({ length: 6 }).map((_, i) => (
@@ -173,7 +173,7 @@ export function NewsView() {
                 <SourceLine
                   className="mb-3"
                   source={`öffentliche RSS-Feeds (${sources.join(', ')})`}
-                  fetchedAt={news.fetchedAt}
+                  fetchedAt={news.data.fetchedAt}
                   loading={news.loading}
                   onReload={news.reload}
                 />

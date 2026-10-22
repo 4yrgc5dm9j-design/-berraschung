@@ -432,7 +432,7 @@ export function NewsWidget() {
               <NewsCard key={i.id} item={i} saved={savedLinks.has(i.link)} compact />
             ))}
           </div>
-          <SourceLine className="mt-2" source="öffentliche RSS-Feeds" fetchedAt={news.fetchedAt} stale={news.stale} loading={news.loading} onReload={news.reload} />
+          <SourceLine className="mt-2" source="öffentliche RSS-Feeds" fetchedAt={news.data.fetchedAt} stale={news.stale} loading={news.loading} onReload={news.reload} />
         </>
       ) : null}
     </WidgetShell>

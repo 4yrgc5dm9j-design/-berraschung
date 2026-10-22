@@ -9,6 +9,8 @@ import type { AccentId, ModuleId, NewsTopic, ThemeMode, WeatherLocation } from '
 import { cn, parseNum } from '@/lib/utils'
 import { searchPlaces } from '@/services/weather'
 import { useServerStatus } from '@/services/hooks'
+import { STATIC_HOSTING } from '@/services/server'
+import { timeAgo } from '@/lib/dates'
 import { TOPICS } from '@/features/discover/news'
 import { TeamLogo, ClubPicker } from '@/features/discover/sport'
 import { exportData, importData } from './backup'
@@ -163,23 +165,34 @@ function DataSources() {
     <div className="divide-y divide-line">
       {row(<Cloud className="size-4" />, 'Wetter · Open-Meteo', <Badge tone="success">Direkt</Badge>, 'Kostenlos, ohne Schlüssel. Direkt aus dem Browser.')}
       {row(<Cloud className="size-4" />, 'Fußball · OpenLigaDB', <Badge tone="success">Direkt</Badge>, 'Freie Community-Daten für 1.–3. Liga.')}
-      {row(
-        <Server className="size-4" />,
-        'Dailybase-Server',
-        status.loading && !status.data ? <Spinner className="size-4" /> : serverOk ? <Badge tone="success">Verbunden</Badge> : <Badge tone="warn">Nicht erreichbar</Badge>,
-        'Lädt News-Feeds und Link-Vorschauen, hält API-Schlüssel geheim.',
-      )}
-      {row(
-        <Server className="size-4" />,
-        'News · öffentliche RSS-Feeds',
-        serverOk ? <Badge tone="success">Aktiv</Badge> : <Badge tone="warn">Server nötig</Badge>,
-        status.data ? status.data.news.sources.join(', ') : 'tagesschau, heise, golem, Spiegel, sportschau, kicker',
+      {status.data?.mode === 'static' || STATIC_HOSTING ? (
+        row(
+          <Server className="size-4" />,
+          'News · öffentliche RSS-Feeds',
+          status.loading && !status.data ? <Spinner className="size-4" /> : status.data?.news.sources.length ? <Badge tone="success">Aktiv</Badge> : <Badge tone="warn">Nicht erreichbar</Badge>,
+          `Werden alle 30 Minuten automatisch abgerufen${status.data?.dataAt ? ` (zuletzt ${timeAgo(status.data.dataAt)})` : ''}. ${status.data?.news.sources.join(', ') ?? ''}`,
+        )
+      ) : (
+        <>
+          {row(
+            <Server className="size-4" />,
+            'Dailybase-Server',
+            status.loading && !status.data ? <Spinner className="size-4" /> : serverOk ? <Badge tone="success">Verbunden</Badge> : <Badge tone="warn">Nicht erreichbar</Badge>,
+            'Lädt News-Feeds und Link-Vorschauen, hält API-Schlüssel geheim.',
+          )}
+          {row(
+            <Server className="size-4" />,
+            'News · öffentliche RSS-Feeds',
+            serverOk ? <Badge tone="success">Aktiv</Badge> : <Badge tone="warn">Server nötig</Badge>,
+            status.data ? status.data.news.sources.join(', ') : 'tagesschau, heise, golem, Spiegel, sportschau, kicker',
+          )}
+        </>
       )}
       {row(
         <Server className="size-4" />,
         'Börsenkurse · Finnhub',
         status.data?.quotes.provider ? <Badge tone="success">Verbunden</Badge> : <Badge>Manuell</Badge>,
-        status.data?.quotes.provider ? 'Live-Kurse (v. a. US-Werte, in USD).' : 'Optional: kostenloser Schlüssel in .env (FINNHUB_API_KEY). Bis dahin pflegst du Kurse selbst.',
+        status.data?.quotes.provider ? 'Live-Kurse (v. a. US-Werte, in USD).' : STATIC_HOSTING ? 'Live-Kurse brauchen einen eigenen Server mit Schlüssel. Bis dahin pflegst du Kurse selbst (Stift-Symbol).' : 'Optional: kostenloser Schlüssel in .env (FINNHUB_API_KEY). Bis dahin pflegst du Kurse selbst.',
       )}
       {row(<Database className="size-4" />, 'Deine Daten', <Badge tone="accent">Lokal</Badge>, 'IndexedDB in diesem Browser. Nichts verlässt dein Gerät.')}
     </div>

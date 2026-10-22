@@ -27,7 +27,7 @@ Bei jedem Push auf `master` baut eine GitHub Action die statische Web-Version (`
 **https://4yrgc5dm9j-design.github.io/-berraschung/**
 
 iPhone/iPad: Link in **Safari** öffnen → Teilen → „Zum Home-Bildschirm“. Android: Menü → „App installieren“.
-In dieser Version läuft kein eigener Server: Wetter, Sport, alle eigenen Daten und Sammlungen funktionieren; News, Live-Kurse und Link-Vorschauen brauchen ein Server-Hosting (z. B. Render/Fly.io mit `npm start`).
+In dieser Version läuft kein eigener Server. Stattdessen ruft die GitHub Action alle 30 Minuten die News-Feeds ab und legt sie als `data/news.json` neben die App (dazu eine Kopie der OpenLigaDB-Daten als Rückfallebene und `data/status.json`). Live-Börsenkurse und automatische Link-Vorschauen brauchen weiterhin ein Server-Hosting (z. B. Render/Fly.io mit `npm start`).
 
 ### Optionale Schlüssel
 

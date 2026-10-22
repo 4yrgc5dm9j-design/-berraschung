@@ -1,5 +1,5 @@
 import { getJson } from './remote'
-import { STATIC_HOSTING } from './server'
+import { STATIC_HOSTING, staticData } from './server'
 import { normalize } from '@/lib/utils'
 
 // Quelle: OpenLigaDB (https://www.openligadb.de) – freie, community-gepflegte Fußballdaten, ohne Schlüssel.
@@ -56,9 +56,9 @@ async function ligaGet<T>(path: string): Promise<T> {
   try {
     return await getJson<T>(`${BASE}/${path}`)
   } catch (e) {
-    if (STATIC_HOSTING) throw e
     try {
-      return await getJson<T>(`/api/sport/${path}`)
+      // Rückfallebene: Web-Version → regelmäßig gespeicherte Kopie, sonst eigener Server
+      return STATIC_HOSTING ? await staticData<T>(`sport/${path.replace(/\//g, '_')}.json`) : await getJson<T>(`/api/sport/${path}`)
     } catch {
       throw e
     }
