@@ -1,4 +1,12 @@
-import { getJson } from './remote'
+import { ApiError, getJson } from './remote'
+
+/** true in der statischen Web-Version (z. B. GitHub Pages) – dort läuft kein Dailybase-Server. */
+export const STATIC_HOSTING = import.meta.env.VITE_STATIC === '1'
+
+function api<T>(path: string, timeoutMs?: number): Promise<T> {
+  if (STATIC_HOSTING) return Promise.reject(new ApiError('In der Web-Version ohne eigenen Dailybase-Server nicht verfügbar', 'no-server'))
+  return getJson<T>(`/api/${path}`, timeoutMs)
+}
 
 // Endpunkte des Dailybase-Servers (server/index.mjs). Hier liegen alle
 // Abfragen, die Schlüssel brauchen oder wegen CORS nicht direkt gehen.
@@ -59,9 +67,9 @@ export interface PreviewResponse {
   reason?: string
 }
 
-export const fetchStatus = () => getJson<ServerStatus>('/api/status', 5000)
-export const fetchNews = (topics: string[]) => getJson<NewsResponse>(`/api/news?topics=${topics.join(',')}`, 20000)
+export const fetchStatus = () => api<ServerStatus>('status', 5000)
+export const fetchNews = (topics: string[]) => api<NewsResponse>(`news?topics=${topics.join(',')}`, 20000)
 export const fetchQuotes = (symbols: string[]) =>
-  getJson<QuotesResponse>(`/api/quotes?symbols=${encodeURIComponent(symbols.join(','))}`, 15000)
-export const searchSymbols = (q: string) => getJson<{ results: SymbolHit[] }>(`/api/symbols?q=${encodeURIComponent(q)}`)
-export const fetchPreview = (url: string) => getJson<PreviewResponse>(`/api/preview?url=${encodeURIComponent(url)}`, 12000)
+  api<QuotesResponse>(`quotes?symbols=${encodeURIComponent(symbols.join(','))}`, 15000)
+export const searchSymbols = (q: string) => api<{ results: SymbolHit[] }>(`symbols?q=${encodeURIComponent(q)}`)
+export const fetchPreview = (url: string) => api<PreviewResponse>(`preview?url=${encodeURIComponent(url)}`, 12000)

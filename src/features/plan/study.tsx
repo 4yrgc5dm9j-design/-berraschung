@@ -419,7 +419,7 @@ export function FocusView() {
 function notify(msg: string) {
   toast(msg, 'success')
   try {
-    if ('Notification' in window && Notification.permission === 'granted') new Notification('Dailybase', { body: msg, icon: '/icons/icon-192.png' })
+    if ('Notification' in window && Notification.permission === 'granted') new Notification('Dailybase', { body: msg, icon: `${import.meta.env.BASE_URL}icons/icon-192.png` })
     navigator.vibrate?.([120, 60, 120])
   } catch {
     /* ignore */

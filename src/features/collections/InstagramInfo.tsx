@@ -29,7 +29,7 @@ export function InstagramInfo() {
                 Android/Chrome: Dailybase als App installieren, dann erscheint sie im Teilen-Menü von Instagram <Badge tone="accent">Teilen-Ziel</Badge>
               </li>
               <li>
-                iPhone-Tipp: Kurzbefehl anlegen („Im Share-Sheet anzeigen“) mit der Aktion „URL öffnen“: <code className="break-all">{location.origin}/teilen?url=</code> + Kurzbefehleingabe. Dann landet ein Reel mit zwei Tipps in Dailybase.
+                iPhone-Tipp: Kurzbefehl anlegen („Im Share-Sheet anzeigen“) mit der Aktion „URL öffnen“: <code className="break-all">{location.origin}{import.meta.env.BASE_URL}teilen?url=</code> + Kurzbefehleingabe. Dann landet ein Reel mit zwei Tipps in Dailybase.
               </li>
               <li>Eigene Notizen, Bewertungen, Tags und Screenshots zu jedem Link.</li>
             </ul>

@@ -20,7 +20,14 @@ npm run build
 npm start          # liefert App + API auf http://localhost:8787
 ```
 
-> Als PWA (Homescreen, offline) braucht die App HTTPS – z. B. über einen Hoster wie Render/Fly.io oder einen eigenen Server mit Zertifikat. Lokal funktioniert alles auch ohne.
+### Web-Version zum Installieren (GitHub Pages)
+
+Bei jedem Push auf `master` baut eine GitHub Action die statische Web-Version (`npm run build:pages`) und veröffentlicht sie im Branch `gh-pages`:
+
+**https://4yrgc5dm9j-design.github.io/-berraschung/**
+
+iPhone/iPad: Link in **Safari** öffnen → Teilen → „Zum Home-Bildschirm“. Android: Menü → „App installieren“.
+In dieser Version läuft kein eigener Server: Wetter, Sport, alle eigenen Daten und Sammlungen funktionieren; News, Live-Kurse und Link-Vorschauen brauchen ein Server-Hosting (z. B. Render/Fly.io mit `npm start`).
 
 ### Optionale Schlüssel
 

@@ -7,7 +7,7 @@ import type { NewsTopic } from '@/data/types'
 import { cn, matches } from '@/lib/utils'
 import { timeAgo } from '@/lib/dates'
 import { useNews } from '@/services/hooks'
-import type { NewsItem } from '@/services/server'
+import { STATIC_HOSTING, type NewsItem } from '@/services/server'
 
 export const TOPICS: { id: NewsTopic; label: string; emoji: string }[] = [
   { id: 'wirtschaft', label: 'Wirtschaft', emoji: '💼' },
@@ -71,7 +71,11 @@ export function NewsUnavailable({ error, onRetry }: { error: string; onRetry: ()
         <ServerOff className="mt-0.5 size-4 shrink-0 text-muted" />
         <div>
           <p className="font-semibold">News brauchen den Dailybase-Server</p>
-          <p className="text-muted">Die Feeds werden über den eigenen Server geladen (Browser dürfen sie nicht direkt abrufen). Starte die App mit „npm run dev“ bzw. „npm start“.</p>
+          <p className="text-muted">
+            {STATIC_HOSTING
+              ? 'In der installierbaren Web-Version läuft (noch) kein eigener Server, und Browser dürfen die News-Feeds nicht direkt abrufen. News kommen mit einem kleinen Server-Hosting – alles andere funktioniert bereits.'
+              : 'Die Feeds werden über den eigenen Server geladen (Browser dürfen sie nicht direkt abrufen). Starte die App mit „npm run dev“ bzw. „npm start“.'}
+          </p>
         </div>
       </div>
     )
