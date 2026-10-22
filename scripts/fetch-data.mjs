@@ -76,6 +76,8 @@ console.log(`Sport: ${status.sport.filter((s) => s.ok).length}/${status.sport.le
 for (const [name, url] of [
   ['open-meteo', 'https://api.open-meteo.com/v1/forecast?latitude=53.55&longitude=10&current=temperature_2m'],
   ['openligadb', `https://api.openligadb.de/getavailableteams/bl1/${season}`],
+  ['finnhub', 'https://finnhub.io/api/v1/quote?symbol=AAPL'],
+  ['frankfurter', 'https://api.frankfurter.dev/v1/latest?base=EUR'],
 ]) {
   try {
     const r = await fetch(url, { headers: { Origin: 'https://example.github.io', 'User-Agent': UA } })

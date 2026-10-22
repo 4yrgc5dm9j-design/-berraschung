@@ -77,8 +77,9 @@ export function summarize(
     }
     const m = manual.find((x) => x.id === symbol)
     const q = quotes?.[symbol]
-    // Depot rechnet in EUR: Live-Kurse nur verwenden, wenn sie in EUR vorliegen.
-    const price = m ? m.price : q && q.currency === 'EUR' ? q.price : null
+    // Depot rechnet in EUR: Live-Kurs (ggf. mit EZB-Kurs umgerechnet) vor manuellem Kurs
+    const live = q ? (q.priceEur ?? (q.currency === 'EUR' ? q.price : null)) : null
+    const price = live ?? m?.price ?? null
     const value = price != null ? price * p.qty : null
     positions.push({
       symbol,
@@ -87,8 +88,8 @@ export function summarize(
       cost: p.cost,
       avg: p.cost / p.qty,
       price,
-      priceSource: m ? 'manuell' : price != null ? 'live' : null,
-      priceAt: m ? m.updatedAt : q?.at ?? null,
+      priceSource: live != null ? 'live' : m ? 'manuell' : null,
+      priceAt: live != null ? q!.at : m?.updatedAt ?? null,
       value,
       gain: value != null ? value - p.cost : null,
       gainPct: value != null && p.cost > 0 ? (value - p.cost) / p.cost : null,

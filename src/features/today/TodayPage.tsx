@@ -12,7 +12,7 @@ import { upcomingEvents } from '@/features/plan/calendar'
 import { useWeather } from '@/services/hooks'
 import { weatherInfo } from '@/services/weather'
 import { WIDGETS, widgetMeta } from './widgets'
-import { Search, Plus } from 'lucide-react'
+import { Search, Plus, CheckCircle2, CalendarDays } from 'lucide-react'
 
 export const VIEWS: { value: ViewId; label: string; icon: React.ReactNode }[] = [
   { value: 'arbeit', label: 'Arbeit', icon: <BriefcaseBusiness className="size-4" /> },
@@ -39,32 +39,31 @@ function DaySummary() {
   const dueToday = tasks.filter((t) => !t.done && t.due && t.due <= today).length
   const todayEvents = upcomingEvents(events, 0).length
   const nextExam = upcomingEvents(events.filter((e) => e.kind === 'pruefung'), 30)[0]
-  const parts: React.ReactNode[] = []
-  parts.push(
-    <Link key="t" to="/planen/aufgaben" className="hover:text-text">
-      <b className="text-text">{dueToday}</b> {dueToday === 1 ? 'Aufgabe' : 'Aufgaben'} fällig
-    </Link>,
+  const pill = 'inline-flex min-h-9 items-center gap-1.5 rounded-full bg-white/18 px-3.5 text-sm font-semibold text-white ring-1 ring-white/20 backdrop-blur-md transition hover:bg-white/25'
+  return (
+    <div className="flex flex-wrap gap-2">
+      <Link to="/planen/aufgaben" className={pill}>
+        <CheckCircle2 className="size-4" /> {dueToday} {dueToday === 1 ? 'Aufgabe' : 'Aufgaben'} fällig
+      </Link>
+      <Link to="/planen/kalender" className={pill}>
+        <CalendarDays className="size-4" /> {todayEvents} {todayEvents === 1 ? 'Termin' : 'Termine'} heute
+      </Link>
+      {w.data && weather && (
+        <span className={pill}>
+          {weatherInfo(w.data.current.code, w.data.current.isDay).emoji} {Math.round(w.data.current.temp)}° in {weather.name}
+        </span>
+      )}
+      {nextExam && (
+        <Link to="/planen/kalender" className={cn(pill, 'bg-white text-[var(--accent-strong)] hover:bg-white')}>
+          🎓 Prüfung „{nextExam.event.title}“{' '}
+          {(() => {
+            const days = Math.round((new Date(nextExam.date).getTime() - new Date(today).getTime()) / 86400000)
+            return days === 0 ? 'heute' : `in ${days} ${days === 1 ? 'Tag' : 'Tagen'}`
+          })()}
+        </Link>
+      )}
+    </div>
   )
-  parts.push(
-    <Link key="e" to="/planen/kalender" className="hover:text-text">
-      <b className="text-text">{todayEvents}</b> {todayEvents === 1 ? 'Termin' : 'Termine'} heute
-    </Link>,
-  )
-  if (w.data && weather)
-    parts.push(
-      <span key="w">
-        {weatherInfo(w.data.current.code, w.data.current.isDay).emoji} <b className="text-text">{Math.round(w.data.current.temp)}°</b> in {weather.name}
-      </span>,
-    )
-  if (nextExam) {
-    const days = Math.round((new Date(nextExam.date).getTime() - new Date(today).getTime()) / 86400000)
-    parts.push(
-      <span key="x" className="text-danger">
-        Prüfung „{nextExam.event.title}“ {days === 0 ? 'heute' : `in ${days} ${days === 1 ? 'Tag' : 'Tagen'}`}
-      </span>,
-    )
-  }
-  return <div className="flex flex-wrap gap-x-4 gap-y-1 text-[15px] text-muted">{parts}</div>
 }
 
 function Customize({ open, view, onClose }: { open: boolean; view: ViewId; onClose: () => void }) {
@@ -133,29 +132,35 @@ export default function TodayPage() {
 
   return (
     <div>
-      <header className="flex flex-wrap items-end justify-between gap-4 pb-6 pt-6 lg:pt-10">
-        <div className="min-w-0 animate-rise">
-          <p className="text-sm font-semibold capitalize text-muted">{now.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>
-          <h1 className="mt-1 font-display text-[34px] font-bold leading-[1.05] tracking-tight sm:text-[46px]">
+      <header className="pb-5 pt-4 lg:pt-8">
+        <section className="hero-gradient relative animate-rise overflow-hidden rounded-[30px] p-5 text-white shadow-[0_20px_50px_-20px_var(--accent)] sm:p-7">
+          {/* dezente Lichtkreise */}
+          <span className="pointer-events-none absolute -right-16 -top-20 size-64 rounded-full bg-white/12 blur-2xl" />
+          <span className="pointer-events-none absolute -bottom-24 left-1/3 size-56 rounded-full bg-white/8 blur-2xl" />
+          <div className="relative flex items-start justify-between gap-3">
+            <p className="text-sm font-semibold capitalize text-white/80">{now.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+            <div className="flex gap-1.5 lg:hidden">
+              <button aria-label="Suchen" onClick={openSearch} className="grid size-10 place-items-center rounded-full bg-white/18 ring-1 ring-white/20 backdrop-blur-md active:scale-95">
+                <Search className="size-[18px]" />
+              </button>
+              <button aria-label="Schnell erfassen" onClick={() => openQuickAdd()} className="grid size-10 place-items-center rounded-full bg-white text-[var(--accent-strong)] shadow-lg active:scale-95">
+                <Plus className="size-5" strokeWidth={2.6} />
+              </button>
+            </div>
+          </div>
+          <h1 className="relative mt-2 font-display text-[34px] font-bold leading-[1.05] tracking-tight sm:text-[48px]">
             {greeting(now)}
-            {name ? `, ${name}` : ''}
-            <span className="text-accent">.</span>
+            {name ? `, ${name}` : ''} 👋
           </h1>
-          <div className="mt-3">
+          <div className="relative mt-4">
             <DaySummary />
           </div>
-        </div>
-        <div className="flex w-full items-center gap-2 sm:w-auto sm:shrink-0">
+        </section>
+        <div className="mt-4 flex items-center gap-2">
           <Segmented className="min-w-0 flex-1 sm:flex-none sm:shrink-0" value={view} onChange={(v) => actions().setSettings({ activeView: v })} options={VIEWS} />
-          <IconButton label="Startseite anpassen" onClick={() => setCustomize(true)} className="border border-line bg-surface">
+          <IconButton label="Startseite anpassen" onClick={() => setCustomize(true)} className="ml-auto border border-line bg-surface shadow-sm">
             <Settings2 className="size-5" />
           </IconButton>
-          <IconButton label="Suchen" onClick={openSearch} className="border border-line bg-surface lg:hidden">
-            <Search className="size-5" />
-          </IconButton>
-          <button aria-label="Schnell erfassen" onClick={() => openQuickAdd()} className="grid size-11 place-items-center rounded-xl bg-accent text-accent-fg shadow-md shadow-accent/25 active:scale-95 lg:hidden">
-            <Plus className="size-5" />
-          </button>
         </div>
       </header>
 

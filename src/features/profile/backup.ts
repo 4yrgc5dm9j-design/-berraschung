@@ -8,7 +8,8 @@ const FORMAT = 'dailybase-backup'
 
 export function exportData() {
   const { data, settings } = actions()
-  const payload = { format: FORMAT, version: 1, exportedAt: new Date().toISOString(), data, settings }
+  // Persönlicher API-Schlüssel gehört nicht in Sicherungsdateien
+  const payload = { format: FORMAT, version: 1, exportedAt: new Date().toISOString(), data, settings: { ...settings, finnhubKey: '' } }
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
@@ -40,7 +41,7 @@ export async function importData(file: File) {
     if (Array.isArray(v)) data[key] = v.filter((e) => e && typeof e === 'object' && typeof e.id === 'string') as never
   }
   const snap = { data: actions().data, settings: actions().settings }
-  actions().replaceAll(data, (parsed.settings ?? snap.settings) as Settings)
+  actions().replaceAll(data, { ...(parsed.settings ?? snap.settings), finnhubKey: snap.settings.finnhubKey } as Settings)
   const n = Object.values(data).reduce((a, l) => a + l.length, 0)
   useToasts.getState().push({ message: `${n} Einträge importiert`, tone: 'success', action: { label: 'Rückgängig', run: () => actions().replaceAll(snap.data, snap.settings) } }, 10000)
 }

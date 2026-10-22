@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { expect, test } from '@playwright/test'
 import { mockExternal } from './mocks'
 
@@ -134,6 +135,32 @@ test('Entdecken: News, Sport, Börse mit Depot und Rechner', async ({ page }, in
   await page.getByRole('tab', { name: /Rechner/ }).click()
   await expect(page.getByText(/Endkapital nach 20 Jahren/)).toBeVisible()
   await page.screenshot({ path: shot('rechner', info.project.name), fullPage: true })
+})
+
+test('Live-Kurse: Schlüssel eintragen, Watchlist live mit Euro-Umrechnung', async ({ page }, info) => {
+  await page.goto('/entdecken/boerse')
+  await expect(page.getByText(/Live-Kurse einschalten/)).toHaveCount(0) // leere Watchlist zeigt Vorschläge
+  await page.getByRole('button', { name: /Apple/ }).click()
+  await expect(page.getByText(/Live-Kurse einschalten/)).toBeVisible()
+  await page.getByRole('link', { name: 'Einrichten' }).click()
+  await page.getByLabel('Finnhub-API-Schlüssel').fill('falsch')
+  await page.getByRole('button', { name: 'Verbinden' }).click()
+  await expect(page.getByText(/Schlüssel ungültig/)).toBeVisible()
+  await page.getByLabel('Finnhub-API-Schlüssel').fill('testkey')
+  await page.getByRole('button', { name: 'Verbinden' }).click()
+  await expect(page.getByText(/Verbunden – Apple steht gerade bei/)).toBeVisible()
+  await page.goto('/entdecken/boerse')
+  await expect(page.getByText('250,00 $')).toBeVisible()
+  await expect(page.getByText('≈ 200,00 €')).toBeVisible()
+  await expect(page.getByText('Live', { exact: true })).toBeVisible()
+  await page.screenshot({ path: shot('live-kurse', info.project.name), fullPage: true })
+  // Export enthält den Schlüssel nicht
+  await page.goto('/profil')
+  const download = page.waitForEvent('download')
+  await page.getByRole('button', { name: 'Exportieren' }).click()
+  const file = await (await download).path()
+  const text = readFileSync(file, 'utf8')
+  expect(text).not.toContain('testkey')
 })
 
 test('Profil: Dark Mode, Wetter-Ort, Module, Export', async ({ page }, info) => {

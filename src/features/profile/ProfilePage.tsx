@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { Link } from 'react-router-dom'
 import { Check, Download, LocateFixed, Monitor, Moon, Sun, Upload, X, Cloud, Server, Database, Smartphone, Plus } from 'lucide-react'
@@ -10,6 +10,7 @@ import { cn, parseNum } from '@/lib/utils'
 import { searchPlaces } from '@/services/weather'
 import { useServerStatus } from '@/services/hooks'
 import { STATIC_HOSTING } from '@/services/server'
+import { testFinnhubKey } from '@/services/quotes'
 import { timeAgo } from '@/lib/dates'
 import { TOPICS } from '@/features/discover/news'
 import { TeamLogo, ClubPicker } from '@/features/discover/sport'
@@ -17,12 +18,12 @@ import { exportData, importData } from './backup'
 import { toast, useToasts } from '@/data/toasts'
 
 const ACCENTS: { id: AccentId; label: string; color: string }[] = [
-  { id: 'ozean', label: 'Ozean', color: '#2f5fe3' },
-  { id: 'raute', label: 'Rautenblau', color: '#0b5aa8' },
-  { id: 'smaragd', label: 'Smaragd', color: '#0f8a62' },
-  { id: 'violett', label: 'Violett', color: '#7045d8' },
-  { id: 'koralle', label: 'Koralle', color: '#d4483b' },
-  { id: 'bernstein', label: 'Bernstein', color: '#b86e00' },
+  { id: 'ozean', label: 'Ozean', color: '#4361ee' },
+  { id: 'raute', label: 'Rautenblau', color: '#0b63ce' },
+  { id: 'smaragd', label: 'Smaragd', color: '#0e9f6e' },
+  { id: 'violett', label: 'Violett', color: '#7c4dff' },
+  { id: 'koralle', label: 'Koralle', color: '#f0533f' },
+  { id: 'bernstein', label: 'Bernstein', color: '#c47500' },
 ]
 
 const MODULES: { id: ModuleId; label: string; description: string }[] = [
@@ -148,8 +149,72 @@ function ListEditor({ label, values, onChange, placeholder }: { label: string; v
   )
 }
 
+function LiveQuotesCard() {
+  const { finnhubKey } = useSettings()
+  const [value, setValue] = useState(finnhubKey)
+  const [state, setState] = useState<{ kind: 'idle' | 'testing' | 'ok' | 'error'; text?: string }>({ kind: 'idle' })
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (location.hash === '#kurse') ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [])
+  const save = async () => {
+    const key = value.trim()
+    if (!key) {
+      actions().setSettings({ finnhubKey: '' })
+      setState({ kind: 'idle' })
+      return toast('Live-Kurse ausgeschaltet')
+    }
+    setState({ kind: 'testing' })
+    try {
+      const price = await testFinnhubKey(key)
+      actions().setSettings({ finnhubKey: key })
+      setState({ kind: 'ok', text: `Verbunden – Apple steht gerade bei ${price.toLocaleString('de-DE', { style: 'currency', currency: 'USD' })}.` })
+      toast('Live-Kurse eingeschaltet', 'success')
+    } catch (e) {
+      setState({ kind: 'error', text: (e as Error).message })
+    }
+  }
+  return (
+    <div ref={ref} id="kurse" className="card scroll-mt-6 p-5">
+      <SectionTitle action={finnhubKey ? <Badge tone="success">Live aktiv</Badge> : <Badge>Aus</Badge>}>Live-Börsenkurse</SectionTitle>
+      <ol className="mb-4 list-decimal space-y-1 pl-5 text-sm text-muted">
+        <li>
+          Kostenlos registrieren bei{' '}
+          <a href="https://finnhub.io/register" target="_blank" rel="noreferrer" className="font-semibold text-accent underline-offset-2 hover:underline">
+            finnhub.io
+          </a>{' '}
+          (nur E-Mail, keine Zahlungsdaten).
+        </li>
+        <li>Im Dashboard den „API Key“ kopieren.</li>
+        <li>Hier einfügen und „Verbinden“ tippen.</li>
+      </ol>
+      <div className="flex gap-2">
+        <input
+          className="field font-mono text-sm"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder="API-Schlüssel"
+          autoComplete="off"
+          autoCapitalize="off"
+          spellCheck={false}
+          aria-label="Finnhub-API-Schlüssel"
+        />
+        <Button variant="primary" onClick={save} loading={state.kind === 'testing'}>
+          {value.trim() ? 'Verbinden' : 'Speichern'}
+        </Button>
+      </div>
+      {state.kind === 'ok' && <p className="mt-2 text-sm font-semibold text-success">{state.text}</p>}
+      {state.kind === 'error' && <p className="mt-2 text-sm font-semibold text-danger">{state.text}</p>}
+      <p className="mt-3 text-xs text-faint">
+        Der Schlüssel bleibt nur auf diesem Gerät und wird nicht exportiert. Live verfügbar sind im kostenlosen Plan Aktien und ETFs an US-Börsen (auch SAP, Deutsche Bank u. a. über ihr US-Listing), aktualisiert jede Minute. Dollar-Kurse rechnet Dailybase mit dem EZB-Referenzkurs in Euro um. Xetra-Kurse sind bei keinem Anbieter kostenlos – dafür bleibt der manuelle Kurs.
+      </p>
+    </div>
+  )
+}
+
 function DataSources() {
   const status = useServerStatus()
+  const settings = useSettings()
   const row = (icon: React.ReactNode, name: string, state: React.ReactNode, note: string) => (
     <div className="flex items-start gap-3 py-2.5">
       <span className="mt-0.5 text-muted">{icon}</span>
@@ -191,8 +256,8 @@ function DataSources() {
       {row(
         <Server className="size-4" />,
         'Börsenkurse · Finnhub',
-        status.data?.quotes.provider ? <Badge tone="success">Verbunden</Badge> : <Badge>Manuell</Badge>,
-        status.data?.quotes.provider ? 'Live-Kurse (v. a. US-Werte, in USD).' : STATIC_HOSTING ? 'Live-Kurse brauchen einen eigenen Server mit Schlüssel. Bis dahin pflegst du Kurse selbst (Stift-Symbol).' : 'Optional: kostenloser Schlüssel in .env (FINNHUB_API_KEY). Bis dahin pflegst du Kurse selbst.',
+        status.data?.quotes.provider || settings.finnhubKey ? <Badge tone="success">Live</Badge> : <Badge>Manuell</Badge>,
+        settings.finnhubKey ? 'Direkt mit deinem Schlüssel, jede Minute aktualisiert (US-Börsen, in € umgerechnet).' : status.data?.quotes.provider ? 'Live-Kurse (v. a. US-Werte, in USD).' : STATIC_HOSTING ? 'Mit kostenlosem Schlüssel einschalten (siehe „Live-Börsenkurse“). Bis dahin pflegst du Kurse selbst.' : 'Optional: kostenloser Schlüssel in .env (FINNHUB_API_KEY). Bis dahin pflegst du Kurse selbst.',
       )}
       {row(<Database className="size-4" />, 'Deine Daten', <Badge tone="accent">Lokal</Badge>, 'IndexedDB in diesem Browser. Nichts verlässt dein Gerät.')}
     </div>
@@ -373,6 +438,8 @@ export default function ProfilePage() {
               </div>
             </div>
           </Card>
+
+          <LiveQuotesCard />
 
           <Card className="p-5">
             <SectionTitle>Deine Daten</SectionTitle>

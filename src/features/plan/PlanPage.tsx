@@ -36,7 +36,7 @@ export default function PlanPage() {
               key={t.id}
               to={`/planen/${t.id}`}
               className={({ isActive }) =>
-                cn('inline-flex min-h-10 shrink-0 items-center rounded-full px-4 text-sm font-semibold transition', isActive ? 'bg-text text-bg' : 'text-muted hover:bg-surface-2 hover:text-text')
+                cn('inline-flex min-h-10 shrink-0 items-center rounded-full px-4 text-sm font-semibold transition', isActive ? 'bg-accent text-accent-fg shadow-md shadow-accent/25' : 'text-muted hover:bg-surface-2 hover:text-text')
               }
             >
               {t.label}

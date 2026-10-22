@@ -1,4 +1,6 @@
 import { ApiError, getJson } from './remote'
+import { fetchQuotesDirect, searchSymbolsDirect } from './quotes'
+import { useApp } from '@/data/store'
 
 /** true in der statischen Web-Version (z. B. GitHub Pages) – dort läuft kein Dailybase-Server. */
 export const STATIC_HOSTING = import.meta.env.VITE_STATIC === '1'
@@ -58,6 +60,8 @@ export interface Quote {
   change: number | null
   changePct: number | null
   currency: string
+  /** Kurs in Euro (umgerechnet mit EZB-Referenzkurs), falls möglich */
+  priceEur?: number | null
   at: string
 }
 
@@ -66,6 +70,7 @@ export interface QuotesResponse {
   quotes: Record<string, Quote>
   errors: string[]
   fetchedAt: string
+  fxDate?: string | null
 }
 
 export interface SymbolHit {
@@ -94,9 +99,12 @@ export const fetchNews = async (topics: string[]): Promise<NewsResponse> => {
   return { ...all, items: all.items.filter((i) => topics.includes(i.topic)) }
 }
 const noQuotes = () => Promise.reject(new ApiError('Keine Kursquelle eingerichtet – Kurse pflegst du manuell.', 'not_configured'))
+const userKey = () => useApp.getState().settings.finnhubKey.trim()
 
-export const fetchQuotes = (symbols: string[]) =>
-  STATIC_HOSTING ? noQuotes() : api<QuotesResponse>(`quotes?symbols=${encodeURIComponent(symbols.join(','))}`, 15000)
-export const searchSymbols = (q: string): Promise<{ results: SymbolHit[] }> => STATIC_HOSTING ? noQuotes() : api<{ results: SymbolHit[] }>(`symbols?q=${encodeURIComponent(q)}`)
+/** Eigener Schlüssel im Profil → direkt aus dem Browser; sonst eigener Server (falls vorhanden). */
+export const fetchQuotes = (symbols: string[]): Promise<QuotesResponse> =>
+  userKey() ? fetchQuotesDirect(symbols, userKey()) : STATIC_HOSTING ? noQuotes() : api<QuotesResponse>(`quotes?symbols=${encodeURIComponent(symbols.join(','))}`, 15000)
+export const searchSymbols = (q: string): Promise<{ results: SymbolHit[] }> =>
+  userKey() ? searchSymbolsDirect(q, userKey()) : STATIC_HOSTING ? noQuotes() : api<{ results: SymbolHit[] }>(`symbols?q=${encodeURIComponent(q)}`)
 export const fetchPreview = (url: string): Promise<PreviewResponse> =>
   STATIC_HOSTING ? Promise.reject(new ApiError('Automatische Vorschauen gibt es nur mit eigenem Dailybase-Server. Titel und Foto kannst du selbst ergänzen.', 'no-server')) : api<PreviewResponse>(`preview?url=${encodeURIComponent(url)}`, 12000)

@@ -3,6 +3,7 @@ import { savingsPlan, summarize } from '@/features/discover/portfolio'
 import { addMonths, nextOccurrence, occursOn } from '@/lib/dates'
 import { detectSource, instagramLabel, normalizeUrl } from '@/lib/links'
 import { parseNum } from '@/lib/utils'
+import { quoteCurrency, toEur } from '@/services/quotes'
 import type { Portfolio, Transaction } from '@/data/types'
 
 const meta = { createdAt: '2026-01-01T00:00:00Z', updatedAt: '2026-01-01T00:00:00Z' }
@@ -24,6 +25,14 @@ describe('Depot', () => {
     expect(s.realized).toBeCloseTo(5 * 130 - 1 - 5 * 110.05)
     expect(s.value).toBeCloseTo(15 * 140)
     expect(s.cash).toBeCloseTo(10000 - 1001 - 1200 + 649)
+  })
+
+  it('bevorzugt den Live-Kurs in Euro vor dem manuellen Kurs', () => {
+    const s = summarize({ ...p, kind: 'real' }, [tx({ symbol: 'AAPL', qty: 2, price: 100 })], [{ id: 'AAPL', price: 90, ...meta }], {
+      AAPL: { symbol: 'AAPL', price: 160, priceEur: 150, change: 1, changePct: 0.01, currency: 'USD', at: meta.createdAt },
+    })
+    expect(s.positions[0].priceSource).toBe('live')
+    expect(s.value).toBe(300)
   })
 
   it('setzt ohne Kurs den Einstand an und zählt die Position', () => {
@@ -72,5 +81,18 @@ describe('Links & Zahlen', () => {
     expect(parseNum('1.234,56')).toBeCloseTo(1234.56)
     expect(parseNum('95,5')).toBe(95.5)
     expect(parseNum('12.5')).toBe(12.5)
+  })
+})
+
+describe('Kurse', () => {
+  it('erkennt die Währung an der Börsenendung', () => {
+    expect(quoteCurrency('AAPL')).toBe('USD')
+    expect(quoteCurrency('SAP.DE')).toBe('EUR')
+    expect(quoteCurrency('VOD.L')).toBe('GBP')
+  })
+  it('rechnet mit EZB-Kurs in Euro um', () => {
+    expect(toEur(110, 'USD', { date: '2026-10-21', rates: { USD: 1.1 } })).toBeCloseTo(100)
+    expect(toEur(50, 'EUR', null)).toBe(50)
+    expect(toEur(50, 'USD', null)).toBeNull()
   })
 })

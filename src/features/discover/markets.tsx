@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Plus, Trash2, Pencil, Info, Gamepad2, Wallet, Calculator, Eye } from 'lucide-react'
+import { Plus, Trash2, Pencil, Gamepad2, Wallet, Calculator, Eye, Zap } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { Badge, Button, Card, Chip, ConfirmDialog, EmptyState, ErrorNote, Field, IconButton, Modal, Segmented, SectionTitle, SourceLine } from '@/components/ui'
 import { AreaChart, Donut, seriesColor } from '@/components/ui/charts'
 import { actions, useData } from '@/data/store'
@@ -12,19 +13,93 @@ import { toast } from '@/data/toasts'
 import { savingsPlan, summarize } from './portfolio'
 
 // ---------------------------------------------------------------- Kurs-Hinweis
-export function QuoteSourceNote({ error, code, fetchedAt, loading, reload }: { error: string | null; code?: string; fetchedAt: string | null; loading: boolean; reload: () => void }) {
-  if (error && /FINNHUB|Kursquelle|not_configured/i.test(error + (code ?? '')))
+export function QuoteSourceNote({ error, fetchedAt, loading, reload, errors }: { error: string | null; fetchedAt: string | null; loading: boolean; reload: () => void; errors?: string[] }) {
+  if (error && /Kursquelle|not_configured/i.test(error))
     return (
-      <div className="flex items-start gap-3 rounded-2xl bg-surface-2 p-3 text-sm">
-        <Info className="mt-0.5 size-4 shrink-0 text-accent" />
-        <p className="text-muted">
-          <span className="font-semibold text-text">Keine Live-Kursquelle verbunden.</span> Du kannst Kurse manuell pflegen (Stift-Symbol). Für Live-Kurse einen kostenlosen Finnhub-Schlüssel in der Server-Datei <code>.env</code> eintragen.
+      <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-accent-soft p-3 text-sm">
+        <Zap className="size-5 shrink-0 text-accent" />
+        <p className="min-w-0 flex-1 text-muted">
+          <span className="font-semibold text-text">Live-Kurse einschalten:</span> mit einem kostenlosen Finnhub-Schlüssel aktualisieren sich Kurse jede Minute. Bis dahin pflegst du Kurse über das Stift-Symbol.
         </p>
+        <Link to="/profil#kurse" className="inline-flex min-h-10 items-center rounded-xl bg-accent px-3 font-semibold text-accent-fg">
+          Einrichten
+        </Link>
       </div>
     )
   if (error) return <ErrorNote error={error} onRetry={reload} compact />
-  if (fetchedAt) return <SourceLine source="Finnhub" href="https://finnhub.io" fetchedAt={fetchedAt} loading={loading} onReload={reload} />
-  return null
+  if (!fetchedAt) return null
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center gap-2">
+        <span className="relative flex size-2">
+          <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-60" />
+          <span className="relative inline-flex size-2 rounded-full bg-success" />
+        </span>
+        <span className="text-xs font-semibold text-success">Live</span>
+        <SourceLine source="Finnhub, € via EZB" href="https://finnhub.io" fetchedAt={fetchedAt} loading={loading} onReload={reload} />
+      </div>
+      {errors && errors.length > 0 && <p className="text-[11px] text-warn">{errors.join(' · ')}</p>}
+    </div>
+  )
+}
+
+/** Beliebte Werte, die im kostenlosen Finnhub-Plan (US-Börsen) live verfügbar sind. */
+export const POPULAR: { symbol: string; name: string; kind: AssetKind }[] = [
+  { symbol: 'AAPL', name: 'Apple', kind: 'Aktie' },
+  { symbol: 'MSFT', name: 'Microsoft', kind: 'Aktie' },
+  { symbol: 'NVDA', name: 'NVIDIA', kind: 'Aktie' },
+  { symbol: 'AMZN', name: 'Amazon', kind: 'Aktie' },
+  { symbol: 'GOOGL', name: 'Alphabet', kind: 'Aktie' },
+  { symbol: 'TSLA', name: 'Tesla', kind: 'Aktie' },
+  { symbol: 'SAP', name: 'SAP (US-Listing)', kind: 'Aktie' },
+  { symbol: 'DB', name: 'Deutsche Bank (US-Listing)', kind: 'Aktie' },
+  { symbol: 'URTH', name: 'iShares MSCI World ETF (US)', kind: 'ETF' },
+  { symbol: 'SPY', name: 'S&P 500 ETF', kind: 'ETF' },
+  { symbol: 'QQQ', name: 'Nasdaq-100 ETF', kind: 'ETF' },
+]
+
+function Suggestions({ existing }: { existing: string[] }) {
+  const list = POPULAR.filter((p) => !existing.includes(p.symbol))
+  if (!list.length) return null
+  return (
+    <div>
+      <p className="mb-2 text-xs font-bold uppercase tracking-wider text-faint">Schnell hinzufügen</p>
+      <div className="flex flex-wrap gap-2">
+        {list.map((p) => (
+          <Chip key={p.symbol} onClick={() => actions().add('watchlist', { symbol: p.symbol, name: p.name, kind: p.kind, note: '' })}>
+            <Plus className="size-3.5" /> {p.name}
+          </Chip>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export function QuoteValue({ live, manual, error }: { live?: Quote; manual?: { price: number; updatedAt: string }; error?: string }) {
+  if (live)
+    return (
+      <div className="text-right">
+        <p className="font-semibold tabular">{fmtMoney(live.price, live.currency)}</p>
+        <div className="flex items-center justify-end gap-1.5">
+          {live.currency !== 'EUR' && live.priceEur != null && <span className="text-[11px] text-faint tabular">≈ {fmtEur(live.priceEur)}</span>}
+          {live.changePct != null && (
+            <span className={cn('rounded-md px-1.5 py-0.5 text-[11px] font-bold tabular', live.changePct >= 0 ? 'bg-success/12 text-success' : 'bg-danger/12 text-danger')}>{fmtPct(live.changePct)}</span>
+          )}
+        </div>
+      </div>
+    )
+  if (manual)
+    return (
+      <div className="text-right">
+        <p className="font-semibold tabular">{fmtEur(manual.price)}</p>
+        <p className="text-[11px] text-faint">manuell · {timeAgo(manual.updatedAt)}</p>
+      </div>
+    )
+  return (
+    <p className="max-w-28 text-right text-[11px] leading-tight text-faint" title={error}>
+      {error ? 'kein Live-Kurs' : 'kein Kurs'}
+    </p>
+  )
 }
 
 function usePriceMap(symbols: string[]) {
@@ -165,45 +240,34 @@ export function WatchlistView() {
     <Card className="p-4 sm:p-5">
       <SectionTitle action={<Button size="sm" variant="primary" icon={<Plus className="size-4" />} onClick={() => { setEdit(null); setOpen(true) }}>Wert</Button>}>Watchlist</SectionTitle>
       {watch.length === 0 ? (
-        <EmptyState compact icon="👀" title="Watchlist ist leer" text="Füge Aktien oder ETFs hinzu, die du beobachten möchtest." />
+        <div className="space-y-4">
+          <EmptyState compact icon="👀" title="Watchlist ist leer" text="Füge Aktien oder ETFs hinzu, die du beobachten möchtest." />
+          <Suggestions existing={[]} />
+        </div>
       ) : (
         <>
           <div className="mb-3">
-            <QuoteSourceNote error={q.error} fetchedAt={q.fetchedAt} loading={q.loading} reload={q.reload} />
+            <QuoteSourceNote error={q.error} fetchedAt={q.fetchedAt} loading={q.loading} reload={q.reload} errors={q.data?.errors} />
           </div>
           <div className="divide-y divide-line">
             {watch.map((w) => {
               const live = q.quotes?.[w.symbol]
               const manual = prices.find((p) => p.id === w.symbol)
               return (
-                <div key={w.id} className="flex items-center gap-3 py-2.5">
-                  <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-surface-2 text-xs font-bold">{w.symbol.slice(0, 4)}</span>
+                <div key={w.id} className="flex items-center gap-2 py-2.5 sm:gap-3">
+                  <span className="hidden size-10 shrink-0 place-items-center rounded-xl bg-surface-2 text-xs font-bold sm:grid">{w.symbol.slice(0, 4)}</span>
                   <button className="min-w-0 flex-1 text-left" onClick={() => { setEdit(w); setOpen(true) }}>
                     <span className="block truncate font-semibold">{w.name}</span>
-                    <span className="text-xs text-muted">
+                    <span className="block truncate text-xs text-muted">
                       {w.symbol} · {w.kind}
                       {w.note && ` · ${w.note}`}
                     </span>
                   </button>
-                  <div className="text-right">
-                    {live ? (
-                      <>
-                        <p className="font-semibold tabular">{fmtMoney(live.price, live.currency)}</p>
-                        {live.changePct != null && <p className={cn('text-xs font-semibold tabular', live.changePct >= 0 ? 'text-success' : 'text-danger')}>{fmtPct(live.changePct)}</p>}
-                      </>
-                    ) : manual ? (
-                      <>
-                        <p className="font-semibold tabular">{fmtEur(manual.price)}</p>
-                        <p className="text-[11px] text-faint">manuell · {timeAgo(manual.updatedAt)}</p>
-                      </>
-                    ) : (
-                      <p className="text-xs text-faint">kein Kurs</p>
-                    )}
-                  </div>
-                  <IconButton label="Kurs manuell pflegen" size="sm" onClick={() => setPriceFor(w)}>
+                  <QuoteValue live={live} manual={manual} error={q.data?.errors.find((e) => e.startsWith(`${w.symbol}:`))} />
+                  <IconButton label="Kurs manuell pflegen" size="sm" className="size-8 sm:size-9" onClick={() => setPriceFor(w)}>
                     <Pencil className="size-4" />
                   </IconButton>
-                  <IconButton label="Entfernen" size="sm" onClick={() => setConfirm(w)}>
+                  <IconButton label="Entfernen" size="sm" className="size-8 sm:size-9" onClick={() => setConfirm(w)}>
                     <Trash2 className="size-4" />
                   </IconButton>
                 </div>
@@ -211,6 +275,11 @@ export function WatchlistView() {
             })}
           </div>
         </>
+      )}
+      {watch.length > 0 && watch.length < 8 && (
+        <div className="mt-4 border-t border-line pt-4">
+          <Suggestions existing={watch.map((w) => w.symbol)} />
+        </div>
       )}
       <WatchEditor open={open} item={edit} onClose={() => setOpen(false)} />
       {priceFor && <PriceEditor open symbol={priceFor.symbol} name={priceFor.name} onClose={() => setPriceFor(null)} />}
@@ -379,7 +448,7 @@ export function PortfolioView({ kind }: { kind: 'real' | 'virtual' }) {
         </Card>
       </div>
 
-      {symbols.length > 0 && <QuoteSourceNote error={q.error} fetchedAt={q.fetchedAt} loading={q.loading} reload={q.reload} />}
+      {symbols.length > 0 && <QuoteSourceNote error={q.error} fetchedAt={q.fetchedAt} loading={q.loading} reload={q.reload} errors={q.data?.errors} />}
 
       <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
         <Card className="p-4 sm:p-5">

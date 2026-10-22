@@ -38,7 +38,7 @@ export default function DiscoverPage() {
             className={({ isActive }) =>
               cn(
                 'flex min-h-12 items-center justify-center gap-2 rounded-2xl border px-5 font-semibold transition',
-                isActive ? 'border-transparent bg-text text-bg' : 'border-line bg-surface text-muted hover:text-text',
+                isActive ? 'border-transparent bg-accent text-accent-fg shadow-md shadow-accent/25' : 'border-line bg-surface text-muted hover:text-text',
               )
             }
           >

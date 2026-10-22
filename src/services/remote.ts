@@ -45,7 +45,7 @@ function writeCache(key: string, data: unknown) {
   return entry
 }
 
-export function useRemote<T>(key: string | null, fetcher: () => Promise<T>, ttlMs = 10 * 60 * 1000): Remote<T> {
+export function useRemote<T>(key: string | null, fetcher: () => Promise<T>, ttlMs = 10 * 60 * 1000, refreshMs = 0): Remote<T> {
   const cached = key ? readCache<T>(key) : null
   const [state, setState] = useState<Omit<Remote<T>, 'reload'>>({
     data: cached?.data ?? null,
@@ -93,6 +93,18 @@ export function useRemote<T>(key: string | null, fetcher: () => Promise<T>, ttlM
     }
     run(false)
   }, [key, run])
+
+  // Automatisch aktualisieren, solange die App sichtbar ist (z. B. Live-Kurse)
+  useEffect(() => {
+    if (!key || !refreshMs) return
+    const tick = () => document.visibilityState === 'visible' && run(true)
+    const i = setInterval(tick, refreshMs)
+    document.addEventListener('visibilitychange', tick)
+    return () => {
+      clearInterval(i)
+      document.removeEventListener('visibilitychange', tick)
+    }
+  }, [key, refreshMs, run])
 
   return { ...state, reload: () => run(true) }
 }

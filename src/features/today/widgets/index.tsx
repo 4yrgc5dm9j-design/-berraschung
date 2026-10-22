@@ -1,11 +1,11 @@
 import { useMemo, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowUpRight, Check, Flame, Pause, Play, Plus, Shuffle, Pencil, Trash2, Droplets, Wind } from 'lucide-react'
+import { ArrowUpRight, Check, Flame, Pause, Play, Plus, Shuffle, Pencil, Trash2, Droplets, Wind, CheckCircle2, CalendarDays, CloudSun, Zap, TrendingUp, Newspaper, Timer, Sparkles, Wallet, Trophy, type LucideIcon } from 'lucide-react'
 import { Button, EmptyState, ErrorNote, IconButton, Modal, Field, ProgressBar, Skeleton, SourceLine } from '@/components/ui'
 import { QuickIcon, guessIcon } from '@/components/ui/LinkIcon'
 import { actions, useApp, useData, useSettings } from '@/data/store'
 import type { QuickLink, QuickLinkIcon, ViewId, WidgetId } from '@/data/types'
-import { cn, fmtEur, fmtMoney, fmtPct } from '@/lib/utils'
+import { cn, fmtEur } from '@/lib/utils'
 import { normalizeUrl } from '@/lib/links'
 import { todayKey, addDays, fmtTime } from '@/lib/dates'
 import { useNews, useQuotes, useWeather, useClub } from '@/services/hooks'
@@ -15,6 +15,7 @@ import { EventEditor, EventPill, upcomingEvents } from '@/features/plan/calendar
 import { streak, toggleHabitDay, monthStats } from '@/features/plan/life'
 import { useTimerTick } from '@/features/plan/study'
 import { NewsCard, NewsUnavailable } from '@/features/discover/news'
+import { QuoteValue } from '@/features/discover/markets'
 import { MatchHero } from '@/features/discover/sport'
 import { RandomPick } from '@/features/collections/CollectionsPage'
 import type { Task, CalEvent } from '@/data/types'
@@ -33,11 +34,31 @@ export const widgetMeta: Record<WidgetId, { title: string; description: string; 
   budget: { title: 'Budget', description: 'Ausgaben diesen Monat' },
 }
 
+// Farbiges Symbol je Widget – gibt der Startseite Orientierung auf einen Blick
+const widgetIcons: [string, LucideIcon, string][] = [
+  ['Aufgaben', CheckCircle2, '#4361ee'],
+  ['Termine', CalendarDays, '#8b5cf6'],
+  ['Wetter', CloudSun, '#0ea5e9'],
+  ['Schnellzugriff', Zap, '#f59e0b'],
+  ['Watchlist', TrendingUp, '#10b981'],
+  ['Nachrichten', Newspaper, '#ef4444'],
+  ['Gewohnheiten', Flame, '#f97316'],
+  ['Fokus', Timer, '#6366f1'],
+  ['Zufallsidee', Sparkles, '#ec4899'],
+  ['Budget', Wallet, '#14b8a6'],
+]
+
 export function WidgetShell({ title, to, action, children, className }: { title: string; to?: string; action?: ReactNode; children: ReactNode; className?: string }) {
+  const [, Icon, color] = widgetIcons.find(([t]) => title.startsWith(t)) ?? ['', Trophy, '#0b63ce']
   return (
-    <section className={cn('card flex min-w-0 flex-col p-4 sm:p-5', className)}>
+    <section className={cn('card flex min-w-0 flex-col p-4 hover:shadow-[var(--shadow-lift)] sm:p-5', className)}>
       <div className="mb-3 flex items-center justify-between gap-2">
-        <h2 className="font-display text-[17px] font-semibold tracking-tight">{title}</h2>
+        <div className="flex min-w-0 items-center gap-2.5">
+          <span className="grid size-8 shrink-0 place-items-center rounded-xl" style={{ background: `color-mix(in oklab, ${color} 14%, transparent)`, color }}>
+            <Icon className="size-[18px]" strokeWidth={2.2} />
+          </span>
+          <h2 className="truncate font-display text-[17px] font-semibold tracking-tight">{title}</h2>
+        </div>
         <div className="flex items-center gap-1">
           {action}
           {to && (
@@ -377,29 +398,24 @@ export function WatchlistWidget() {
                     <p className="truncate font-semibold">{w.name}</p>
                     <p className="text-xs text-muted">{w.symbol}</p>
                   </div>
-                  {live ? (
-                    <div className="text-right">
-                      <p className="font-semibold tabular">{fmtMoney(live.price, live.currency)}</p>
-                      {live.changePct != null && <p className={cn('text-xs font-bold tabular', live.changePct >= 0 ? 'text-success' : 'text-danger')}>{fmtPct(live.changePct)}</p>}
-                    </div>
-                  ) : m ? (
-                    <div className="text-right">
-                      <p className="font-semibold tabular">{fmtEur(m.price)}</p>
-                      <p className="text-[11px] text-faint">manuell</p>
-                    </div>
-                  ) : (
-                    <span className="text-xs text-faint">–</span>
-                  )}
+                  <QuoteValue live={live} manual={m} error={q.data?.errors.find((e) => e.startsWith(`${w.symbol}:`))} />
                 </div>
               )
             })}
           </div>
           {notConfigured ? (
-            <p className="mt-2 text-[11px] text-faint">Keine Live-Kursquelle verbunden – Kurse manuell gepflegt.</p>
+            <Link to="/profil#kurse" className="mt-2 block text-xs font-semibold text-accent">
+              Live-Kurse einschalten →
+            </Link>
           ) : q.error ? (
             <p className="mt-2 text-[11px] text-warn">{q.error}</p>
           ) : (
-            q.fetchedAt && <SourceLine className="mt-2" source="Finnhub" fetchedAt={q.fetchedAt} stale={q.stale} />
+            q.fetchedAt && (
+              <div className="mt-2 flex items-center gap-1.5">
+                <span className="size-1.5 animate-pulse rounded-full bg-success" />
+                <SourceLine source="Finnhub, live" fetchedAt={q.fetchedAt} stale={q.stale} loading={q.loading} onReload={q.reload} />
+              </div>
+            )
           )}
         </>
       )}
@@ -531,7 +547,7 @@ export function IdeaWidget() {
         <>
           <div className="scroll-x -mx-1 mb-3 flex gap-1.5 px-1">
             {withItems.map((c) => (
-              <button key={c.id} onClick={() => setCid(c.id)} className={cn('min-h-9 shrink-0 rounded-full px-3 text-sm font-semibold', c.id === col?.id ? 'bg-text text-bg' : 'bg-surface-2 text-muted')}>
+              <button key={c.id} onClick={() => setCid(c.id)} className={cn('min-h-9 shrink-0 rounded-full px-3 text-sm font-semibold', c.id === col?.id ? 'bg-accent text-accent-fg' : 'bg-surface-2 text-muted')}>
                 {c.emoji} {c.name}
               </button>
             ))}

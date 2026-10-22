@@ -50,7 +50,7 @@ export function MatchHero({ m, teamId }: { m: Match; teamId: number }) {
               {score[0]}:{score[1]}
             </p>
           ) : live ? (
-            <p className="font-display text-3xl font-bold tabular">–:–</p>
+            <p className="font-display text-2xl font-bold text-danger">Live</p>
           ) : (
             <p className="font-display text-2xl font-bold tabular">{time}</p>
           )}

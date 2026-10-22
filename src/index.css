@@ -9,60 +9,71 @@
    und die Akzentfarbe zur Laufzeit umgeschaltet werden können.
 ------------------------------------------------------------------- */
 :root {
-  --bg: #f5f4f0;
-  --bg-glow: rgba(59, 108, 246, 0.1);
+  /* Hell: kühles, sehr helles Grau mit reinweißen Karten */
+  --bg: #f5f7fc;
+  --bg-glow: rgba(67, 97, 238, 0.16);
+  --bg-glow-2: rgba(255, 120, 170, 0.12);
+  --bg-glow-3: rgba(56, 214, 196, 0.12);
   --surface: #ffffff;
-  --surface-2: #efeee9;
-  --surface-3: #e6e4dd;
-  --line: rgba(20, 22, 30, 0.08);
-  --line-strong: rgba(20, 22, 30, 0.16);
-  --text: #15171d;
-  --muted: #5d616d;
-  --faint: #8b8f99;
-  --success: #12805c;
-  --danger: #c8323c;
-  --warn: #b26a00;
-  --shadow: 0 1px 2px rgba(20, 22, 30, 0.04), 0 8px 24px -12px rgba(20, 22, 30, 0.12);
+  --surface-2: #f2f4fa;
+  --surface-3: #e7eaf3;
+  --line: rgba(16, 24, 40, 0.06);
+  --line-strong: rgba(16, 24, 40, 0.14);
+  --text: #0f172a;
+  --muted: #5a6478;
+  --faint: #8e97aa;
+  --success: #0f9b62;
+  --danger: #e0394a;
+  --warn: #c27300;
+  --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 14px 34px -14px rgba(30, 41, 80, 0.14);
+  --shadow-lift: 0 2px 6px rgba(16, 24, 40, 0.05), 0 22px 44px -18px rgba(30, 41, 80, 0.22);
+  --card-border: transparent;
 
-  --accent: #2f5fe3;
-  --accent-strong: #2449b8;
+  --accent: #4361ee;
+  --accent-2: #8b5cf6;
+  --accent-strong: #2f48c7;
   --accent-fg: #ffffff;
-  --accent-soft: rgba(47, 95, 227, 0.1);
+  --accent-soft: rgba(67, 97, 238, 0.1);
 }
 
 .dark {
-  --bg: #0b0d12;
-  --bg-glow: rgba(96, 140, 255, 0.16);
-  --surface: #13161d;
-  --surface-2: #1a1e27;
-  --surface-3: #232835;
+  --bg: #0b0e16;
+  --bg-glow: rgba(96, 120, 255, 0.2);
+  --bg-glow-2: rgba(255, 110, 170, 0.08);
+  --bg-glow-3: rgba(56, 214, 196, 0.08);
+  --surface: #141826;
+  --surface-2: #1b2031;
+  --surface-3: #252b3f;
   --line: rgba(255, 255, 255, 0.07);
   --line-strong: rgba(255, 255, 255, 0.14);
-  --text: #eef0f5;
-  --muted: #a1a6b3;
-  --faint: #6f7584;
+  --text: #eef1f8;
+  --muted: #a3abc0;
+  --faint: #707a92;
   --success: #3ccf91;
-  --danger: #ff6b72;
+  --danger: #ff6b78;
   --warn: #f2b14c;
   --shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 12px 32px -16px rgba(0, 0, 0, 0.6);
+  --shadow-lift: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 20px 40px -18px rgba(0, 0, 0, 0.7);
+  --card-border: rgba(255, 255, 255, 0.06);
 
-  --accent: #7c9dff;
-  --accent-strong: #a3baff;
-  --accent-fg: #0b0d12;
-  --accent-soft: rgba(124, 157, 255, 0.14);
+  --accent: #8098ff;
+  --accent-2: #b392ff;
+  --accent-strong: #a9baff;
+  --accent-fg: #0b0e16;
+  --accent-soft: rgba(128, 152, 255, 0.15);
 }
 
-/* Akzentfarben */
-[data-accent='smaragd'] { --accent: #0f8a62; --accent-strong: #0a6a4a; --accent-soft: rgba(15, 138, 98, 0.1); --bg-glow: rgba(15, 138, 98, 0.09); }
-.dark[data-accent='smaragd'] { --accent: #4fd8a2; --accent-strong: #86e8c0; --accent-soft: rgba(79, 216, 162, 0.13); --bg-glow: rgba(79, 216, 162, 0.12); }
-[data-accent='koralle'] { --accent: #d4483b; --accent-strong: #a8352b; --accent-soft: rgba(212, 72, 59, 0.1); --bg-glow: rgba(212, 72, 59, 0.08); }
-.dark[data-accent='koralle'] { --accent: #ff8a73; --accent-strong: #ffb2a3; --accent-soft: rgba(255, 138, 115, 0.13); --bg-glow: rgba(255, 138, 115, 0.12); }
-[data-accent='violett'] { --accent: #7045d8; --accent-strong: #5631b0; --accent-soft: rgba(112, 69, 216, 0.1); --bg-glow: rgba(112, 69, 216, 0.09); }
-.dark[data-accent='violett'] { --accent: #b49bff; --accent-strong: #cfc0ff; --accent-soft: rgba(180, 155, 255, 0.14); --bg-glow: rgba(180, 155, 255, 0.13); }
-[data-accent='bernstein'] { --accent: #b86e00; --accent-strong: #8f5600; --accent-soft: rgba(184, 110, 0, 0.1); --bg-glow: rgba(214, 140, 20, 0.1); }
-.dark[data-accent='bernstein'] { --accent: #ffbf55; --accent-strong: #ffd58f; --accent-soft: rgba(255, 191, 85, 0.13); --bg-glow: rgba(255, 191, 85, 0.1); }
-[data-accent='raute'] { --accent: #0b5aa8; --accent-strong: #084482; --accent-soft: rgba(11, 90, 168, 0.1); --bg-glow: rgba(11, 90, 168, 0.09); }
-.dark[data-accent='raute'] { --accent: #5fb0ff; --accent-strong: #9acdff; --accent-soft: rgba(95, 176, 255, 0.14); --bg-glow: rgba(95, 176, 255, 0.13); }
+/* Akzentfarben (jeweils mit zweitem Ton für Verläufe) */
+[data-accent='smaragd'] { --accent: #0e9f6e; --accent-2: #0ea5e9; --accent-strong: #0a7a54; --accent-soft: rgba(14, 159, 110, 0.1); --bg-glow: rgba(14, 159, 110, 0.14); }
+.dark[data-accent='smaragd'] { --accent: #4fd8a2; --accent-2: #5cc8ff; --accent-strong: #86e8c0; --accent-soft: rgba(79, 216, 162, 0.13); --bg-glow: rgba(79, 216, 162, 0.14); }
+[data-accent='koralle'] { --accent: #f0533f; --accent-2: #f59e0b; --accent-strong: #c33b2a; --accent-soft: rgba(240, 83, 63, 0.1); --bg-glow: rgba(240, 83, 63, 0.13); }
+.dark[data-accent='koralle'] { --accent: #ff8a73; --accent-2: #ffc061; --accent-strong: #ffb2a3; --accent-soft: rgba(255, 138, 115, 0.13); --bg-glow: rgba(255, 138, 115, 0.14); }
+[data-accent='violett'] { --accent: #7c4dff; --accent-2: #ec4899; --accent-strong: #5b2fd6; --accent-soft: rgba(124, 77, 255, 0.1); --bg-glow: rgba(124, 77, 255, 0.15); }
+.dark[data-accent='violett'] { --accent: #b49bff; --accent-2: #ff8fc8; --accent-strong: #cfc0ff; --accent-soft: rgba(180, 155, 255, 0.14); --bg-glow: rgba(180, 155, 255, 0.15); }
+[data-accent='bernstein'] { --accent: #c47500; --accent-2: #ef4444; --accent-strong: #a86400; --accent-soft: rgba(224, 134, 0, 0.11); --bg-glow: rgba(240, 160, 20, 0.15); }
+.dark[data-accent='bernstein'] { --accent: #ffbf55; --accent-2: #ff8a73; --accent-strong: #ffd58f; --accent-soft: rgba(255, 191, 85, 0.13); --bg-glow: rgba(255, 191, 85, 0.12); }
+[data-accent='raute'] { --accent: #0b63ce; --accent-2: #06b6d4; --accent-strong: #084b9c; --accent-soft: rgba(11, 99, 206, 0.1); --bg-glow: rgba(11, 99, 206, 0.14); }
+.dark[data-accent='raute'] { --accent: #5fb0ff; --accent-2: #5ee7df; --accent-strong: #9acdff; --accent-soft: rgba(95, 176, 255, 0.14); --bg-glow: rgba(95, 176, 255, 0.15); }
 
 @theme inline {
   --color-bg: var(--bg);
@@ -76,6 +87,7 @@
   --color-faint: var(--faint);
   --color-accent: var(--accent);
   --color-accent-strong: var(--accent-strong);
+  --color-accent-2: var(--accent-2);
   --color-accent-fg: var(--accent-fg);
   --color-accent-soft: var(--accent-soft);
   --color-success: var(--success);
@@ -123,9 +135,14 @@
   body::before {
     content: '';
     position: fixed;
-    inset: -20vh -10vw auto;
-    height: 70vh;
-    background: radial-gradient(60% 60% at 30% 20%, var(--bg-glow), transparent 70%);
+    inset: -25vh -15vw auto;
+    height: 85vh;
+    /* sanfter Farbverlauf („Mesh“) am oberen Rand */
+    background:
+      radial-gradient(42% 52% at 18% 22%, var(--bg-glow), transparent 70%),
+      radial-gradient(38% 46% at 78% 12%, var(--bg-glow-2), transparent 70%),
+      radial-gradient(40% 40% at 55% 48%, var(--bg-glow-3), transparent 70%);
+    filter: blur(8px);
     pointer-events: none;
     z-index: 0;
   }
@@ -162,14 +179,31 @@
 @layer components {
   .card {
     background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 22px;
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
     box-shadow: var(--shadow);
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+  }
+  /* Glas-Effekt für schwebende Leisten */
+  .glass {
+    background: color-mix(in oklab, var(--surface) 78%, transparent);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+  }
+.dark .hero-gradient {
+    background:
+      radial-gradient(120% 140% at 100% 0%, color-mix(in oklab, var(--accent-2) 45%, transparent) 0%, transparent 55%),
+      linear-gradient(135deg, color-mix(in oklab, var(--accent) 50%, #0b0e16) 0%, color-mix(in oklab, var(--accent-2) 35%, #0b0e16) 100%);
+  }
+  .hero-gradient {
+    background:
+      radial-gradient(120% 140% at 100% 0%, color-mix(in oklab, var(--accent-2) 85%, transparent) 0%, transparent 55%),
+      linear-gradient(135deg, var(--accent) 0%, color-mix(in oklab, var(--accent) 60%, var(--accent-2)) 100%);
   }
   .field {
     width: 100%;
     min-height: 44px;
-    border-radius: 12px;
+    border-radius: 14px;
     background: var(--surface-2);
     border: 1px solid var(--line);
     padding: 10px 12px;

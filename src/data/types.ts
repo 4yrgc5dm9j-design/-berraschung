@@ -264,5 +264,7 @@ export interface Settings {
   monthlyBudget: number
   focus: { work: number; short: number; long: number; rounds: number }
   dashboard: Record<ViewId, WidgetConfig[]>
+  /** Persönlicher Finnhub-Schlüssel für Live-Kurse – bleibt lokal auf dem Gerät */
+  finnhubKey: string
   onboarded: boolean
 }

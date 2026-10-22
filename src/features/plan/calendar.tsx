@@ -118,7 +118,7 @@ export function EventEditor({ open, event, date, onClose }: { open: boolean; eve
                 <button
                   key={k}
                   onClick={() => set('kind', k)}
-                  className={cn('inline-flex min-h-9 items-center gap-2 rounded-full border px-3 text-sm font-semibold', d.kind === k ? 'border-transparent bg-text text-bg' : 'border-line text-muted')}
+                  className={cn('inline-flex min-h-9 items-center gap-2 rounded-full border px-3 text-sm font-semibold', d.kind === k ? 'border-transparent bg-accent text-accent-fg' : 'border-line text-muted')}
                 >
                   <span className="size-2.5 rounded-full" style={{ background: kindMeta[k].color }} />
                   {kindMeta[k].label}

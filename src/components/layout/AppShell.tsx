@@ -55,7 +55,7 @@ export function AppShell() {
       const dark = settings.theme === 'dark' || (settings.theme === 'system' && matchMedia('(prefers-color-scheme: dark)').matches)
       document.documentElement.classList.toggle('dark', dark)
       document.documentElement.dataset.accent = settings.accent
-      document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute('content', dark ? '#0b0d12' : '#f5f4f0'))
+      document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute('content', dark ? '#0b0e16' : '#f5f7fc'))
     }
     apply()
     try {
@@ -70,9 +70,9 @@ export function AppShell() {
   }, [settings.theme, settings.accent])
 
   return (
-    <div className="min-h-dvh overflow-x-clip lg:pl-[264px]">
+    <div className="min-h-dvh overflow-x-clip lg:pl-[260px]">
       <Sidebar onSearch={() => setSearchOpen(true)} onAdd={() => setQuick({ open: true })} />
-      <main className="mx-auto w-full max-w-[1240px] px-4 pb-[calc(110px+env(safe-area-inset-bottom))] pt-safe sm:px-6 lg:px-10 lg:pb-16">
+      <main className="mx-auto w-full max-w-[1240px] px-4 pb-[calc(118px+env(safe-area-inset-bottom))] pt-safe sm:px-6 lg:px-10 lg:pb-16">
         <Outlet />
       </main>
       <BottomNav />
@@ -85,7 +85,7 @@ export function AppShell() {
 
 function Sidebar({ onSearch, onAdd }: { onSearch: () => void; onAdd: () => void }) {
   return (
-    <aside className="fixed inset-y-0 left-0 z-30 hidden w-[264px] flex-col border-r border-line bg-surface/70 px-4 py-6 backdrop-blur-xl lg:flex">
+    <aside className="glass fixed inset-y-3 left-3 z-30 hidden w-[248px] flex-col rounded-[28px] px-4 py-6 shadow-[var(--shadow)] lg:flex">
       <div className="px-2">
         <Logo />
       </div>
@@ -106,7 +106,7 @@ function Sidebar({ onSearch, onAdd }: { onSearch: () => void; onAdd: () => void 
             className={({ isActive }) =>
               cn(
                 'group flex min-h-11 items-center gap-3 rounded-xl px-3 font-semibold transition',
-                isActive ? 'bg-accent-soft text-accent' : 'text-muted hover:bg-surface-2 hover:text-text',
+                isActive ? 'bg-accent text-accent-fg shadow-md shadow-accent/25' : 'text-muted hover:bg-surface-2 hover:text-text',
               )
             }
           >
@@ -130,26 +130,22 @@ function Sidebar({ onSearch, onAdd }: { onSearch: () => void; onAdd: () => void 
 }
 
 function BottomNav() {
+  // Schwebende Leiste im Stil aktueller iOS-Apps
   return (
-    <nav
-      aria-label="Hauptnavigation"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface/85 pb-safe backdrop-blur-xl lg:hidden"
-    >
-      <div className="mx-auto grid max-w-xl grid-cols-5">
+    <nav aria-label="Hauptnavigation" className="fixed inset-x-0 bottom-0 z-40 px-3 pb-[max(10px,env(safe-area-inset-bottom))] lg:hidden">
+      <div className="glass mx-auto grid max-w-md grid-cols-5 rounded-[26px] p-1.5 shadow-[0_10px_40px_-10px_rgba(16,24,40,0.28)] ring-1 ring-line">
         {NAV.map((n) => (
           <NavLink
             key={n.to}
             to={n.to}
             end={n.end}
             className={({ isActive }) =>
-              cn('flex min-h-[62px] flex-col items-center justify-center gap-1 text-[11px] font-semibold transition', isActive ? 'text-accent' : 'text-faint')
+              cn('flex min-h-[54px] flex-col items-center justify-center gap-0.5 rounded-[20px] text-[10.5px] font-semibold transition', isActive ? 'bg-accent-soft text-accent' : 'text-faint active:bg-surface-2')
             }
           >
             {({ isActive }) => (
               <>
-                <span className={cn('grid h-8 w-14 place-items-center rounded-full transition', isActive && 'bg-accent-soft')}>
-                  <n.icon className="size-[22px]" strokeWidth={isActive ? 2.4 : 2} />
-                </span>
+                <n.icon className="size-[22px]" strokeWidth={isActive ? 2.4 : 2} />
                 {n.label}
               </>
             )}

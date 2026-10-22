@@ -59,4 +59,11 @@ export async function mockExternal(page: Page) {
     }),
   )
   await page.route('https://i.ytimg.com/**', (r) => r.fulfill({ status: 404, body: '' }))
+  await page.route('https://api.frankfurter.dev/**', (r) => r.fulfill({ json: { date: '2026-10-21', rates: { USD: 1.25 } } }))
+  await page.route('https://finnhub.io/api/v1/**', (r) => {
+    const u = new URL(r.request().url())
+    if (u.searchParams.get('token') !== 'testkey') return r.fulfill({ status: 401, json: { error: 'Invalid API key' } })
+    if (u.pathname.endsWith('/quote')) return r.fulfill({ json: { c: 250, d: 2.5, dp: 1.01, t: Math.floor(Date.now() / 1000) } })
+    return r.fulfill({ json: { result: [] } })
+  })
 }

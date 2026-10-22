@@ -117,7 +117,13 @@ export const useApp = create<AppState>()(
     }),
     {
       name: 'dailybase-v1',
-      version: 1,
+      version: 2,
+      // v2: neues, helles Design – wer „System“ eingestellt hatte, startet einmalig in Hell
+      migrate: (persisted, version) => {
+        const p = persisted as Partial<AppState>
+        if (version < 2 && p?.settings?.theme === 'system') p.settings = { ...p.settings, theme: 'light' }
+        return p as AppState
+      },
       storage: createJSONStorage(() => idbStorage),
       partialize: (s) => ({ data: s.data, settings: s.settings }),
       merge: (persisted, current) => {

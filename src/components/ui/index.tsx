@@ -21,7 +21,7 @@ export const Button = forwardRef<
         size === 'sm' && 'min-h-9 px-3 text-sm',
         size === 'md' && 'min-h-11 px-4 text-[15px]',
         size === 'lg' && 'min-h-12 px-5 text-base',
-        variant === 'primary' && 'bg-accent text-accent-fg shadow-sm hover:brightness-110',
+        variant === 'primary' && 'bg-accent text-accent-fg shadow-md shadow-accent/25 hover:brightness-110',
         variant === 'secondary' && 'border border-line bg-surface-2 text-text hover:bg-surface-3',
         variant === 'ghost' && 'text-muted hover:bg-surface-2 hover:text-text',
         variant === 'soft' && 'bg-accent-soft text-accent hover:brightness-95',
@@ -126,7 +126,7 @@ export function Chip({
       aria-pressed={active}
       className={cn(
         'inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-sm font-semibold transition active:scale-95',
-        active ? 'border-transparent bg-text text-bg' : 'border-line bg-surface text-muted hover:text-text',
+        active ? 'border-transparent bg-accent text-accent-fg shadow-sm shadow-accent/25' : 'border-line bg-surface text-muted hover:text-text',
         className,
       )}
     >

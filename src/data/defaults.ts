@@ -29,7 +29,7 @@ export const defaultDashboard = (): Record<ViewId, WidgetConfig[]> => ({
 
 export const defaultSettings = (): Settings => ({
   name: '',
-  theme: 'system',
+  theme: 'light',
   accent: 'ozean',
   activeView: 'arbeit',
   interests: ['wirtschaft', 'technologie', 'sport'],
@@ -41,6 +41,7 @@ export const defaultSettings = (): Settings => ({
   monthlyBudget: 800,
   focus: { work: 25, short: 5, long: 15, rounds: 4 },
   dashboard: defaultDashboard(),
+  finnhubKey: '',
   onboarded: false,
 })
 
