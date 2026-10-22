@@ -1,0 +1,2172 @@
+[
+{
+"id": "ADS.DE",
+"name": "Adidas",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "ads.de"
+},
+{
+"id": "AIR.DE",
+"name": "Airbus",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "NL",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "air.de"
+},
+{
+"id": "ALV.DE",
+"name": "Allianz",
+"type": "Aktie",
+"sector": "Finanzen",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "alv.de"
+},
+{
+"id": "BAS.DE",
+"name": "BASF",
+"type": "Aktie",
+"sector": "Chemie & Rohstoffe",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "bas.de"
+},
+{
+"id": "BAYN.DE",
+"name": "Bayer",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "bayn.de"
+},
+{
+"id": "BEI.DE",
+"name": "Beiersdorf",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "bei.de"
+},
+{
+"id": "BMW.DE",
+"name": "BMW",
+"type": "Aktie",
+"sector": "Auto",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "bmw.de"
+},
+{
+"id": "BNR.DE",
+"name": "Brenntag",
+"type": "Aktie",
+"sector": "Chemie & Rohstoffe",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "bnr.de"
+},
+{
+"id": "CBK.DE",
+"name": "Commerzbank",
+"type": "Aktie",
+"sector": "Finanzen",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "cbk.de"
+},
+{
+"id": "CON.DE",
+"name": "Continental",
+"type": "Aktie",
+"sector": "Auto",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "con.de"
+},
+{
+"id": "DTG.DE",
+"name": "Daimler Truck",
+"type": "Aktie",
+"sector": "Auto",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "dtg.de"
+},
+{
+"id": "DBK.DE",
+"name": "Deutsche Bank",
+"type": "Aktie",
+"sector": "Finanzen",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "dbk.de"
+},
+{
+"id": "DB1.DE",
+"name": "Deutsche Börse",
+"type": "Aktie",
+"sector": "Finanzen",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "db1.de"
+},
+{
+"id": "DHL.DE",
+"name": "DHL Group",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "dhl.de"
+},
+{
+"id": "DTE.DE",
+"name": "Deutsche Telekom",
+"type": "Aktie",
+"sector": "Telekom",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "dte.de"
+},
+{
+"id": "EOAN.DE",
+"name": "E.ON",
+"type": "Aktie",
+"sector": "Versorger",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "eoan.de"
+},
+{
+"id": "FRE.DE",
+"name": "Fresenius",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "fre.de"
+},
+{
+"id": "FME.DE",
+"name": "Fresenius Medical Care",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "fme.de"
+},
+{
+"id": "G1A.DE",
+"name": "GEA Group",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "g1a.de"
+},
+{
+"id": "HNR1.DE",
+"name": "Hannover Rück",
+"type": "Aktie",
+"sector": "Finanzen",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "hnr1.de"
+},
+{
+"id": "HEI.DE",
+"name": "Heidelberg Materials",
+"type": "Aktie",
+"sector": "Chemie & Rohstoffe",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "hei.de"
+},
+{
+"id": "HEN3.DE",
+"name": "Henkel",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "hen3.de"
+},
+{
+"id": "IFX.DE",
+"name": "Infineon",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "ifx.de"
+},
+{
+"id": "MBG.DE",
+"name": "Mercedes-Benz",
+"type": "Aktie",
+"sector": "Auto",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "mbg.de"
+},
+{
+"id": "MRK.DE",
+"name": "Merck KGaA",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "mrk.de"
+},
+{
+"id": "MTX.DE",
+"name": "MTU Aero Engines",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "mtx.de"
+},
+{
+"id": "MUV2.DE",
+"name": "Münchener Rück",
+"type": "Aktie",
+"sector": "Finanzen",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "muv2.de"
+},
+{
+"id": "P911.DE",
+"name": "Porsche AG",
+"type": "Aktie",
+"sector": "Auto",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "p911.de"
+},
+{
+"id": "PAH3.DE",
+"name": "Porsche SE",
+"type": "Aktie",
+"sector": "Auto",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "pah3.de"
+},
+{
+"id": "QIA.DE",
+"name": "Qiagen",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "NL",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "qia.de"
+},
+{
+"id": "RHM.DE",
+"name": "Rheinmetall",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "rhm.de"
+},
+{
+"id": "RWE.DE",
+"name": "RWE",
+"type": "Aktie",
+"sector": "Versorger",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "rwe.de"
+},
+{
+"id": "SAP.DE",
+"name": "SAP",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "sap.de"
+},
+{
+"id": "G24.DE",
+"name": "Scout24",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "g24.de"
+},
+{
+"id": "SIE.DE",
+"name": "Siemens",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "sie.de"
+},
+{
+"id": "ENR.DE",
+"name": "Siemens Energy",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "enr.de"
+},
+{
+"id": "SHL.DE",
+"name": "Siemens Healthineers",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "shl.de"
+},
+{
+"id": "SY1.DE",
+"name": "Symrise",
+"type": "Aktie",
+"sector": "Chemie & Rohstoffe",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "sy1.de"
+},
+{
+"id": "VOW3.DE",
+"name": "Volkswagen Vz.",
+"type": "Aktie",
+"sector": "Auto",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "vow3.de"
+},
+{
+"id": "VNA.DE",
+"name": "Vonovia",
+"type": "Aktie",
+"sector": "Immobilien",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "vna.de"
+},
+{
+"id": "ZAL.DE",
+"name": "Zalando",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "DE",
+"index": "DAX",
+"currency": "EUR",
+"stooq": "zal.de"
+},
+{
+"id": "LHA.DE",
+"name": "Lufthansa",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "lha.de"
+},
+{
+"id": "PUM.DE",
+"name": "Puma",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "pum.de"
+},
+{
+"id": "HFG.DE",
+"name": "HelloFresh",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "hfg.de"
+},
+{
+"id": "DHER.DE",
+"name": "Delivery Hero",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "dher.de"
+},
+{
+"id": "TMV.DE",
+"name": "TeamViewer",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "tmv.de"
+},
+{
+"id": "HAG.DE",
+"name": "Hensoldt",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "hag.de"
+},
+{
+"id": "R3NK.DE",
+"name": "Renk",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "r3nk.de"
+},
+{
+"id": "SRT3.DE",
+"name": "Sartorius",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "srt3.de"
+},
+{
+"id": "EVK.DE",
+"name": "Evonik",
+"type": "Aktie",
+"sector": "Chemie & Rohstoffe",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "evk.de"
+},
+{
+"id": "LEG.DE",
+"name": "LEG Immobilien",
+"type": "Aktie",
+"sector": "Immobilien",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "leg.de"
+},
+{
+"id": "TLX.DE",
+"name": "Talanx",
+"type": "Aktie",
+"sector": "Finanzen",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "tlx.de"
+},
+{
+"id": "NDA.DE",
+"name": "Aurubis",
+"type": "Aktie",
+"sector": "Chemie & Rohstoffe",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "nda.de"
+},
+{
+"id": "FRA.DE",
+"name": "Fraport",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "fra.de"
+},
+{
+"id": "BOSS.DE",
+"name": "Hugo Boss",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "boss.de"
+},
+{
+"id": "TKA.DE",
+"name": "thyssenkrupp",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "tka.de"
+},
+{
+"id": "NDX1.DE",
+"name": "Nordex",
+"type": "Aktie",
+"sector": "Versorger",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "ndx1.de"
+},
+{
+"id": "AFX.DE",
+"name": "Carl Zeiss Meditec",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "afx.de"
+},
+{
+"id": "KBX.DE",
+"name": "Knorr-Bremse",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "kbx.de"
+},
+{
+"id": "WCH.DE",
+"name": "Wacker Chemie",
+"type": "Aktie",
+"sector": "Chemie & Rohstoffe",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "wch.de"
+},
+{
+"id": "KGX.DE",
+"name": "Kion",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "kgx.de"
+},
+{
+"id": "FNTN.DE",
+"name": "freenet",
+"type": "Aktie",
+"sector": "Telekom",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "fntn.de"
+},
+{
+"id": "1U1.DE",
+"name": "1&1",
+"type": "Aktie",
+"sector": "Telekom",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "1u1.de"
+},
+{
+"id": "UTDI.DE",
+"name": "United Internet",
+"type": "Aktie",
+"sector": "Telekom",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "utdi.de"
+},
+{
+"id": "SIX2.DE",
+"name": "Sixt",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "six2.de"
+},
+{
+"id": "EVD.DE",
+"name": "CTS Eventim",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "evd.de"
+},
+{
+"id": "BC8.DE",
+"name": "Bechtle",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "bc8.de"
+},
+{
+"id": "NEM.DE",
+"name": "Nemetschek",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "nem.de"
+},
+{
+"id": "AG1.DE",
+"name": "Auto1",
+"type": "Aktie",
+"sector": "Auto",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "ag1.de"
+},
+{
+"id": "8TRA.DE",
+"name": "Traton",
+"type": "Aktie",
+"sector": "Auto",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "8tra.de"
+},
+{
+"id": "AIXA.DE",
+"name": "Aixtron",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "aixa.de"
+},
+{
+"id": "EVT.DE",
+"name": "Evotec",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "evt.de"
+},
+{
+"id": "S92.DE",
+"name": "SMA Solar",
+"type": "Aktie",
+"sector": "Versorger",
+"country": "DE",
+"index": "SDAX",
+"currency": "EUR",
+"stooq": "s92.de"
+},
+{
+"id": "KRN.DE",
+"name": "Krones",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "krn.de"
+},
+{
+"id": "RAA.DE",
+"name": "Rational",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "raa.de"
+},
+{
+"id": "FIE.DE",
+"name": "Fielmann",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "DE",
+"index": "SDAX",
+"currency": "EUR",
+"stooq": "fie.de"
+},
+{
+"id": "CEC.DE",
+"name": "Ceconomy",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "DE",
+"index": "SDAX",
+"currency": "EUR",
+"stooq": "cec.de"
+},
+{
+"id": "SAE.DE",
+"name": "Redcare Pharmacy",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "DE",
+"index": "MDAX",
+"currency": "EUR",
+"stooq": "sae.de"
+},
+{
+"id": "DEZ.DE",
+"name": "Deutz",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "DE",
+"index": "SDAX",
+"currency": "EUR",
+"stooq": "dez.de"
+},
+{
+"id": "JEN.DE",
+"name": "Jenoptik",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "DE",
+"index": "SDAX",
+"currency": "EUR",
+"stooq": "jen.de"
+},
+{
+"id": "HYQ.DE",
+"name": "Hypoport",
+"type": "Aktie",
+"sector": "Finanzen",
+"country": "DE",
+"index": "SDAX",
+"currency": "EUR",
+"stooq": "hyq.de"
+},
+{
+"id": "AAPL",
+"name": "Apple",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "aapl.us"
+},
+{
+"id": "MSFT",
+"name": "Microsoft",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "msft.us"
+},
+{
+"id": "NVDA",
+"name": "NVIDIA",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "nvda.us"
+},
+{
+"id": "AMZN",
+"name": "Amazon",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "amzn.us"
+},
+{
+"id": "GOOGL",
+"name": "Alphabet (Google)",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "googl.us"
+},
+{
+"id": "META",
+"name": "Meta Platforms",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "meta.us"
+},
+{
+"id": "TSLA",
+"name": "Tesla",
+"type": "Aktie",
+"sector": "Auto",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "tsla.us"
+},
+{
+"id": "BRK.B",
+"name": "Berkshire Hathaway B",
+"type": "Aktie",
+"sector": "Finanzen",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "brk-b.us"
+},
+{
+"id": "AVGO",
+"name": "Broadcom",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "avgo.us"
+},
+{
+"id": "JPM",
+"name": "JPMorgan Chase",
+"type": "Aktie",
+"sector": "Finanzen",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "jpm.us"
+},
+{
+"id": "V",
+"name": "Visa",
+"type": "Aktie",
+"sector": "Finanzen",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "v.us"
+},
+{
+"id": "MA",
+"name": "Mastercard",
+"type": "Aktie",
+"sector": "Finanzen",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "ma.us"
+},
+{
+"id": "UNH",
+"name": "UnitedHealth",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "unh.us"
+},
+{
+"id": "LLY",
+"name": "Eli Lilly",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "lly.us"
+},
+{
+"id": "JNJ",
+"name": "Johnson & Johnson",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "jnj.us"
+},
+{
+"id": "XOM",
+"name": "ExxonMobil",
+"type": "Aktie",
+"sector": "Energie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "xom.us"
+},
+{
+"id": "CVX",
+"name": "Chevron",
+"type": "Aktie",
+"sector": "Energie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "cvx.us"
+},
+{
+"id": "WMT",
+"name": "Walmart",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "wmt.us"
+},
+{
+"id": "PG",
+"name": "Procter & Gamble",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "pg.us"
+},
+{
+"id": "KO",
+"name": "Coca-Cola",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "ko.us"
+},
+{
+"id": "PEP",
+"name": "PepsiCo",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "pep.us"
+},
+{
+"id": "COST",
+"name": "Costco",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "cost.us"
+},
+{
+"id": "HD",
+"name": "Home Depot",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "hd.us"
+},
+{
+"id": "MCD",
+"name": "McDonald's",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "mcd.us"
+},
+{
+"id": "NKE",
+"name": "Nike",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "nke.us"
+},
+{
+"id": "DIS",
+"name": "Walt Disney",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "dis.us"
+},
+{
+"id": "NFLX",
+"name": "Netflix",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "nflx.us"
+},
+{
+"id": "ADBE",
+"name": "Adobe",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "adbe.us"
+},
+{
+"id": "CRM",
+"name": "Salesforce",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "crm.us"
+},
+{
+"id": "ORCL",
+"name": "Oracle",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "orcl.us"
+},
+{
+"id": "INTC",
+"name": "Intel",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "intc.us"
+},
+{
+"id": "AMD",
+"name": "AMD",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "amd.us"
+},
+{
+"id": "QCOM",
+"name": "Qualcomm",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "qcom.us"
+},
+{
+"id": "TXN",
+"name": "Texas Instruments",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "txn.us"
+},
+{
+"id": "CSCO",
+"name": "Cisco",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "csco.us"
+},
+{
+"id": "IBM",
+"name": "IBM",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "ibm.us"
+},
+{
+"id": "PYPL",
+"name": "PayPal",
+"type": "Aktie",
+"sector": "Finanzen",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "pypl.us"
+},
+{
+"id": "UBER",
+"name": "Uber",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "uber.us"
+},
+{
+"id": "ABNB",
+"name": "Airbnb",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "abnb.us"
+},
+{
+"id": "SBUX",
+"name": "Starbucks",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "sbux.us"
+},
+{
+"id": "BA",
+"name": "Boeing",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "ba.us"
+},
+{
+"id": "CAT",
+"name": "Caterpillar",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "cat.us"
+},
+{
+"id": "GE",
+"name": "GE Aerospace",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "ge.us"
+},
+{
+"id": "MMM",
+"name": "3M",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "mmm.us"
+},
+{
+"id": "GS",
+"name": "Goldman Sachs",
+"type": "Aktie",
+"sector": "Finanzen",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "gs.us"
+},
+{
+"id": "MS",
+"name": "Morgan Stanley",
+"type": "Aktie",
+"sector": "Finanzen",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "ms.us"
+},
+{
+"id": "BAC",
+"name": "Bank of America",
+"type": "Aktie",
+"sector": "Finanzen",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "bac.us"
+},
+{
+"id": "C",
+"name": "Citigroup",
+"type": "Aktie",
+"sector": "Finanzen",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "c.us"
+},
+{
+"id": "WFC",
+"name": "Wells Fargo",
+"type": "Aktie",
+"sector": "Finanzen",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "wfc.us"
+},
+{
+"id": "BLK",
+"name": "BlackRock",
+"type": "Aktie",
+"sector": "Finanzen",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "blk.us"
+},
+{
+"id": "SPGI",
+"name": "S&P Global",
+"type": "Aktie",
+"sector": "Finanzen",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "spgi.us"
+},
+{
+"id": "AXP",
+"name": "American Express",
+"type": "Aktie",
+"sector": "Finanzen",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "axp.us"
+},
+{
+"id": "PFE",
+"name": "Pfizer",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "pfe.us"
+},
+{
+"id": "MRK",
+"name": "Merck & Co.",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "mrk.us"
+},
+{
+"id": "ABBV",
+"name": "AbbVie",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "abbv.us"
+},
+{
+"id": "TMO",
+"name": "Thermo Fisher",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "tmo.us"
+},
+{
+"id": "ABT",
+"name": "Abbott",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "abt.us"
+},
+{
+"id": "AMGN",
+"name": "Amgen",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "amgn.us"
+},
+{
+"id": "GILD",
+"name": "Gilead",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "gild.us"
+},
+{
+"id": "VZ",
+"name": "Verizon",
+"type": "Aktie",
+"sector": "Telekom",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "vz.us"
+},
+{
+"id": "T",
+"name": "AT&T",
+"type": "Aktie",
+"sector": "Telekom",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "t.us"
+},
+{
+"id": "TMUS",
+"name": "T-Mobile US",
+"type": "Aktie",
+"sector": "Telekom",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "tmus.us"
+},
+{
+"id": "PLTR",
+"name": "Palantir",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "pltr.us"
+},
+{
+"id": "COIN",
+"name": "Coinbase",
+"type": "Aktie",
+"sector": "Finanzen",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "coin.us"
+},
+{
+"id": "NOW",
+"name": "ServiceNow",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "now.us"
+},
+{
+"id": "INTU",
+"name": "Intuit",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "intu.us"
+},
+{
+"id": "AMAT",
+"name": "Applied Materials",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "amat.us"
+},
+{
+"id": "MU",
+"name": "Micron",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "mu.us"
+},
+{
+"id": "ARM",
+"name": "Arm Holdings",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "GB",
+"index": "USA",
+"currency": "USD",
+"stooq": "arm.us"
+},
+{
+"id": "MSTR",
+"name": "Strategy (MicroStrategy)",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "mstr.us"
+},
+{
+"id": "RIVN",
+"name": "Rivian",
+"type": "Aktie",
+"sector": "Auto",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "rivn.us"
+},
+{
+"id": "F",
+"name": "Ford",
+"type": "Aktie",
+"sector": "Auto",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "f.us"
+},
+{
+"id": "GM",
+"name": "General Motors",
+"type": "Aktie",
+"sector": "Auto",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "gm.us"
+},
+{
+"id": "LMT",
+"name": "Lockheed Martin",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "lmt.us"
+},
+{
+"id": "RTX",
+"name": "RTX",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "rtx.us"
+},
+{
+"id": "UPS",
+"name": "UPS",
+"type": "Aktie",
+"sector": "Industrie",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "ups.us"
+},
+{
+"id": "LIN",
+"name": "Linde",
+"type": "Aktie",
+"sector": "Chemie & Rohstoffe",
+"country": "GB",
+"index": "USA",
+"currency": "USD",
+"stooq": "lin.us"
+},
+{
+"id": "NEE",
+"name": "NextEra Energy",
+"type": "Aktie",
+"sector": "Versorger",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "nee.us"
+},
+{
+"id": "O",
+"name": "Realty Income",
+"type": "Aktie",
+"sector": "Immobilien",
+"country": "US",
+"index": "USA",
+"currency": "USD",
+"stooq": "o.us"
+},
+{
+"id": "SPOT",
+"name": "Spotify",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "SE",
+"index": "Welt",
+"currency": "USD",
+"stooq": "spot.us"
+},
+{
+"id": "SHOP",
+"name": "Shopify",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "CA",
+"index": "Welt",
+"currency": "USD",
+"stooq": "shop.us"
+},
+{
+"id": "MELI",
+"name": "MercadoLibre",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "AR",
+"index": "Welt",
+"currency": "USD",
+"stooq": "meli.us"
+},
+{
+"id": "ASML",
+"name": "ASML",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "NL",
+"index": "Welt",
+"currency": "USD",
+"stooq": "asml.us"
+},
+{
+"id": "NVO",
+"name": "Novo Nordisk",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "DK",
+"index": "Welt",
+"currency": "USD",
+"stooq": "nvo.us"
+},
+{
+"id": "TSM",
+"name": "TSMC",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "TW",
+"index": "Welt",
+"currency": "USD",
+"stooq": "tsm.us"
+},
+{
+"id": "SHEL",
+"name": "Shell",
+"type": "Aktie",
+"sector": "Energie",
+"country": "GB",
+"index": "Welt",
+"currency": "USD",
+"stooq": "shel.us"
+},
+{
+"id": "TTE",
+"name": "TotalEnergies",
+"type": "Aktie",
+"sector": "Energie",
+"country": "FR",
+"index": "Welt",
+"currency": "USD",
+"stooq": "tte.us"
+},
+{
+"id": "UL",
+"name": "Unilever",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "GB",
+"index": "Welt",
+"currency": "USD",
+"stooq": "ul.us"
+},
+{
+"id": "AZN",
+"name": "AstraZeneca",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "GB",
+"index": "Welt",
+"currency": "USD",
+"stooq": "azn.us"
+},
+{
+"id": "NVS",
+"name": "Novartis",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "CH",
+"index": "Welt",
+"currency": "USD",
+"stooq": "nvs.us"
+},
+{
+"id": "SNY",
+"name": "Sanofi",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "FR",
+"index": "Welt",
+"currency": "USD",
+"stooq": "sny.us"
+},
+{
+"id": "BP",
+"name": "BP",
+"type": "Aktie",
+"sector": "Energie",
+"country": "GB",
+"index": "Welt",
+"currency": "USD",
+"stooq": "bp.us"
+},
+{
+"id": "HSBC",
+"name": "HSBC",
+"type": "Aktie",
+"sector": "Finanzen",
+"country": "GB",
+"index": "Welt",
+"currency": "USD",
+"stooq": "hsbc.us"
+},
+{
+"id": "TM",
+"name": "Toyota",
+"type": "Aktie",
+"sector": "Auto",
+"country": "JP",
+"index": "Welt",
+"currency": "USD",
+"stooq": "tm.us"
+},
+{
+"id": "SONY",
+"name": "Sony",
+"type": "Aktie",
+"sector": "Technologie",
+"country": "JP",
+"index": "Welt",
+"currency": "USD",
+"stooq": "sony.us"
+},
+{
+"id": "BABA",
+"name": "Alibaba",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "CN",
+"index": "Welt",
+"currency": "USD",
+"stooq": "baba.us"
+},
+{
+"id": "BTI",
+"name": "British American Tobacco",
+"type": "Aktie",
+"sector": "Konsum",
+"country": "GB",
+"index": "Welt",
+"currency": "USD",
+"stooq": "bti.us"
+},
+{
+"id": "GSK",
+"name": "GSK",
+"type": "Aktie",
+"sector": "Gesundheit",
+"country": "GB",
+"index": "Welt",
+"currency": "USD",
+"stooq": "gsk.us"
+},
+{
+"id": "RIO",
+"name": "Rio Tinto",
+"type": "Aktie",
+"sector": "Chemie & Rohstoffe",
+"country": "GB",
+"index": "Welt",
+"currency": "USD",
+"stooq": "rio.us"
+},
+{
+"id": "BHP",
+"name": "BHP",
+"type": "Aktie",
+"sector": "Chemie & Rohstoffe",
+"country": "AU",
+"index": "Welt",
+"currency": "USD",
+"stooq": "bhp.us"
+},
+{
+"id": "NU",
+"name": "Nu Holdings",
+"type": "Aktie",
+"sector": "Finanzen",
+"country": "BR",
+"index": "Welt",
+"currency": "USD",
+"stooq": "nu.us"
+},
+{
+"id": "EUNL.DE",
+"name": "iShares Core MSCI World",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "Welt",
+"index": "ETF",
+"currency": "EUR",
+"stooq": "eunl.de"
+},
+{
+"id": "VWCE.DE",
+"name": "Vanguard FTSE All-World (thes.)",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "Welt",
+"index": "ETF",
+"currency": "EUR",
+"stooq": "vwce.de"
+},
+{
+"id": "VGWL.DE",
+"name": "Vanguard FTSE All-World (aussch.)",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "Welt",
+"index": "ETF",
+"currency": "EUR",
+"stooq": "vgwl.de"
+},
+{
+"id": "XDWD.DE",
+"name": "Xtrackers MSCI World",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "Welt",
+"index": "ETF",
+"currency": "EUR",
+"stooq": "xdwd.de"
+},
+{
+"id": "IUSQ.DE",
+"name": "iShares MSCI ACWI",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "Welt",
+"index": "ETF",
+"currency": "EUR",
+"stooq": "iusq.de"
+},
+{
+"id": "SXR8.DE",
+"name": "iShares Core S&P 500",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "USA",
+"index": "ETF",
+"currency": "EUR",
+"stooq": "sxr8.de"
+},
+{
+"id": "VUAA.DE",
+"name": "Vanguard S&P 500 (thes.)",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "USA",
+"index": "ETF",
+"currency": "EUR",
+"stooq": "vuaa.de"
+},
+{
+"id": "SXRV.DE",
+"name": "iShares Nasdaq 100",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "USA",
+"index": "ETF",
+"currency": "EUR",
+"stooq": "sxrv.de"
+},
+{
+"id": "EQQQ.DE",
+"name": "Invesco EQQQ Nasdaq-100",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "USA",
+"index": "ETF",
+"currency": "EUR",
+"stooq": "eqqq.de"
+},
+{
+"id": "IS3N.DE",
+"name": "iShares Core MSCI EM IMI",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "Schwellenländer",
+"index": "ETF",
+"currency": "EUR",
+"stooq": "is3n.de"
+},
+{
+"id": "XMME.DE",
+"name": "Xtrackers MSCI Emerging Markets",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "Schwellenländer",
+"index": "ETF",
+"currency": "EUR",
+"stooq": "xmme.de"
+},
+{
+"id": "EXS1.DE",
+"name": "iShares Core DAX",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "DE",
+"index": "ETF",
+"currency": "EUR",
+"stooq": "exs1.de"
+},
+{
+"id": "EXSA.DE",
+"name": "iShares STOXX Europe 600",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "Europa",
+"index": "ETF",
+"currency": "EUR",
+"stooq": "exsa.de"
+},
+{
+"id": "EUNK.DE",
+"name": "iShares Core MSCI Europe",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "Europa",
+"index": "ETF",
+"currency": "EUR",
+"stooq": "eunk.de"
+},
+{
+"id": "VHYL.DE",
+"name": "Vanguard FTSE All-World High Dividend",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "Welt",
+"index": "ETF",
+"currency": "EUR",
+"stooq": "vhyl.de"
+},
+{
+"id": "ZPRV.DE",
+"name": "SPDR MSCI USA Small Cap Value",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "USA",
+"index": "ETF",
+"currency": "EUR",
+"stooq": "zprv.de"
+},
+{
+"id": "IQQH.DE",
+"name": "iShares Global Clean Energy",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "Welt",
+"index": "ETF",
+"currency": "EUR",
+"stooq": "iqqh.de"
+},
+{
+"id": "2B76.DE",
+"name": "iShares Automation & Robotics",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "Welt",
+"index": "ETF",
+"currency": "EUR",
+"stooq": "2b76.de"
+},
+{
+"id": "QDVE.DE",
+"name": "iShares S&P 500 Information Technology",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "USA",
+"index": "ETF",
+"currency": "EUR",
+"stooq": "qdve.de"
+},
+{
+"id": "EUNA.DE",
+"name": "iShares Core Global Aggregate Bond",
+"type": "ETF",
+"sector": "ETF Anleihen",
+"country": "Welt",
+"index": "ETF",
+"currency": "EUR",
+"stooq": "euna.de"
+},
+{
+"id": "4GLD.DE",
+"name": "Xetra-Gold",
+"type": "ETF",
+"sector": "Gold",
+"country": "Welt",
+"index": "ETF",
+"currency": "EUR",
+"stooq": "4gld.de"
+},
+{
+"id": "SPY",
+"name": "SPDR S&P 500 (US)",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "USA",
+"index": "ETF",
+"currency": "USD",
+"stooq": "spy.us"
+},
+{
+"id": "VOO",
+"name": "Vanguard S&P 500 (US)",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "USA",
+"index": "ETF",
+"currency": "USD",
+"stooq": "voo.us"
+},
+{
+"id": "VTI",
+"name": "Vanguard Total Stock Market (US)",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "USA",
+"index": "ETF",
+"currency": "USD",
+"stooq": "vti.us"
+},
+{
+"id": "QQQ",
+"name": "Invesco QQQ (US)",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "USA",
+"index": "ETF",
+"currency": "USD",
+"stooq": "qqq.us"
+},
+{
+"id": "VT",
+"name": "Vanguard Total World (US)",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "Welt",
+"index": "ETF",
+"currency": "USD",
+"stooq": "vt.us"
+},
+{
+"id": "URTH",
+"name": "iShares MSCI World (US)",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "Welt",
+"index": "ETF",
+"currency": "USD",
+"stooq": "urth.us"
+},
+{
+"id": "IWM",
+"name": "iShares Russell 2000 (US)",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "USA",
+"index": "ETF",
+"currency": "USD",
+"stooq": "iwm.us"
+},
+{
+"id": "DIA",
+"name": "SPDR Dow Jones (US)",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "USA",
+"index": "ETF",
+"currency": "USD",
+"stooq": "dia.us"
+},
+{
+"id": "EEM",
+"name": "iShares MSCI Emerging Markets (US)",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "Schwellenländer",
+"index": "ETF",
+"currency": "USD",
+"stooq": "eem.us"
+},
+{
+"id": "SCHD",
+"name": "Schwab US Dividend Equity (US)",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "USA",
+"index": "ETF",
+"currency": "USD",
+"stooq": "schd.us"
+},
+{
+"id": "VNQ",
+"name": "Vanguard Real Estate (US)",
+"type": "ETF",
+"sector": "Immobilien",
+"country": "USA",
+"index": "ETF",
+"currency": "USD",
+"stooq": "vnq.us"
+},
+{
+"id": "GLD",
+"name": "SPDR Gold Shares (US)",
+"type": "ETF",
+"sector": "Gold",
+"country": "Welt",
+"index": "ETF",
+"currency": "USD",
+"stooq": "gld.us"
+},
+{
+"id": "TLT",
+"name": "iShares 20+ Year Treasury (US)",
+"type": "ETF",
+"sector": "ETF Anleihen",
+"country": "USA",
+"index": "ETF",
+"currency": "USD",
+"stooq": "tlt.us"
+},
+{
+"id": "ARKK",
+"name": "ARK Innovation (US)",
+"type": "ETF",
+"sector": "ETF Aktien",
+"country": "USA",
+"index": "ETF",
+"currency": "USD",
+"stooq": "arkk.us"
+}
+]
