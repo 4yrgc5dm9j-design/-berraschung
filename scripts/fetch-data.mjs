@@ -6,7 +6,7 @@
 // - status.json: Ergebnis jeder Quelle, damit Probleme in der App sichtbar sind
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { FEEDS, parseFeed } from '../server/feeds.mjs'
-import { buildSquads, norm, wikidataRaw } from './squads.mjs'
+import { buildSquads, norm, RAW_VERSION, wikidataRaw } from './squads.mjs'
 
 const OUT = process.argv[2] || 'dist/data'
 const UA = 'Dailybase/0.1 (persoenliche Alltags-App; Feed-Reader)'
@@ -97,7 +97,7 @@ try {
       const r = await fetch(process.env.SQUADS_CACHE_URL)
       if (r.ok) {
         const cached = await r.json()
-        if (Date.now() - new Date(cached.fetchedAt).getTime() < 24 * 3600e3 && cached.rows?.length) raw = cached
+        if (cached.version === RAW_VERSION && Date.now() - new Date(cached.fetchedAt).getTime() < 24 * 3600e3 && cached.rows?.length) raw = cached
       }
     } catch {
       /* kein Cache */

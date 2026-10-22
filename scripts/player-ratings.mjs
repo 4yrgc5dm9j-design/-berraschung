@@ -63,6 +63,9 @@ export const RATINGS = [
   // 1. FC Köln
   ['Marvin Schwäbe', 'TW', 74], ['Timo Hübers', 'AB', 74], ['Eric Martel', 'MF', 74], ['Linton Maina', 'ST', 74], ['Luca Waldschmidt', 'ST', 74],
   ['Ragnar Ache', 'ST', 73], ['Said El Mala', 'ST', 73], ['Jan Thielmann', 'MF', 72],
+  // FC Schalke 04
+  ['Kenan Karaman', 'ST', 75], ['Loris Karius', 'TW', 74], ['Moussa Sylla', 'ST', 73], ['Nikola Katić', 'AB', 73], ['Ron Schallenberg', 'MF', 72],
+  ['Hasan Kuruçay', 'AB', 71], ['Adrian Gantenbein', 'AB', 71], ['Soufiane El-Faouzi', 'MF', 70], ['Christopher Antwi-Adjei', 'ST', 70],
   // Hamburger SV
   ['Fábio Vieira', 'MF', 77], ['Albert Sambi Lokonga', 'MF', 76], ['Daniel Heuer Fernandes', 'TW', 75], ['Mario Vušković', 'AB', 75], ['Yussuf Poulsen', 'ST', 75],
   ['Jean-Luc Dompé', 'ST', 75], ['Luka Vušković', 'AB', 74], ['Ransford Königsdörffer', 'ST', 74], ['Jonas Meffert', 'MF', 74], ['Miro Muheim', 'AB', 74],

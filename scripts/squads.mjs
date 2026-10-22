@@ -4,6 +4,9 @@ import { RATINGS, ALWAYS } from './player-ratings.mjs'
 export const norm = (x) => x.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim()
 const WD_UA = { 'User-Agent': 'Dailybase/0.1 (https://github.com/4yrgc5dm9j-design/-berraschung; persoenliche App)', Accept: 'application/json' }
 
+/** Bei Änderungen an der Abfrage erhöhen, damit alte Zwischenstände verworfen werden */
+export const RAW_VERSION = 2
+
 export async function wikidataRaw(clubs) {
   // 1) Vereine in Wikidata finden (Suche nach dem Namen aus OpenLigaDB)
   const found = []
@@ -11,25 +14,39 @@ export async function wikidataRaw(clubs) {
     const url = `https://www.wikidata.org/w/api.php?action=wbsearchentities&format=json&language=de&uselang=de&type=item&limit=7&search=${encodeURIComponent(c.name)}`
     const r = await fetch(url, { headers: WD_UA })
     const j = await r.json()
-    const hit = (j.search || []).find((x) => /fußball|fussball|football|soccer/i.test(x.description || '') && !/frauen|women|ii\b|u\d\d|jugend|youth|reserve/i.test(`${x.label} ${x.description}`))
-    if (hit) found.push({ ...c, qid: hit.id })
+    // Profivereine haben die älteren (niedrigeren) Wikidata-Nummern; Frauen-, Nachwuchs- und Zweitteams ausschließen
+    const hits = (j.search || [])
+      .filter((x) => /fußball|fussball|football|soccer/i.test(x.description || '') && !/frauen|women|female|\bii\b|u\d\d|jugend|youth|reserve|esport/i.test(`${x.label} ${x.description}`))
+      .sort((a, b) => Number(a.id.slice(1)) - Number(b.id.slice(1)))
+    if (hits[0]) found.push({ ...c, qid: hits[0].id })
   }
   // 2) Aktuelle Spieler je Verein (Vereinszugehörigkeit ohne Enddatum)
   const values = found.map((c) => `wd:${c.qid}`).join(' ')
-  const query = `SELECT ?club ?player ?playerLabel ?posLabel ?dob ?start WHERE {
+  // ?latest = jüngster Vereinswechsel des Spielers (nur Vereine, keine Nationalteams)
+  const query = `SELECT ?club ?player ?playerLabel ?posLabel ?dob ?start ?latest WHERE {
     VALUES ?club { ${values} }
     ?player p:P54 ?st . ?st ps:P54 ?club .
     FILTER NOT EXISTS { ?st pq:P582 ?end . }
     OPTIONAL { ?st pq:P580 ?start . }
-    ?player wdt:P106 wd:Q937857 .
+    ?player wdt:P106 wd:Q937857 ; wdt:P21 wd:Q6581097 .
     OPTIONAL { ?player wdt:P413 ?pos . }
     OPTIONAL { ?player wdt:P569 ?dob . }
+    OPTIONAL {
+      SELECT ?player (MAX(?s2) AS ?latest) WHERE {
+        ?player p:P54 ?x . ?x pq:P580 ?s2 ; ps:P54 ?c2 . ?c2 wdt:P31 wd:Q476028 .
+      } GROUP BY ?player
+    }
     SERVICE wikibase:label { bd:serviceParam wikibase:language "de,en". }
   }`
   const r = await fetch(`https://query.wikidata.org/sparql?format=json&query=${encodeURIComponent(query)}`, { headers: { ...WD_UA, Accept: 'application/sparql-results+json' } })
   if (!r.ok) throw new Error(`Wikidata HTTP ${r.status}`)
   const rows = (await r.json()).results.bindings
-  return { fetchedAt: new Date().toISOString(), clubs: found, rows: rows.map((b) => ({ club: b.club.value.split('/').pop(), player: b.player.value.split('/').pop(), name: b.playerLabel?.value, pos: b.posLabel?.value || '', dob: b.dob?.value || null, start: b.start?.value || null })) }
+  return {
+    version: RAW_VERSION,
+    fetchedAt: new Date().toISOString(),
+    clubs: found,
+    rows: rows.map((b) => ({ club: b.club.value.split('/').pop(), player: b.player.value.split('/').pop(), name: b.playerLabel?.value, pos: b.posLabel?.value || '', dob: b.dob?.value || null, start: b.start?.value || null, latest: b.latest?.value || null })),
+  }
 }
 
 export function mapPos(label) {
@@ -57,8 +74,13 @@ export function buildSquads(raw, clubs, goalsByName) {
       if (!row.name || /^Q\d+$/.test(row.name)) continue
       const born = row.dob ? Number(row.dob.slice(0, 4)) : null
       if (born && (born < year - 38 || born > year - 16)) continue
-      if (row.start && Number(row.start.slice(0, 4)) < year - 9) continue
-      if (!row.start && (!born || born < year - 30)) continue
+      const known = ratingMap.has(norm(row.name))
+      // Nur wenn dieser Verein die jüngste Station ist (sonst längst gewechselt) – bekannte Spieler immer
+      if (!known) {
+        if (!row.start) continue
+        if (row.latest && row.start < row.latest) continue
+        if (Number(row.start.slice(0, 4)) < year - 8) continue
+      }
       const p = players.get(row.player) ?? { name: row.name, born, positions: [], start: row.start }
       const mp = mapPos(row.pos)
       if (mp) p.positions.push(mp)
@@ -83,7 +105,7 @@ export function buildSquads(raw, clubs, goalsByName) {
       p.rating = Math.round(Math.max(55, Math.min(84, base + hashDev(p.name) + ageAdj + goalAdj)))
       p.source = 'schaetzung'
     }
-    list.sort((a, b) => (b.source === 'ea') - (a.source === 'ea') || b.rating - a.rating)
+    list.sort((a, b) => (b.source === 'ea') - (a.source === 'ea') || (b.start ?? '').localeCompare(a.start ?? '') || b.rating - a.rating)
     return { name: club.name, short: club.short, qid: wd?.qid ?? null, players: list.slice(0, 30).map(({ start, ...p }) => p) }
   })
 }
