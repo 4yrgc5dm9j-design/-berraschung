@@ -7,7 +7,6 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { FEEDS, parseFeed } from '../server/feeds.mjs'
 import { buildSquads, norm, RAW_VERSION, wikidataRaw } from './squads.mjs'
-import { buildQuotes, fetchFx, fetchHistory, fetchQuotes, instruments, probe } from './market-data.mjs'
 
 const OUT = process.argv[2] || 'dist/data'
 const UA = 'Dailybase/0.1 (persoenliche Alltags-App; Feed-Reader)'
@@ -127,47 +126,12 @@ try {
   }
 }
 
-// ---------------------------------------------------------------- Börse (Stooq, ohne Schlüssel)
-try {
-  const test = await probe()
-  console.log('Stooq-Probe:', JSON.stringify(test))
-  status.marketProbe = test
-  if (!test.ok) throw new Error('Stooq liefert keine Kurse (Details in marketProbe)')
-  const siteBase = process.env.SQUADS_CACHE_URL ? process.env.SQUADS_CACHE_URL.replace('squads-raw.json', '') : null
-  // Tagesverlauf höchstens alle 12 Stunden neu laden, sonst von der Webseite übernehmen
-  let history = null
-  if (siteBase) {
-    try {
-      const r = await fetch(`${siteBase}history.json`)
-      if (r.ok) {
-        const h = await r.json()
-        if (Date.now() - new Date(h.fetchedAt).getTime() < 12 * 3600e3 && Object.keys(h.series || {}).length > 50) history = h
-      }
-    } catch {
-      /* neu laden */
-    }
-  }
-  if (!history) history = { fetchedAt: new Date().toISOString(), series: await fetchHistory(instruments) }
-  writeFileSync(`${OUT}/history.json`, JSON.stringify(history))
-  const fx = await fetchFx().catch(() => null)
-  const latest = await fetchQuotes(instruments)
-  const quotes = buildQuotes(latest, history.series, fx)
-  writeFileSync(`${OUT}/quotes.json`, JSON.stringify(quotes))
-  status.market = { ok: latest.size > 0, quotes: `${latest.size}/${instruments.length}`, history: Object.keys(history.series).length, missing: quotes.errors.slice(0, 40) }
-  console.log(`Börse: ${latest.size}/${instruments.length} Kurse, ${Object.keys(history.series).length} Verläufe`)
-} catch (e) {
-  status.market = { ok: false, error: String(e.message || e) }
-  console.log('Börse: Fehler', e.message)
-}
-
 // ---------------------------------------------------------------- CORS-Prüfung der Direktquellen
 for (const [name, url] of [
   ['open-meteo', 'https://api.open-meteo.com/v1/forecast?latitude=53.55&longitude=10&current=temperature_2m'],
   ['openligadb', `https://api.openligadb.de/getavailableteams/bl1/${season}`],
   ['finnhub', 'https://finnhub.io/api/v1/quote?symbol=AAPL'],
   ['frankfurter', 'https://api.frankfurter.dev/v1/latest?base=EUR'],
-  ['stooq', 'https://stooq.com/q/l/?s=aapl.us&f=sd2t2ohlcv&h&e=csv'],
-  ['yahoo', 'https://query1.finance.yahoo.com/v8/finance/chart/SAP.DE?range=5d&interval=1d'],
 ]) {
   try {
     const r = await fetch(url, { headers: { Origin: 'https://example.github.io', 'User-Agent': UA } })

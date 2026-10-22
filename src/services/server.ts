@@ -1,5 +1,7 @@
 import { ApiError, getJson } from './remote'
-import { fetchQuotesDirect, searchSymbolsDirect } from './quotes'
+import { fetchFx, fetchQuotesDirect, searchSymbolsDirect, toEur } from './quotes'
+import { loadSheet } from './googleSheet'
+import { usePriceHistory } from '@/data/priceHistory'
 import { useApp } from '@/data/store'
 
 /** true in der statischen Web-Version (z. B. GitHub Pages) – dort läuft kein Dailybase-Server. */
@@ -63,7 +65,7 @@ export interface Quote {
   /** Kurs in Euro (umgerechnet mit EZB-Referenzkurs), falls möglich */
   priceEur?: number | null
   at: string
-  /** live (Finnhub) oder verzögert (Stooq) */
+  /** live (Finnhub) oder verzögert (Google Finanzen) */
   delayed?: boolean
 }
 
@@ -100,40 +102,58 @@ export const fetchNews = async (topics: string[]): Promise<NewsResponse> => {
   const all = await staticData<NewsResponse>('news.json', 20000)
   return { ...all, items: all.items.filter((i) => topics.includes(i.topic)) }
 }
-const noQuotes = () => Promise.reject(new ApiError('Keine Kursquelle eingerichtet – Kurse pflegst du manuell.', 'not_configured'))
+const noQuotes = () => Promise.reject(new ApiError('Keine Kursquelle eingerichtet – unter Profil → Börsenkurse einmalig die Google-Tabelle verbinden.', 'not_configured'))
 const userKey = () => useApp.getState().settings.finnhubKey.trim()
+const sheetUrl = () => useApp.getState().settings.googleSheetUrl.trim()
+
+/** Kurse aus der veröffentlichten Google-Tabelle (GOOGLEFINANCE, bis zu 20 Min. verzögert) */
+async function fetchSheetQuotes(symbols: string[], url: string): Promise<QuotesResponse> {
+  const [sheet, fx] = await Promise.all([loadSheet(url), fetchFx().catch(() => null)])
+  const quotes: Record<string, Quote> = {}
+  const at = new Date().toISOString()
+  for (const sym of symbols) {
+    const r = sheet.quotes[sym.toUpperCase()]
+    if (!r) continue
+    const change = r.closeyest ? r.price - r.closeyest : null
+    quotes[sym] = { symbol: sym, price: r.price, change, changePct: r.closeyest ? r.price / r.closeyest - 1 : null, currency: r.currency, priceEur: toEur(r.price, r.currency, fx), at, delayed: true }
+  }
+  return { source: 'Google Finanzen', quotes, errors: [], fetchedAt: at, fxDate: fx?.date ?? null }
+}
 
 /**
  * Kurse zusammenführen:
- * 1) Web-Version: verzögerte Kurse aller bekannten Werte (Stooq, von der GitHub Action geladen)
+ * 1) eigene Google-Tabelle: verzögerte Kurse aller bekannten Werte (auch Xetra)
  * 2) mit eigenem Finnhub-Schlüssel: Live-Kurse für US-Werte darüber legen
  * 3) lokaler Server mit Schlüssel als Alternative
+ * Jeder abgerufene Kurs wandert zusätzlich in den eigenen Tagesverlauf.
  */
 export async function fetchQuotes(symbols: string[]): Promise<QuotesResponse> {
   const key = userKey()
+  const url = sheetUrl()
   const [base, live] = await Promise.all([
-    STATIC_HOSTING ? staticData<QuotesResponse>('quotes.json', 15000).catch(() => null) : Promise.resolve(null),
+    url ? fetchSheetQuotes(symbols, url).catch((e) => e as Error) : Promise.resolve(null),
     key ? fetchQuotesDirect(symbols.filter((s) => !s.includes('.')), key).catch((e) => e as Error) : Promise.resolve(null),
   ])
   if (!base && !live && !STATIC_HOSTING) return api<QuotesResponse>(`quotes?symbols=${encodeURIComponent(symbols.join(','))}`, 15000)
-  if (!base && (!live || live instanceof Error)) {
+  const baseOk = base && !(base instanceof Error) ? base : null
+  const liveOk = live && !(live instanceof Error) ? live : null
+  if (!baseOk && !liveOk) {
+    if (base instanceof Error) throw base
     if (live instanceof Error) throw live
     return noQuotes()
   }
   const quotes: Record<string, Quote> = {}
-  for (const sym of symbols) {
-    const b = base?.quotes[sym.toUpperCase()]
-    if (b) quotes[sym] = { ...b, delayed: true }
-  }
-  const liveOk = live && !(live instanceof Error) ? live : null
+  for (const sym of symbols) if (baseOk?.quotes[sym]) quotes[sym] = baseOk.quotes[sym]
   if (liveOk) for (const [sym, q] of Object.entries(liveOk.quotes)) quotes[sym] = { ...q, delayed: false }
+  usePriceHistory.getState().record(Object.fromEntries(Object.entries(quotes).map(([sym, q]) => [sym.toUpperCase(), q.price])))
   const errors = symbols.filter((s) => !quotes[s]).map((s) => `${s}: kein Kurs verfügbar`)
+  if (base instanceof Error) errors.unshift(`Google-Tabelle: ${base.message}`)
   return {
-    source: liveOk ? (base ? 'Finnhub (live) + Stooq (verzögert)' : 'Finnhub (live)') : 'Stooq (verzögert)',
+    source: liveOk ? (baseOk ? 'Finnhub (live) + Google Finanzen (verzögert)' : 'Finnhub (live)') : 'Google Finanzen (bis 20 Min. verzögert)',
     quotes,
     errors,
-    fetchedAt: base?.fetchedAt ?? liveOk?.fetchedAt ?? new Date().toISOString(),
-    fxDate: base?.fxDate ?? liveOk?.fxDate ?? null,
+    fetchedAt: baseOk?.fetchedAt ?? liveOk?.fetchedAt ?? new Date().toISOString(),
+    fxDate: baseOk?.fxDate ?? liveOk?.fxDate ?? null,
   }
 }
 export const searchSymbols = (q: string): Promise<{ results: SymbolHit[] }> =>

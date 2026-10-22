@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Bot, Send, Sparkles } from 'lucide-react'
 import { Badge, Card, Chip } from '@/components/ui'
-import { useData, useSettings } from '@/data/store'
+import { useData } from '@/data/store'
 import { cn, fmtEur, fmtPct, normalize } from '@/lib/utils'
 import { useQuotes } from '@/services/hooks'
 import { POPULAR } from '@/features/discover/markets'
@@ -57,7 +57,6 @@ export function Assistant() {
   const tx = useData('transactions')
   const prices = useData('prices')
   const watch = useData('watchlist')
-  const { finnhubKey } = useSettings()
   const symbols = useMemo(() => [...new Set([...watch.map((w) => w.symbol), ...POPULAR.map((p) => p.symbol), ...tx.map((t) => t.symbol)])], [watch, tx])
   const q = useQuotes(symbols)
   const quotes = q.data?.quotes ?? null
@@ -78,10 +77,10 @@ export function Assistant() {
     if (/spiel/.test(n) && /depot|check|pruef/.test(n)) return depotCheck('Spieldepot', sum('virtual'))
     if (/depot|portfolio|check|pruef|risiko/.test(n)) return depotCheck('Mein Depot', sum('real'))
     if (/gewinner|verlierer|beweg|heute|markt/.test(n)) {
-      if (!finnhubKey || !quotes) return { from: 'bot', text: 'Für Tagesbewegungen brauche ich Live-Kurse. Schalte sie unter Profil → Live-Börsenkurse ein (kostenlos).' }
+      if (!quotes) return { from: 'bot', text: 'Für Tagesbewegungen brauche ich Kurse. Verbinde sie unter Profil → Börsenkurse über Google (kostenlos).' }
       const list = Object.values(quotes).filter((x) => x.changePct != null).sort((a, b) => (b.changePct ?? 0) - (a.changePct ?? 0))
       const fmt = (x: (typeof list)[number]) => `${x.symbol}: ${fmtPct(x.changePct ?? 0)}`
-      return { from: 'bot', text: 'Tagesbewegungen deiner beobachteten Werte (Finnhub, live):', lines: [`📈 Gewinner: ${list.slice(0, 3).map(fmt).join(' · ')}`, `📉 Verlierer: ${list.slice(-3).reverse().map(fmt).join(' · ')}`] }
+      return { from: 'bot', text: `Tagesbewegungen deiner beobachteten Werte (${q.data?.source ?? 'Kurse'}):`, lines: [`📈 Gewinner: ${list.slice(0, 3).map(fmt).join(' · ')}`, `📉 Verlierer: ${list.slice(-3).reverse().map(fmt).join(' · ')}`] }
     }
     if (/sparplan|monatlich|sparen|vermoegen/.test(n)) {
       const rows = savingsPlan({ start: 0, monthly: 100, years: 20, ratePct: 6, dynamicPct: 0, inflationPct: 0 })

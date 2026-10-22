@@ -266,5 +266,7 @@ export interface Settings {
   dashboard: Record<ViewId, WidgetConfig[]>
   /** Persönlicher Finnhub-Schlüssel für Live-Kurse – bleibt lokal auf dem Gerät */
   finnhubKey: string
+  /** Im Web veröffentlichte Google-Tabelle mit GOOGLEFINANCE-Kursen (Dailybase-Vorlage) */
+  googleSheetUrl: string
   onboarded: boolean
 }

@@ -2,7 +2,7 @@ import list from './instruments.json'
 import { matches } from '@/lib/utils'
 
 // Bekannte Aktien und ETFs (DAX, MDAX/SDAX-Auswahl, USA, international, Sparplan-ETFs).
-// Kurse kommen in der Web-Version kostenlos von Stooq (leicht verzögert).
+// Kurse kommen kostenlos über GOOGLEFINANCE aus der eigenen Google-Tabelle (siehe services/googleSheet.ts).
 export interface Instrument {
   id: string // App-Kürzel, z. B. SAP.DE, AAPL, EUNL.DE
   name: string

@@ -22,7 +22,7 @@ export function QuoteSourceNote({ error, fetchedAt, loading, reload, errors, sou
       <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-accent-soft p-3 text-sm">
         <Zap className="size-5 shrink-0 text-accent" />
         <p className="min-w-0 flex-1 text-muted">
-          <span className="font-semibold text-text">Kurse nicht verfügbar.</span> Kurse für alle bekannten Werte gibt es in der Web-Version automatisch. Mit einem kostenlosen Finnhub-Schlüssel kommen US-Werte live dazu.
+          <span className="font-semibold text-text">Kurse nicht verfügbar.</span> Verbinde einmalig eine kostenlose Google-Tabelle – dann gibt es Kurse für alle Aktien und ETFs, auch Xetra (ca. 3 Minuten).
         </p>
         <Link to="/profil#kurse" className="inline-flex min-h-10 items-center rounded-xl bg-accent px-3 font-semibold text-accent-fg">
           Einrichten
@@ -40,8 +40,8 @@ export function QuoteSourceNote({ error, fetchedAt, loading, reload, errors, sou
           <span className={cn('absolute inline-flex size-full rounded-full opacity-60', live ? 'animate-ping bg-success' : 'bg-warn')} />
           <span className={cn('relative inline-flex size-2 rounded-full', live ? 'bg-success' : 'bg-warn')} />
         </span>
-        <span className={cn('text-xs font-semibold', live ? 'text-success' : 'text-warn')}>{live ? 'Live' : 'Verzögert (ca. 15–45 Min.)'}</span>
-        <SourceLine source={`${source ?? 'Finnhub'}, € via EZB`} fetchedAt={fetchedAt} loading={loading} onReload={reload} />
+        <span className={cn('text-xs font-semibold', live ? 'text-success' : 'text-warn')}>{live ? 'Live' : 'Verzögert (bis 20 Min.)'}</span>
+        <SourceLine source={`${source ?? 'Google Finanzen'}, € via EZB`} fetchedAt={fetchedAt} loading={loading} onReload={reload} />
       </div>
       {missing > 0 && <p className="text-[11px] text-faint">Für {missing} Wert(e) gibt es keinen Kurs – dort hilft der manuelle Kurs (Stift-Symbol).</p>}
     </div>

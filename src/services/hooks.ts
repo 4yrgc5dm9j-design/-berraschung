@@ -17,10 +17,12 @@ export function useNews(topics: string[]) {
 
 export function useQuotes(symbols: string[]) {
   const list = useMemo(() => [...new Set(symbols.map((s) => s.toUpperCase()))].sort(), [symbols])
-  const key = useSettings().finnhubKey.trim()
-  // Schlüssel-Ende im Cache-Schlüssel: nach Eingabe eines neuen Schlüssels sofort neu laden
-  // mit Schlüssel jede Minute (live), sonst alle 5 Minuten die verzögerten Kurse neu lesen
-  return useRemote(list.length ? `quotes:${key.slice(-4)}:${list.join(',')}` : null, () => fetchQuotes(list), 55 * 1000, key ? 60 * 1000 : 5 * 60 * 1000)
+  const { finnhubKey, googleSheetUrl } = useSettings()
+  const key = finnhubKey.trim()
+  // Quellen im Cache-Schlüssel: nach Eingabe eines neuen Schlüssels/Links sofort neu laden.
+  // Mit Schlüssel jede Minute (live), sonst alle 2 Minuten die Tabelle neu lesen
+  const src = `${key.slice(-4)}:${googleSheetUrl.trim().slice(-8)}`
+  return useRemote(list.length ? `quotes:${src}:${list.join(',')}` : null, () => fetchQuotes(list), 55 * 1000, key ? 60 * 1000 : 2 * 60 * 1000)
 }
 
 export function useWeather() {

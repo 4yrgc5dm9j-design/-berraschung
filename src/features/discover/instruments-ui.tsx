@@ -1,26 +1,49 @@
 import { useMemo, useState } from 'react'
 import { Eye, Gamepad2, Plus, Search, ShoppingCart } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Badge, Button, Chip, EmptyState, Modal, Segmented, Skeleton, SourceLine } from '@/components/ui'
 import { AreaChart } from '@/components/ui/charts'
 import { INDEX_FILTERS, INSTRUMENTS, COUNTRY_LABEL, instrument, searchInstruments, type IndexFilter, type Instrument } from '@/data/instruments'
-import { actions, useData } from '@/data/store'
+import { actions, useData, useSettings } from '@/data/store'
+import { usePriceHistory } from '@/data/priceHistory'
 import { toast } from '@/data/toasts'
 import { cn, fmtEur, fmtMoney, fmtPct } from '@/lib/utils'
-import { fmtDate } from '@/lib/dates'
+import { addDays, fmtDate, todayKey } from '@/lib/dates'
 import { useQuotes } from '@/services/hooks'
 import { useRemote } from '@/services/remote'
-import { STATIC_HOSTING, staticData, type Quote } from '@/services/server'
+import { loadSheet } from '@/services/googleSheet'
+import type { Quote } from '@/services/server'
 
 // ---------------------------------------------------------------- Kursverläufe
 export interface HistoryFile {
-  fetchedAt: string
+  /** Herkunft: Wochenkurse aus Google Tabellen und/oder selbst gesammelte Tageskurse */
+  source: 'google' | 'lokal' | 'gemischt'
   series: Record<string, [string, number][]>
 }
 
-/** Ein Jahr Tagesschlusskurse aller bekannten Werte (Web-Version, von der GitHub Action geladen) */
-export function useHistory() {
-  return useRemote<HistoryFile | null>(STATIC_HOSTING ? 'history' : null, () => staticData<HistoryFile>('history.json', 30000), 6 * 3600e3)
+/** Wochenkurse aus der Google-Tabelle (falls Google sie im veröffentlichten Blatt herausgibt) + eigener Tagesverlauf */
+export function useHistory(): { data: HistoryFile | null; loading: boolean } {
+  const url = useSettings().googleSheetUrl.trim()
+  const local = usePriceHistory((s) => s.series)
+  const sheet = useRemote(url ? `sheet-history:${url}` : null, () => loadSheet(url).then((d) => d.history), 30 * 60 * 1000)
+  const data = useMemo<HistoryFile | null>(() => {
+    const remote = sheet.data ?? {}
+    const ids = new Set([...Object.keys(remote), ...Object.keys(local)])
+    if (!ids.size) return null
+    const series: HistoryFile['series'] = {}
+    let g = 0
+    let l = 0
+    for (const id of ids) {
+      const weekly = remote[id] ?? []
+      const last = weekly[weekly.length - 1]?.[0] ?? ''
+      // eigene Tageskurse nach dem letzten Wochenkurs anhängen
+      series[id] = [...weekly, ...(local[id] ?? []).filter(([d]) => d > last)]
+      if (weekly.length) g++
+      else l++
+    }
+    return { source: g && l ? 'gemischt' : g ? 'google' : 'lokal', series }
+  }, [sheet.data, local])
+  return { data, loading: sheet.loading && !data }
 }
 
 /** Kurse aller bekannten Werte (für Listen) */
@@ -94,8 +117,8 @@ export function InstrumentSheet({ id, onClose }: { id: string | null; onClose: (
   if (!id || !inst) return null
   const q = quotes.data?.quotes[id]
   const series = history.data?.series[id] ?? []
-  const days = range === '1M' ? 23 : range === '6M' ? 128 : 260
-  const pts = series.slice(-days).map(([d, c]) => ({ date: d, close: c }))
+  const from = addDays(todayKey(), range === '1M' ? -31 : range === '6M' ? -183 : -366)
+  const pts = series.filter(([d]) => d >= from).map(([d, c]) => ({ date: d, close: c }))
   const perf = pts.length > 1 ? pts[pts.length - 1].close / pts[0].close - 1 : null
   const onWatch = watch.some((w) => w.symbol === id)
   return (
@@ -122,7 +145,7 @@ export function InstrumentSheet({ id, onClose }: { id: string | null; onClose: (
       <div className="mt-4">
         {history.loading && !history.data ? (
           <Skeleton className="h-52 w-full" />
-        ) : pts.length > 1 ? (
+        ) : pts.length > 2 ? (
           <>
             <AreaChart points={pts} series={[{ key: 'close', label: `Schlusskurs (${inst.currency})`, color: perf != null && perf < 0 ? 'var(--danger)' : 'var(--success)' }]} stacked={false} height={200} xLabel={(p) => fmtDate(String(p.date), { day: 'numeric', month: 'short', year: '2-digit' })} format={(v) => (inst.currency === 'EUR' ? fmtEur(v) : fmtMoney(v, inst.currency))} />
             {perf != null && (
@@ -132,10 +155,12 @@ export function InstrumentSheet({ id, onClose }: { id: string | null; onClose: (
             )}
           </>
         ) : (
-          <p className="text-sm text-muted">Kein Kursverlauf verfügbar.</p>
+          <p className="text-sm text-muted">
+            {series.length ? 'Verlauf baut sich auf: Dailybase merkt sich ab jetzt jeden Tag einen Kurs dieses Werts.' : 'Noch kein Kursverlauf. Sobald Kurse geladen werden, merkt sich Dailybase täglich einen Kurs und zeichnet daraus den Verlauf.'}
+          </p>
         )}
       </div>
-      {q && <SourceLine className="mt-2" source={q.delayed === false ? 'Finnhub (live)' : 'Stooq (verzögert)'} fetchedAt={quotes.data?.fetchedAt} />}
+      {q && <SourceLine className="mt-2" source={q.delayed === false ? 'Finnhub (live)' : 'Google Finanzen (bis 20 Min. verzögert)'} fetchedAt={quotes.data?.fetchedAt} />}
       <div className="mt-4 flex flex-wrap gap-2">
         <Button
           variant="soft"
@@ -211,7 +236,16 @@ export function MarketBrowser() {
           </Chip>
         ))}
       </div>
-      {quotes.error && !quotes.data ? (
+      {quotes.error && !quotes.data && /Kursquelle/.test(quotes.error) ? (
+        <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-accent-soft p-3 text-sm">
+          <p className="min-w-0 flex-1 text-muted">
+            <span className="font-semibold text-text">Kurse nicht verfügbar.</span> Verbinde einmalig eine kostenlose Google-Tabelle – dann gibt es Kurse für alle {INSTRUMENTS.length} Werte.
+          </p>
+          <Link to="/profil#kurse" className="inline-flex min-h-10 items-center rounded-xl bg-accent px-3 font-semibold text-accent-fg">
+            Einrichten
+          </Link>
+        </div>
+      ) : quotes.error && !quotes.data ? (
         <p className="rounded-2xl bg-surface-2 p-3 text-sm text-muted">Kurse sind gerade nicht verfügbar ({quotes.error}).</p>
       ) : (
         quotes.data && (

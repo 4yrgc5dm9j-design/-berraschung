@@ -157,7 +157,7 @@ export function TradingTerminal() {
           <Zap className="size-4 shrink-0" />
           <span className="flex-1">Gerade keine Kurse verfügbar – du kannst den Preis selbst eintragen.</span>
           <Link to="/profil#kurse" className="rounded-lg bg-amber-300 px-3 py-1.5 font-semibold text-black">
-            Live-Kurse einschalten
+            Kurse einrichten
           </Link>
         </div>
       )}

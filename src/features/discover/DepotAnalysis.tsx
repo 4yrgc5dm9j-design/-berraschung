@@ -23,8 +23,8 @@ export interface Analysis {
   todayEur: number | null
   valueSeries: { date: string; value: number; invested: number }[]
   allocation: Record<'position' | 'branche' | 'region' | 'art', { label: string; value: number }[]>
-  risk: { vol: number; maxDD: number; best: [string, number]; worst: [string, number]; ret1y: number } | null
-  bench: { ret1y: number; vol: number } | null
+  risk: { vol: number; maxDD: number; best: [string, number]; worst: [string, number]; ret1y: number; from: string; weekly: boolean } | null
+  bench: { ret1y: number; vol: number; from: string } | null
   rows: {
     symbol: string
     name: string
@@ -40,10 +40,18 @@ export interface Analysis {
   tips: string[]
 }
 
-function stats(returns: { date: string; r: number }[]) {
-  if (returns.length < 20) return null
+/** Perioden pro Jahr aus dem typischen Abstand der Datenpunkte (Wochenkurse ≈ 52, Tageskurse ≈ 252) */
+export function periodsPerYear(dates: string[]) {
+  const gaps = dates.slice(1).map((d, i) => (Date.parse(d) - Date.parse(dates[i])) / 864e5).sort((a, b) => a - b)
+  const median = gaps[Math.floor(gaps.length / 2)] ?? 1
+  return median >= 5 ? 52 : 252
+}
+
+export function stats(returns: { date: string; r: number }[]) {
+  if (returns.length < 15) return null
   const mean = returns.reduce((a, x) => a + x.r, 0) / returns.length
-  const vol = Math.sqrt(returns.reduce((a, x) => a + (x.r - mean) ** 2, 0) / (returns.length - 1)) * Math.sqrt(252)
+  const perYear = periodsPerYear(returns.map((x) => x.date))
+  const vol = Math.sqrt(returns.reduce((a, x) => a + (x.r - mean) ** 2, 0) / (returns.length - 1)) * Math.sqrt(perYear)
   let peak = 1
   let level = 1
   let maxDD = 0
@@ -53,7 +61,7 @@ function stats(returns: { date: string; r: number }[]) {
     maxDD = Math.min(maxDD, level / peak - 1)
   }
   const sorted = [...returns].sort((a, b) => a.r - b.r)
-  return { vol, maxDD, ret1y: level - 1, best: [sorted[sorted.length - 1].date, sorted[sorted.length - 1].r] as [string, number], worst: [sorted[0].date, sorted[0].r] as [string, number] }
+  return { vol, maxDD, ret1y: level - 1, from: returns[0].date, weekly: perYear === 52, best: [sorted[sorted.length - 1].date, sorted[sorted.length - 1].r] as [string, number], worst: [sorted[0].date, sorted[0].r] as [string, number] }
 }
 
 function dailyReturns(series: [string, number][]) {
@@ -151,7 +159,7 @@ export function analyze(portfolio: Portfolio, txAll: Transaction[], prices: Manu
   }
   const benchSeries = history?.series[BENCH]
   const bs = benchSeries ? stats(dailyReturns(benchSeries)) : null
-  const bench = bs ? { ret1y: bs.ret1y, vol: bs.vol } : null
+  const bench = bs ? { ret1y: bs.ret1y, vol: bs.vol, from: bs.from } : null
 
   // Positionen im Detail
   const firstBuy = new Map<string, string>()
@@ -219,7 +227,7 @@ export function DepotAnalysis({ portfolio, transactions, prices, quotes }: { por
           <Kpi label="Realisiert" value={fmtEur(s.realized, true)} tone={s.realized > 0 ? 'up' : s.realized < 0 ? 'down' : undefined} sub={s.closed.length ? `${s.closed.length} geschlossene Position(en)` : undefined} />
           <Kpi label="Größte Position" value={fmtPct([...a.rows].sort((x, y) => y.weight - x.weight)[0]?.weight ?? 0).replace('+', '')} sub={[...a.rows].sort((x, y) => y.weight - x.weight)[0]?.name} />
           <Kpi label="Schwankung p. a." value={a.risk ? fmtPct(a.risk.vol).replace('+', '') : '–'} sub={a.bench ? `MSCI World ${fmtPct(a.bench.vol).replace('+', '')}` : undefined} />
-          <Kpi label="Max. Rückgang 1J" value={a.risk ? fmtPct(a.risk.maxDD) : '–'} sub="mit heutiger Gewichtung" tone={a.risk ? 'down' : undefined} />
+          <Kpi label="Max. Rückgang" value={a.risk ? fmtPct(a.risk.maxDD) : '–'} sub={a.risk ? 'mit heutiger Gewichtung' : 'Verlauf baut sich auf'} tone={a.risk ? 'down' : undefined} />
         </div>
       </Card>
 
@@ -241,23 +249,23 @@ export function DepotAnalysis({ portfolio, transactions, prices, quotes }: { por
               format={(v) => fmtEur(v, true)}
             />
           ) : (
-            <p className="text-sm text-muted">Die Entwicklung erscheint, sobald Kursverläufe für deine Positionen vorliegen und seit dem ersten Kauf ein paar Handelstage vergangen sind.</p>
+            <p className="text-sm text-muted">Der Verlauf baut sich auf: Dailybase merkt sich ab jetzt jeden Tag die Kurse deiner Werte. Nach ein paar Handelstagen erscheint hier die Entwicklung, nach etwa drei Wochen auch Schwankung und maximaler Rückgang.</p>
           )}
           {a.risk && a.bench && (
             <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
               <div className="rounded-xl bg-surface-2 p-2.5">
-                <p className="text-xs text-muted">Heutiges Depot, letzte 12 Monate</p>
+                <p className="text-xs text-muted">Heutiges Depot seit {fmtDate(a.risk.from, { day: 'numeric', month: 'short', year: '2-digit' })}</p>
                 <p className={cn('font-bold tabular', a.risk.ret1y >= 0 ? 'text-success' : 'text-danger')}>{fmtPct(a.risk.ret1y)}</p>
               </div>
               <div className="rounded-xl bg-surface-2 p-2.5">
-                <p className="text-xs text-muted">MSCI World (EUNL), 12 Monate</p>
+                <p className="text-xs text-muted">MSCI World (EUNL) seit {fmtDate(a.bench.from, { day: 'numeric', month: 'short', year: '2-digit' })}</p>
                 <p className={cn('font-bold tabular', a.bench.ret1y >= 0 ? 'text-success' : 'text-danger')}>{fmtPct(a.bench.ret1y)}</p>
               </div>
             </div>
           )}
           {a.risk && (
             <p className="mt-2 text-xs text-muted">
-              Bester Tag {fmtPct(a.risk.best[1])} ({fmtDate(a.risk.best[0])}), schlechtester Tag {fmtPct(a.risk.worst[1])} ({fmtDate(a.risk.worst[0])}).
+              {a.risk.weekly ? 'Beste Woche' : 'Bester Tag'} {fmtPct(a.risk.best[1])} ({fmtDate(a.risk.best[0])}), {a.risk.weekly ? 'schlechteste Woche' : 'schlechtester Tag'} {fmtPct(a.risk.worst[1])} ({fmtDate(a.risk.worst[0])}).
             </p>
           )}
         </Card>

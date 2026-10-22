@@ -11,6 +11,8 @@ import { searchPlaces } from '@/services/weather'
 import { useServerStatus } from '@/services/hooks'
 import { STATIC_HOSTING } from '@/services/server'
 import { testFinnhubKey } from '@/services/quotes'
+import { fetchSheet, templateCsv } from '@/services/googleSheet'
+import { INSTRUMENTS } from '@/data/instruments'
 import { timeAgo } from '@/lib/dates'
 import { TOPICS } from '@/features/discover/news'
 import { TeamLogo, ClubPicker } from '@/features/discover/sport'
@@ -149,14 +151,101 @@ function ListEditor({ label, values, onChange, placeholder }: { label: string; v
   )
 }
 
-function LiveQuotesCard() {
-  const { finnhubKey } = useSettings()
-  const [value, setValue] = useState(finnhubKey)
+function GoogleSheetCard() {
+  const { googleSheetUrl } = useSettings()
+  const extra = useApp(useShallow((s) => [...new Set([...s.data.watchlist.map((w) => w.symbol), ...s.data.transactions.map((t) => t.symbol)].map((x) => x.toUpperCase()))]))
+  const [value, setValue] = useState(googleSheetUrl)
   const [state, setState] = useState<{ kind: 'idle' | 'testing' | 'ok' | 'error'; text?: string }>({ kind: 'idle' })
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (location.hash === '#kurse') ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }, [])
+  const download = () => {
+    const blob = new Blob([templateCsv(extra)], { type: 'text/csv' })
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = 'dailybase-kurse.csv'
+    a.click()
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000)
+  }
+  const save = async () => {
+    const url = value.trim()
+    if (!url) {
+      actions().setSettings({ googleSheetUrl: '' })
+      setState({ kind: 'idle' })
+      return toast('Google-Tabelle getrennt')
+    }
+    setState({ kind: 'testing' })
+    try {
+      const d = await fetchSheet(url)
+      actions().setSettings({ googleSheetUrl: url })
+      const n = Object.keys(d.quotes).length
+      const hist = Object.keys(d.history).length
+      setState({ kind: 'ok', text: `Verbunden – ${n} Kurse gefunden${hist ? `, Wochenverlauf für ${hist} Werte` : ''}.` })
+      toast('Börsenkurse verbunden', 'success')
+    } catch (e) {
+      setState({ kind: 'error', text: (e as Error).message })
+    }
+  }
+  const step = 'rounded-xl bg-surface-2 p-3'
+  return (
+    <div ref={ref} id="kurse" className="card scroll-mt-6 p-5">
+      <SectionTitle action={googleSheetUrl ? <Badge tone="success">Verbunden</Badge> : <Badge>Aus</Badge>}>Börsenkurse über Google</SectionTitle>
+      <p className="mb-3 text-sm text-muted">
+        Google Tabellen liefert mit der Funktion GOOGLEFINANCE kostenlos Kurse für alle {INSTRUMENTS.length} Aktien und ETFs in Dailybase – auch Xetra. Einmal einrichten, ca. 3 Minuten:
+      </p>
+      <ol className="mb-4 space-y-2 text-sm">
+        <li className={step}>
+          <b>1. Vorlage laden.</b> Enthält alle Werte plus deine Watchlist und dein Depot.
+          <div className="mt-2">
+            <Button size="sm" variant="soft" icon={<Download className="size-4" />} onClick={download}>
+              Vorlage herunterladen
+            </Button>
+          </div>
+        </li>
+        <li className={step}>
+          <b>2. In Google Tabellen öffnen.</b>{' '}
+          <a href="https://sheets.new" target="_blank" rel="noreferrer" className="font-semibold text-accent underline-offset-2 hover:underline">
+            sheets.new
+          </a>{' '}
+          öffnen (mit Google-Konto) → <i>Datei → Importieren → Hochladen</i> → die Vorlage wählen → „Tabelle ersetzen“. Unter <i>Datei → Einstellungen</i> muss das Gebietsschema „Deutschland“ sein.
+        </li>
+        <li className={step}>
+          <b>3. Im Web veröffentlichen.</b> <i>Datei → Freigeben → Im Web veröffentlichen</i> → „Gesamtes Dokument“ und „Kommagetrennte Werte (.csv)“ → Veröffentlichen → Link kopieren.
+        </li>
+        <li className={step}>
+          <b>4. Link hier einfügen</b> und „Verbinden“ tippen.
+        </li>
+      </ol>
+      <div className="flex gap-2">
+        <input
+          className="field text-sm"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder="https://docs.google.com/spreadsheets/d/e/…/pub?output=csv"
+          autoComplete="off"
+          autoCapitalize="off"
+          spellCheck={false}
+          inputMode="url"
+          aria-label="Link der veröffentlichten Google-Tabelle"
+        />
+        <Button variant="primary" onClick={save} loading={state.kind === 'testing'}>
+          {value.trim() ? 'Verbinden' : 'Speichern'}
+        </Button>
+      </div>
+      {state.kind === 'ok' && <p className="mt-2 text-sm font-semibold text-success">{state.text}</p>}
+      {state.kind === 'error' && <p className="mt-2 text-sm font-semibold text-danger">{state.text}</p>}
+      <p className="mt-3 text-xs text-faint">
+        Kurse sind laut Google bis zu 20 Minuten verzögert; veröffentlichte Tabellen aktualisiert Google etwa alle 5 Minuten. Dailybase liest nur diese eine Tabelle, rechnet Dollar-Kurse mit dem EZB-Referenzkurs in Euro um und merkt sich jeden Tag einen Kurs für Charts und Depot-Analyse. Wer den Link kennt, sieht die Kurstabelle – sie enthält nur Kurse, keine Depotdaten.
+      </p>
+    </div>
+  )
+}
+
+function LiveQuotesCard() {
+  const { finnhubKey } = useSettings()
+  const [value, setValue] = useState(finnhubKey)
+  const [state, setState] = useState<{ kind: 'idle' | 'testing' | 'ok' | 'error'; text?: string }>({ kind: 'idle' })
   const save = async () => {
     const key = value.trim()
     if (!key) {
@@ -175,8 +264,9 @@ function LiveQuotesCard() {
     }
   }
   return (
-    <div ref={ref} id="kurse" className="card scroll-mt-6 p-5">
-      <SectionTitle action={finnhubKey ? <Badge tone="success">Live aktiv</Badge> : <Badge>Aus</Badge>}>Live-Börsenkurse</SectionTitle>
+    <div id="live" className="card scroll-mt-6 p-5">
+      <SectionTitle action={finnhubKey ? <Badge tone="success">Live aktiv</Badge> : <Badge>Aus</Badge>}>Optional: Echtzeit für US-Werte</SectionTitle>
+      <p className="mb-3 text-sm text-muted">Wer US-Aktien sekundengenau statt verzögert sehen will, kann zusätzlich einen kostenlosen Finnhub-Schlüssel hinterlegen.</p>
       <ol className="mb-4 list-decimal space-y-1 pl-5 text-sm text-muted">
         <li>
           Kostenlos registrieren bei{' '}
@@ -206,7 +296,7 @@ function LiveQuotesCard() {
       {state.kind === 'ok' && <p className="mt-2 text-sm font-semibold text-success">{state.text}</p>}
       {state.kind === 'error' && <p className="mt-2 text-sm font-semibold text-danger">{state.text}</p>}
       <p className="mt-3 text-xs text-faint">
-        Der Schlüssel bleibt nur auf diesem Gerät und wird nicht exportiert. Live verfügbar sind im kostenlosen Plan Aktien und ETFs an US-Börsen (auch SAP, Deutsche Bank u. a. über ihr US-Listing), aktualisiert jede Minute. Dollar-Kurse rechnet Dailybase mit dem EZB-Referenzkurs in Euro um. Xetra-Kurse sind bei keinem Anbieter kostenlos – dafür bleibt der manuelle Kurs.
+        Der Schlüssel bleibt nur auf diesem Gerät und wird nicht exportiert. Live verfügbar sind im kostenlosen Plan Aktien und ETFs an US-Börsen (auch SAP, Deutsche Bank u. a. über ihr US-Listing), aktualisiert jede Minute. Dollar-Kurse rechnet Dailybase mit dem EZB-Referenzkurs in Euro um. Xetra-Werte kommen weiter aus der Google-Tabelle.
       </p>
     </div>
   )
@@ -255,9 +345,15 @@ function DataSources() {
       )}
       {row(
         <Server className="size-4" />,
-        'Börsenkurse · Finnhub',
-        status.data?.quotes.provider || settings.finnhubKey ? <Badge tone="success">Live</Badge> : <Badge>Manuell</Badge>,
-        settings.finnhubKey ? 'Direkt mit deinem Schlüssel, jede Minute aktualisiert (US-Börsen, in € umgerechnet).' : status.data?.quotes.provider ? 'Live-Kurse (v. a. US-Werte, in USD).' : STATIC_HOSTING ? 'Mit kostenlosem Schlüssel einschalten (siehe „Live-Börsenkurse“). Bis dahin pflegst du Kurse selbst.' : 'Optional: kostenloser Schlüssel in .env (FINNHUB_API_KEY). Bis dahin pflegst du Kurse selbst.',
+        'Börsenkurse · Google Finanzen',
+        settings.googleSheetUrl ? <Badge tone="success">Verbunden</Badge> : <Badge>Manuell</Badge>,
+        settings.googleSheetUrl ? 'Über deine veröffentlichte Google-Tabelle, bis zu 20 Min. verzögert, alle 2 Minuten neu gelesen.' : 'Einmalig unter „Börsenkurse über Google“ einrichten. Bis dahin pflegst du Kurse selbst.',
+      )}
+      {row(
+        <Server className="size-4" />,
+        'Echtzeit US · Finnhub',
+        status.data?.quotes.provider || settings.finnhubKey ? <Badge tone="success">Live</Badge> : <Badge>Aus</Badge>,
+        settings.finnhubKey ? 'Direkt mit deinem Schlüssel, jede Minute aktualisiert (US-Börsen, in € umgerechnet).' : status.data?.quotes.provider ? 'Live-Kurse über den Dailybase-Server (v. a. US-Werte).' : 'Optional mit kostenlosem Schlüssel.',
       )}
       {row(<Database className="size-4" />, 'Deine Daten', <Badge tone="accent">Lokal</Badge>, 'IndexedDB in diesem Browser. Nichts verlässt dein Gerät.')}
     </div>
@@ -439,6 +535,7 @@ export default function ProfilePage() {
             </div>
           </Card>
 
+          <GoogleSheetCard />
           <LiveQuotesCard />
 
           <Card className="p-5">

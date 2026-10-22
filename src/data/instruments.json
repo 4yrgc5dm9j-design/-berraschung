@@ -6,8 +6,7 @@
 "sector": "Konsum",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "ads.de"
+"currency": "EUR"
 },
 {
 "id": "AIR.DE",
@@ -16,8 +15,7 @@
 "sector": "Industrie",
 "country": "NL",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "air.de"
+"currency": "EUR"
 },
 {
 "id": "ALV.DE",
@@ -26,8 +24,7 @@
 "sector": "Finanzen",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "alv.de"
+"currency": "EUR"
 },
 {
 "id": "BAS.DE",
@@ -36,8 +33,7 @@
 "sector": "Chemie & Rohstoffe",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "bas.de"
+"currency": "EUR"
 },
 {
 "id": "BAYN.DE",
@@ -46,8 +42,7 @@
 "sector": "Gesundheit",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "bayn.de"
+"currency": "EUR"
 },
 {
 "id": "BEI.DE",
@@ -56,8 +51,7 @@
 "sector": "Konsum",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "bei.de"
+"currency": "EUR"
 },
 {
 "id": "BMW.DE",
@@ -66,8 +60,7 @@
 "sector": "Auto",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "bmw.de"
+"currency": "EUR"
 },
 {
 "id": "BNR.DE",
@@ -76,8 +69,7 @@
 "sector": "Chemie & Rohstoffe",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "bnr.de"
+"currency": "EUR"
 },
 {
 "id": "CBK.DE",
@@ -86,8 +78,7 @@
 "sector": "Finanzen",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "cbk.de"
+"currency": "EUR"
 },
 {
 "id": "CON.DE",
@@ -96,8 +87,7 @@
 "sector": "Auto",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "con.de"
+"currency": "EUR"
 },
 {
 "id": "DTG.DE",
@@ -106,8 +96,7 @@
 "sector": "Auto",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "dtg.de"
+"currency": "EUR"
 },
 {
 "id": "DBK.DE",
@@ -116,8 +105,7 @@
 "sector": "Finanzen",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "dbk.de"
+"currency": "EUR"
 },
 {
 "id": "DB1.DE",
@@ -126,8 +114,7 @@
 "sector": "Finanzen",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "db1.de"
+"currency": "EUR"
 },
 {
 "id": "DHL.DE",
@@ -136,8 +123,7 @@
 "sector": "Industrie",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "dhl.de"
+"currency": "EUR"
 },
 {
 "id": "DTE.DE",
@@ -146,8 +132,7 @@
 "sector": "Telekom",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "dte.de"
+"currency": "EUR"
 },
 {
 "id": "EOAN.DE",
@@ -156,8 +141,7 @@
 "sector": "Versorger",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "eoan.de"
+"currency": "EUR"
 },
 {
 "id": "FRE.DE",
@@ -166,8 +150,7 @@
 "sector": "Gesundheit",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "fre.de"
+"currency": "EUR"
 },
 {
 "id": "FME.DE",
@@ -176,8 +159,7 @@
 "sector": "Gesundheit",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "fme.de"
+"currency": "EUR"
 },
 {
 "id": "G1A.DE",
@@ -186,8 +168,7 @@
 "sector": "Industrie",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "g1a.de"
+"currency": "EUR"
 },
 {
 "id": "HNR1.DE",
@@ -196,8 +177,7 @@
 "sector": "Finanzen",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "hnr1.de"
+"currency": "EUR"
 },
 {
 "id": "HEI.DE",
@@ -206,8 +186,7 @@
 "sector": "Chemie & Rohstoffe",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "hei.de"
+"currency": "EUR"
 },
 {
 "id": "HEN3.DE",
@@ -216,8 +195,7 @@
 "sector": "Konsum",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "hen3.de"
+"currency": "EUR"
 },
 {
 "id": "IFX.DE",
@@ -226,8 +204,7 @@
 "sector": "Technologie",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "ifx.de"
+"currency": "EUR"
 },
 {
 "id": "MBG.DE",
@@ -236,8 +213,7 @@
 "sector": "Auto",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "mbg.de"
+"currency": "EUR"
 },
 {
 "id": "MRK.DE",
@@ -246,8 +222,7 @@
 "sector": "Gesundheit",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "mrk.de"
+"currency": "EUR"
 },
 {
 "id": "MTX.DE",
@@ -256,8 +231,7 @@
 "sector": "Industrie",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "mtx.de"
+"currency": "EUR"
 },
 {
 "id": "MUV2.DE",
@@ -266,8 +240,7 @@
 "sector": "Finanzen",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "muv2.de"
+"currency": "EUR"
 },
 {
 "id": "P911.DE",
@@ -276,8 +249,7 @@
 "sector": "Auto",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "p911.de"
+"currency": "EUR"
 },
 {
 "id": "PAH3.DE",
@@ -286,8 +258,7 @@
 "sector": "Auto",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "pah3.de"
+"currency": "EUR"
 },
 {
 "id": "QIA.DE",
@@ -296,8 +267,7 @@
 "sector": "Gesundheit",
 "country": "NL",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "qia.de"
+"currency": "EUR"
 },
 {
 "id": "RHM.DE",
@@ -306,8 +276,7 @@
 "sector": "Industrie",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "rhm.de"
+"currency": "EUR"
 },
 {
 "id": "RWE.DE",
@@ -316,8 +285,7 @@
 "sector": "Versorger",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "rwe.de"
+"currency": "EUR"
 },
 {
 "id": "SAP.DE",
@@ -326,8 +294,7 @@
 "sector": "Technologie",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "sap.de"
+"currency": "EUR"
 },
 {
 "id": "G24.DE",
@@ -336,8 +303,7 @@
 "sector": "Technologie",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "g24.de"
+"currency": "EUR"
 },
 {
 "id": "SIE.DE",
@@ -346,8 +312,7 @@
 "sector": "Industrie",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "sie.de"
+"currency": "EUR"
 },
 {
 "id": "ENR.DE",
@@ -356,8 +321,7 @@
 "sector": "Industrie",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "enr.de"
+"currency": "EUR"
 },
 {
 "id": "SHL.DE",
@@ -366,8 +330,7 @@
 "sector": "Gesundheit",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "shl.de"
+"currency": "EUR"
 },
 {
 "id": "SY1.DE",
@@ -376,8 +339,7 @@
 "sector": "Chemie & Rohstoffe",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "sy1.de"
+"currency": "EUR"
 },
 {
 "id": "VOW3.DE",
@@ -386,8 +348,7 @@
 "sector": "Auto",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "vow3.de"
+"currency": "EUR"
 },
 {
 "id": "VNA.DE",
@@ -396,8 +357,7 @@
 "sector": "Immobilien",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "vna.de"
+"currency": "EUR"
 },
 {
 "id": "ZAL.DE",
@@ -406,8 +366,7 @@
 "sector": "Konsum",
 "country": "DE",
 "index": "DAX",
-"currency": "EUR",
-"stooq": "zal.de"
+"currency": "EUR"
 },
 {
 "id": "LHA.DE",
@@ -416,8 +375,7 @@
 "sector": "Industrie",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "lha.de"
+"currency": "EUR"
 },
 {
 "id": "PUM.DE",
@@ -426,8 +384,7 @@
 "sector": "Konsum",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "pum.de"
+"currency": "EUR"
 },
 {
 "id": "HFG.DE",
@@ -436,8 +393,7 @@
 "sector": "Konsum",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "hfg.de"
+"currency": "EUR"
 },
 {
 "id": "DHER.DE",
@@ -446,8 +402,7 @@
 "sector": "Konsum",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "dher.de"
+"currency": "EUR"
 },
 {
 "id": "TMV.DE",
@@ -456,8 +411,7 @@
 "sector": "Technologie",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "tmv.de"
+"currency": "EUR"
 },
 {
 "id": "HAG.DE",
@@ -466,8 +420,7 @@
 "sector": "Industrie",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "hag.de"
+"currency": "EUR"
 },
 {
 "id": "R3NK.DE",
@@ -476,8 +429,7 @@
 "sector": "Industrie",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "r3nk.de"
+"currency": "EUR"
 },
 {
 "id": "SRT3.DE",
@@ -486,8 +438,7 @@
 "sector": "Gesundheit",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "srt3.de"
+"currency": "EUR"
 },
 {
 "id": "EVK.DE",
@@ -496,8 +447,7 @@
 "sector": "Chemie & Rohstoffe",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "evk.de"
+"currency": "EUR"
 },
 {
 "id": "LEG.DE",
@@ -506,8 +456,7 @@
 "sector": "Immobilien",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "leg.de"
+"currency": "EUR"
 },
 {
 "id": "TLX.DE",
@@ -516,8 +465,7 @@
 "sector": "Finanzen",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "tlx.de"
+"currency": "EUR"
 },
 {
 "id": "NDA.DE",
@@ -526,8 +474,7 @@
 "sector": "Chemie & Rohstoffe",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "nda.de"
+"currency": "EUR"
 },
 {
 "id": "FRA.DE",
@@ -536,8 +483,7 @@
 "sector": "Industrie",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "fra.de"
+"currency": "EUR"
 },
 {
 "id": "BOSS.DE",
@@ -546,8 +492,7 @@
 "sector": "Konsum",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "boss.de"
+"currency": "EUR"
 },
 {
 "id": "TKA.DE",
@@ -556,8 +501,7 @@
 "sector": "Industrie",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "tka.de"
+"currency": "EUR"
 },
 {
 "id": "NDX1.DE",
@@ -566,8 +510,7 @@
 "sector": "Versorger",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "ndx1.de"
+"currency": "EUR"
 },
 {
 "id": "AFX.DE",
@@ -576,8 +519,7 @@
 "sector": "Gesundheit",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "afx.de"
+"currency": "EUR"
 },
 {
 "id": "KBX.DE",
@@ -586,8 +528,7 @@
 "sector": "Industrie",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "kbx.de"
+"currency": "EUR"
 },
 {
 "id": "WCH.DE",
@@ -596,8 +537,7 @@
 "sector": "Chemie & Rohstoffe",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "wch.de"
+"currency": "EUR"
 },
 {
 "id": "KGX.DE",
@@ -606,8 +546,7 @@
 "sector": "Industrie",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "kgx.de"
+"currency": "EUR"
 },
 {
 "id": "FNTN.DE",
@@ -616,8 +555,7 @@
 "sector": "Telekom",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "fntn.de"
+"currency": "EUR"
 },
 {
 "id": "1U1.DE",
@@ -626,8 +564,7 @@
 "sector": "Telekom",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "1u1.de"
+"currency": "EUR"
 },
 {
 "id": "UTDI.DE",
@@ -636,8 +573,7 @@
 "sector": "Telekom",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "utdi.de"
+"currency": "EUR"
 },
 {
 "id": "SIX2.DE",
@@ -646,8 +582,7 @@
 "sector": "Industrie",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "six2.de"
+"currency": "EUR"
 },
 {
 "id": "EVD.DE",
@@ -656,8 +591,7 @@
 "sector": "Konsum",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "evd.de"
+"currency": "EUR"
 },
 {
 "id": "BC8.DE",
@@ -666,8 +600,7 @@
 "sector": "Technologie",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "bc8.de"
+"currency": "EUR"
 },
 {
 "id": "NEM.DE",
@@ -676,8 +609,7 @@
 "sector": "Technologie",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "nem.de"
+"currency": "EUR"
 },
 {
 "id": "AG1.DE",
@@ -686,8 +618,7 @@
 "sector": "Auto",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "ag1.de"
+"currency": "EUR"
 },
 {
 "id": "8TRA.DE",
@@ -696,8 +627,7 @@
 "sector": "Auto",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "8tra.de"
+"currency": "EUR"
 },
 {
 "id": "AIXA.DE",
@@ -706,8 +636,7 @@
 "sector": "Technologie",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "aixa.de"
+"currency": "EUR"
 },
 {
 "id": "EVT.DE",
@@ -716,8 +645,7 @@
 "sector": "Gesundheit",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "evt.de"
+"currency": "EUR"
 },
 {
 "id": "S92.DE",
@@ -726,8 +654,7 @@
 "sector": "Versorger",
 "country": "DE",
 "index": "SDAX",
-"currency": "EUR",
-"stooq": "s92.de"
+"currency": "EUR"
 },
 {
 "id": "KRN.DE",
@@ -736,8 +663,7 @@
 "sector": "Industrie",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "krn.de"
+"currency": "EUR"
 },
 {
 "id": "RAA.DE",
@@ -746,8 +672,7 @@
 "sector": "Industrie",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "raa.de"
+"currency": "EUR"
 },
 {
 "id": "FIE.DE",
@@ -756,8 +681,7 @@
 "sector": "Konsum",
 "country": "DE",
 "index": "SDAX",
-"currency": "EUR",
-"stooq": "fie.de"
+"currency": "EUR"
 },
 {
 "id": "CEC.DE",
@@ -766,8 +690,7 @@
 "sector": "Konsum",
 "country": "DE",
 "index": "SDAX",
-"currency": "EUR",
-"stooq": "cec.de"
+"currency": "EUR"
 },
 {
 "id": "SAE.DE",
@@ -776,8 +699,7 @@
 "sector": "Gesundheit",
 "country": "DE",
 "index": "MDAX",
-"currency": "EUR",
-"stooq": "sae.de"
+"currency": "EUR"
 },
 {
 "id": "DEZ.DE",
@@ -786,8 +708,7 @@
 "sector": "Industrie",
 "country": "DE",
 "index": "SDAX",
-"currency": "EUR",
-"stooq": "dez.de"
+"currency": "EUR"
 },
 {
 "id": "JEN.DE",
@@ -796,8 +717,7 @@
 "sector": "Technologie",
 "country": "DE",
 "index": "SDAX",
-"currency": "EUR",
-"stooq": "jen.de"
+"currency": "EUR"
 },
 {
 "id": "HYQ.DE",
@@ -806,8 +726,7 @@
 "sector": "Finanzen",
 "country": "DE",
 "index": "SDAX",
-"currency": "EUR",
-"stooq": "hyq.de"
+"currency": "EUR"
 },
 {
 "id": "AAPL",
@@ -816,8 +735,7 @@
 "sector": "Technologie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "aapl.us"
+"currency": "USD"
 },
 {
 "id": "MSFT",
@@ -826,8 +744,7 @@
 "sector": "Technologie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "msft.us"
+"currency": "USD"
 },
 {
 "id": "NVDA",
@@ -836,8 +753,7 @@
 "sector": "Technologie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "nvda.us"
+"currency": "USD"
 },
 {
 "id": "AMZN",
@@ -846,8 +762,7 @@
 "sector": "Konsum",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "amzn.us"
+"currency": "USD"
 },
 {
 "id": "GOOGL",
@@ -856,8 +771,7 @@
 "sector": "Technologie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "googl.us"
+"currency": "USD"
 },
 {
 "id": "META",
@@ -866,8 +780,7 @@
 "sector": "Technologie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "meta.us"
+"currency": "USD"
 },
 {
 "id": "TSLA",
@@ -876,8 +789,7 @@
 "sector": "Auto",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "tsla.us"
+"currency": "USD"
 },
 {
 "id": "BRK.B",
@@ -886,8 +798,7 @@
 "sector": "Finanzen",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "brk-b.us"
+"currency": "USD"
 },
 {
 "id": "AVGO",
@@ -896,8 +807,7 @@
 "sector": "Technologie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "avgo.us"
+"currency": "USD"
 },
 {
 "id": "JPM",
@@ -906,8 +816,7 @@
 "sector": "Finanzen",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "jpm.us"
+"currency": "USD"
 },
 {
 "id": "V",
@@ -916,8 +825,7 @@
 "sector": "Finanzen",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "v.us"
+"currency": "USD"
 },
 {
 "id": "MA",
@@ -926,8 +834,7 @@
 "sector": "Finanzen",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "ma.us"
+"currency": "USD"
 },
 {
 "id": "UNH",
@@ -936,8 +843,7 @@
 "sector": "Gesundheit",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "unh.us"
+"currency": "USD"
 },
 {
 "id": "LLY",
@@ -946,8 +852,7 @@
 "sector": "Gesundheit",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "lly.us"
+"currency": "USD"
 },
 {
 "id": "JNJ",
@@ -956,8 +861,7 @@
 "sector": "Gesundheit",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "jnj.us"
+"currency": "USD"
 },
 {
 "id": "XOM",
@@ -966,8 +870,7 @@
 "sector": "Energie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "xom.us"
+"currency": "USD"
 },
 {
 "id": "CVX",
@@ -976,8 +879,7 @@
 "sector": "Energie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "cvx.us"
+"currency": "USD"
 },
 {
 "id": "WMT",
@@ -986,8 +888,7 @@
 "sector": "Konsum",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "wmt.us"
+"currency": "USD"
 },
 {
 "id": "PG",
@@ -996,8 +897,7 @@
 "sector": "Konsum",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "pg.us"
+"currency": "USD"
 },
 {
 "id": "KO",
@@ -1006,8 +906,7 @@
 "sector": "Konsum",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "ko.us"
+"currency": "USD"
 },
 {
 "id": "PEP",
@@ -1016,8 +915,7 @@
 "sector": "Konsum",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "pep.us"
+"currency": "USD"
 },
 {
 "id": "COST",
@@ -1026,8 +924,7 @@
 "sector": "Konsum",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "cost.us"
+"currency": "USD"
 },
 {
 "id": "HD",
@@ -1036,8 +933,7 @@
 "sector": "Konsum",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "hd.us"
+"currency": "USD"
 },
 {
 "id": "MCD",
@@ -1046,8 +942,7 @@
 "sector": "Konsum",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "mcd.us"
+"currency": "USD"
 },
 {
 "id": "NKE",
@@ -1056,8 +951,7 @@
 "sector": "Konsum",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "nke.us"
+"currency": "USD"
 },
 {
 "id": "DIS",
@@ -1066,8 +960,7 @@
 "sector": "Konsum",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "dis.us"
+"currency": "USD"
 },
 {
 "id": "NFLX",
@@ -1076,8 +969,7 @@
 "sector": "Konsum",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "nflx.us"
+"currency": "USD"
 },
 {
 "id": "ADBE",
@@ -1086,8 +978,7 @@
 "sector": "Technologie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "adbe.us"
+"currency": "USD"
 },
 {
 "id": "CRM",
@@ -1096,8 +987,7 @@
 "sector": "Technologie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "crm.us"
+"currency": "USD"
 },
 {
 "id": "ORCL",
@@ -1106,8 +996,7 @@
 "sector": "Technologie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "orcl.us"
+"currency": "USD"
 },
 {
 "id": "INTC",
@@ -1116,8 +1005,7 @@
 "sector": "Technologie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "intc.us"
+"currency": "USD"
 },
 {
 "id": "AMD",
@@ -1126,8 +1014,7 @@
 "sector": "Technologie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "amd.us"
+"currency": "USD"
 },
 {
 "id": "QCOM",
@@ -1136,8 +1023,7 @@
 "sector": "Technologie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "qcom.us"
+"currency": "USD"
 },
 {
 "id": "TXN",
@@ -1146,8 +1032,7 @@
 "sector": "Technologie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "txn.us"
+"currency": "USD"
 },
 {
 "id": "CSCO",
@@ -1156,8 +1041,7 @@
 "sector": "Technologie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "csco.us"
+"currency": "USD"
 },
 {
 "id": "IBM",
@@ -1166,8 +1050,7 @@
 "sector": "Technologie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "ibm.us"
+"currency": "USD"
 },
 {
 "id": "PYPL",
@@ -1176,8 +1059,7 @@
 "sector": "Finanzen",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "pypl.us"
+"currency": "USD"
 },
 {
 "id": "UBER",
@@ -1186,8 +1068,7 @@
 "sector": "Technologie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "uber.us"
+"currency": "USD"
 },
 {
 "id": "ABNB",
@@ -1196,8 +1077,7 @@
 "sector": "Konsum",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "abnb.us"
+"currency": "USD"
 },
 {
 "id": "SBUX",
@@ -1206,8 +1086,7 @@
 "sector": "Konsum",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "sbux.us"
+"currency": "USD"
 },
 {
 "id": "BA",
@@ -1216,8 +1095,7 @@
 "sector": "Industrie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "ba.us"
+"currency": "USD"
 },
 {
 "id": "CAT",
@@ -1226,8 +1104,7 @@
 "sector": "Industrie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "cat.us"
+"currency": "USD"
 },
 {
 "id": "GE",
@@ -1236,8 +1113,7 @@
 "sector": "Industrie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "ge.us"
+"currency": "USD"
 },
 {
 "id": "MMM",
@@ -1246,8 +1122,7 @@
 "sector": "Industrie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "mmm.us"
+"currency": "USD"
 },
 {
 "id": "GS",
@@ -1256,8 +1131,7 @@
 "sector": "Finanzen",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "gs.us"
+"currency": "USD"
 },
 {
 "id": "MS",
@@ -1266,8 +1140,7 @@
 "sector": "Finanzen",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "ms.us"
+"currency": "USD"
 },
 {
 "id": "BAC",
@@ -1276,8 +1149,7 @@
 "sector": "Finanzen",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "bac.us"
+"currency": "USD"
 },
 {
 "id": "C",
@@ -1286,8 +1158,7 @@
 "sector": "Finanzen",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "c.us"
+"currency": "USD"
 },
 {
 "id": "WFC",
@@ -1296,8 +1167,7 @@
 "sector": "Finanzen",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "wfc.us"
+"currency": "USD"
 },
 {
 "id": "BLK",
@@ -1306,8 +1176,7 @@
 "sector": "Finanzen",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "blk.us"
+"currency": "USD"
 },
 {
 "id": "SPGI",
@@ -1316,8 +1185,7 @@
 "sector": "Finanzen",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "spgi.us"
+"currency": "USD"
 },
 {
 "id": "AXP",
@@ -1326,8 +1194,7 @@
 "sector": "Finanzen",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "axp.us"
+"currency": "USD"
 },
 {
 "id": "PFE",
@@ -1336,8 +1203,7 @@
 "sector": "Gesundheit",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "pfe.us"
+"currency": "USD"
 },
 {
 "id": "MRK",
@@ -1346,8 +1212,7 @@
 "sector": "Gesundheit",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "mrk.us"
+"currency": "USD"
 },
 {
 "id": "ABBV",
@@ -1356,8 +1221,7 @@
 "sector": "Gesundheit",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "abbv.us"
+"currency": "USD"
 },
 {
 "id": "TMO",
@@ -1366,8 +1230,7 @@
 "sector": "Gesundheit",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "tmo.us"
+"currency": "USD"
 },
 {
 "id": "ABT",
@@ -1376,8 +1239,7 @@
 "sector": "Gesundheit",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "abt.us"
+"currency": "USD"
 },
 {
 "id": "AMGN",
@@ -1386,8 +1248,7 @@
 "sector": "Gesundheit",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "amgn.us"
+"currency": "USD"
 },
 {
 "id": "GILD",
@@ -1396,8 +1257,7 @@
 "sector": "Gesundheit",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "gild.us"
+"currency": "USD"
 },
 {
 "id": "VZ",
@@ -1406,8 +1266,7 @@
 "sector": "Telekom",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "vz.us"
+"currency": "USD"
 },
 {
 "id": "T",
@@ -1416,8 +1275,7 @@
 "sector": "Telekom",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "t.us"
+"currency": "USD"
 },
 {
 "id": "TMUS",
@@ -1426,8 +1284,7 @@
 "sector": "Telekom",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "tmus.us"
+"currency": "USD"
 },
 {
 "id": "PLTR",
@@ -1436,8 +1293,7 @@
 "sector": "Technologie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "pltr.us"
+"currency": "USD"
 },
 {
 "id": "COIN",
@@ -1446,8 +1302,7 @@
 "sector": "Finanzen",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "coin.us"
+"currency": "USD"
 },
 {
 "id": "NOW",
@@ -1456,8 +1311,7 @@
 "sector": "Technologie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "now.us"
+"currency": "USD"
 },
 {
 "id": "INTU",
@@ -1466,8 +1320,7 @@
 "sector": "Technologie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "intu.us"
+"currency": "USD"
 },
 {
 "id": "AMAT",
@@ -1476,8 +1329,7 @@
 "sector": "Technologie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "amat.us"
+"currency": "USD"
 },
 {
 "id": "MU",
@@ -1486,8 +1338,7 @@
 "sector": "Technologie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "mu.us"
+"currency": "USD"
 },
 {
 "id": "ARM",
@@ -1496,8 +1347,7 @@
 "sector": "Technologie",
 "country": "GB",
 "index": "USA",
-"currency": "USD",
-"stooq": "arm.us"
+"currency": "USD"
 },
 {
 "id": "MSTR",
@@ -1506,8 +1356,7 @@
 "sector": "Technologie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "mstr.us"
+"currency": "USD"
 },
 {
 "id": "RIVN",
@@ -1516,8 +1365,7 @@
 "sector": "Auto",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "rivn.us"
+"currency": "USD"
 },
 {
 "id": "F",
@@ -1526,8 +1374,7 @@
 "sector": "Auto",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "f.us"
+"currency": "USD"
 },
 {
 "id": "GM",
@@ -1536,8 +1383,7 @@
 "sector": "Auto",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "gm.us"
+"currency": "USD"
 },
 {
 "id": "LMT",
@@ -1546,8 +1392,7 @@
 "sector": "Industrie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "lmt.us"
+"currency": "USD"
 },
 {
 "id": "RTX",
@@ -1556,8 +1401,7 @@
 "sector": "Industrie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "rtx.us"
+"currency": "USD"
 },
 {
 "id": "UPS",
@@ -1566,8 +1410,7 @@
 "sector": "Industrie",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "ups.us"
+"currency": "USD"
 },
 {
 "id": "LIN",
@@ -1576,8 +1419,7 @@
 "sector": "Chemie & Rohstoffe",
 "country": "GB",
 "index": "USA",
-"currency": "USD",
-"stooq": "lin.us"
+"currency": "USD"
 },
 {
 "id": "NEE",
@@ -1586,8 +1428,7 @@
 "sector": "Versorger",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "nee.us"
+"currency": "USD"
 },
 {
 "id": "O",
@@ -1596,8 +1437,7 @@
 "sector": "Immobilien",
 "country": "US",
 "index": "USA",
-"currency": "USD",
-"stooq": "o.us"
+"currency": "USD"
 },
 {
 "id": "SPOT",
@@ -1606,8 +1446,7 @@
 "sector": "Konsum",
 "country": "SE",
 "index": "Welt",
-"currency": "USD",
-"stooq": "spot.us"
+"currency": "USD"
 },
 {
 "id": "SHOP",
@@ -1616,8 +1455,7 @@
 "sector": "Technologie",
 "country": "CA",
 "index": "Welt",
-"currency": "USD",
-"stooq": "shop.us"
+"currency": "USD"
 },
 {
 "id": "MELI",
@@ -1626,8 +1464,7 @@
 "sector": "Konsum",
 "country": "AR",
 "index": "Welt",
-"currency": "USD",
-"stooq": "meli.us"
+"currency": "USD"
 },
 {
 "id": "ASML",
@@ -1636,8 +1473,7 @@
 "sector": "Technologie",
 "country": "NL",
 "index": "Welt",
-"currency": "USD",
-"stooq": "asml.us"
+"currency": "USD"
 },
 {
 "id": "NVO",
@@ -1646,8 +1482,7 @@
 "sector": "Gesundheit",
 "country": "DK",
 "index": "Welt",
-"currency": "USD",
-"stooq": "nvo.us"
+"currency": "USD"
 },
 {
 "id": "TSM",
@@ -1656,8 +1491,7 @@
 "sector": "Technologie",
 "country": "TW",
 "index": "Welt",
-"currency": "USD",
-"stooq": "tsm.us"
+"currency": "USD"
 },
 {
 "id": "SHEL",
@@ -1666,8 +1500,7 @@
 "sector": "Energie",
 "country": "GB",
 "index": "Welt",
-"currency": "USD",
-"stooq": "shel.us"
+"currency": "USD"
 },
 {
 "id": "TTE",
@@ -1676,8 +1509,7 @@
 "sector": "Energie",
 "country": "FR",
 "index": "Welt",
-"currency": "USD",
-"stooq": "tte.us"
+"currency": "USD"
 },
 {
 "id": "UL",
@@ -1686,8 +1518,7 @@
 "sector": "Konsum",
 "country": "GB",
 "index": "Welt",
-"currency": "USD",
-"stooq": "ul.us"
+"currency": "USD"
 },
 {
 "id": "AZN",
@@ -1696,8 +1527,7 @@
 "sector": "Gesundheit",
 "country": "GB",
 "index": "Welt",
-"currency": "USD",
-"stooq": "azn.us"
+"currency": "USD"
 },
 {
 "id": "NVS",
@@ -1706,8 +1536,7 @@
 "sector": "Gesundheit",
 "country": "CH",
 "index": "Welt",
-"currency": "USD",
-"stooq": "nvs.us"
+"currency": "USD"
 },
 {
 "id": "SNY",
@@ -1716,8 +1545,7 @@
 "sector": "Gesundheit",
 "country": "FR",
 "index": "Welt",
-"currency": "USD",
-"stooq": "sny.us"
+"currency": "USD"
 },
 {
 "id": "BP",
@@ -1726,8 +1554,7 @@
 "sector": "Energie",
 "country": "GB",
 "index": "Welt",
-"currency": "USD",
-"stooq": "bp.us"
+"currency": "USD"
 },
 {
 "id": "HSBC",
@@ -1736,8 +1563,7 @@
 "sector": "Finanzen",
 "country": "GB",
 "index": "Welt",
-"currency": "USD",
-"stooq": "hsbc.us"
+"currency": "USD"
 },
 {
 "id": "TM",
@@ -1746,8 +1572,7 @@
 "sector": "Auto",
 "country": "JP",
 "index": "Welt",
-"currency": "USD",
-"stooq": "tm.us"
+"currency": "USD"
 },
 {
 "id": "SONY",
@@ -1756,8 +1581,7 @@
 "sector": "Technologie",
 "country": "JP",
 "index": "Welt",
-"currency": "USD",
-"stooq": "sony.us"
+"currency": "USD"
 },
 {
 "id": "BABA",
@@ -1766,8 +1590,7 @@
 "sector": "Konsum",
 "country": "CN",
 "index": "Welt",
-"currency": "USD",
-"stooq": "baba.us"
+"currency": "USD"
 },
 {
 "id": "BTI",
@@ -1776,8 +1599,7 @@
 "sector": "Konsum",
 "country": "GB",
 "index": "Welt",
-"currency": "USD",
-"stooq": "bti.us"
+"currency": "USD"
 },
 {
 "id": "GSK",
@@ -1786,8 +1608,7 @@
 "sector": "Gesundheit",
 "country": "GB",
 "index": "Welt",
-"currency": "USD",
-"stooq": "gsk.us"
+"currency": "USD"
 },
 {
 "id": "RIO",
@@ -1796,8 +1617,7 @@
 "sector": "Chemie & Rohstoffe",
 "country": "GB",
 "index": "Welt",
-"currency": "USD",
-"stooq": "rio.us"
+"currency": "USD"
 },
 {
 "id": "BHP",
@@ -1806,8 +1626,7 @@
 "sector": "Chemie & Rohstoffe",
 "country": "AU",
 "index": "Welt",
-"currency": "USD",
-"stooq": "bhp.us"
+"currency": "USD"
 },
 {
 "id": "NU",
@@ -1816,8 +1635,7 @@
 "sector": "Finanzen",
 "country": "BR",
 "index": "Welt",
-"currency": "USD",
-"stooq": "nu.us"
+"currency": "USD"
 },
 {
 "id": "EUNL.DE",
@@ -1826,8 +1644,7 @@
 "sector": "ETF Aktien",
 "country": "Welt",
 "index": "ETF",
-"currency": "EUR",
-"stooq": "eunl.de"
+"currency": "EUR"
 },
 {
 "id": "VWCE.DE",
@@ -1836,8 +1653,7 @@
 "sector": "ETF Aktien",
 "country": "Welt",
 "index": "ETF",
-"currency": "EUR",
-"stooq": "vwce.de"
+"currency": "EUR"
 },
 {
 "id": "VGWL.DE",
@@ -1846,8 +1662,7 @@
 "sector": "ETF Aktien",
 "country": "Welt",
 "index": "ETF",
-"currency": "EUR",
-"stooq": "vgwl.de"
+"currency": "EUR"
 },
 {
 "id": "XDWD.DE",
@@ -1856,8 +1671,7 @@
 "sector": "ETF Aktien",
 "country": "Welt",
 "index": "ETF",
-"currency": "EUR",
-"stooq": "xdwd.de"
+"currency": "EUR"
 },
 {
 "id": "IUSQ.DE",
@@ -1866,8 +1680,7 @@
 "sector": "ETF Aktien",
 "country": "Welt",
 "index": "ETF",
-"currency": "EUR",
-"stooq": "iusq.de"
+"currency": "EUR"
 },
 {
 "id": "SXR8.DE",
@@ -1876,8 +1689,7 @@
 "sector": "ETF Aktien",
 "country": "USA",
 "index": "ETF",
-"currency": "EUR",
-"stooq": "sxr8.de"
+"currency": "EUR"
 },
 {
 "id": "VUAA.DE",
@@ -1886,8 +1698,7 @@
 "sector": "ETF Aktien",
 "country": "USA",
 "index": "ETF",
-"currency": "EUR",
-"stooq": "vuaa.de"
+"currency": "EUR"
 },
 {
 "id": "SXRV.DE",
@@ -1896,8 +1707,7 @@
 "sector": "ETF Aktien",
 "country": "USA",
 "index": "ETF",
-"currency": "EUR",
-"stooq": "sxrv.de"
+"currency": "EUR"
 },
 {
 "id": "EQQQ.DE",
@@ -1906,8 +1716,7 @@
 "sector": "ETF Aktien",
 "country": "USA",
 "index": "ETF",
-"currency": "EUR",
-"stooq": "eqqq.de"
+"currency": "EUR"
 },
 {
 "id": "IS3N.DE",
@@ -1916,8 +1725,7 @@
 "sector": "ETF Aktien",
 "country": "Schwellenländer",
 "index": "ETF",
-"currency": "EUR",
-"stooq": "is3n.de"
+"currency": "EUR"
 },
 {
 "id": "XMME.DE",
@@ -1926,8 +1734,7 @@
 "sector": "ETF Aktien",
 "country": "Schwellenländer",
 "index": "ETF",
-"currency": "EUR",
-"stooq": "xmme.de"
+"currency": "EUR"
 },
 {
 "id": "EXS1.DE",
@@ -1936,8 +1743,7 @@
 "sector": "ETF Aktien",
 "country": "DE",
 "index": "ETF",
-"currency": "EUR",
-"stooq": "exs1.de"
+"currency": "EUR"
 },
 {
 "id": "EXSA.DE",
@@ -1946,8 +1752,7 @@
 "sector": "ETF Aktien",
 "country": "Europa",
 "index": "ETF",
-"currency": "EUR",
-"stooq": "exsa.de"
+"currency": "EUR"
 },
 {
 "id": "EUNK.DE",
@@ -1956,8 +1761,7 @@
 "sector": "ETF Aktien",
 "country": "Europa",
 "index": "ETF",
-"currency": "EUR",
-"stooq": "eunk.de"
+"currency": "EUR"
 },
 {
 "id": "VHYL.DE",
@@ -1966,8 +1770,7 @@
 "sector": "ETF Aktien",
 "country": "Welt",
 "index": "ETF",
-"currency": "EUR",
-"stooq": "vhyl.de"
+"currency": "EUR"
 },
 {
 "id": "ZPRV.DE",
@@ -1976,8 +1779,7 @@
 "sector": "ETF Aktien",
 "country": "USA",
 "index": "ETF",
-"currency": "EUR",
-"stooq": "zprv.de"
+"currency": "EUR"
 },
 {
 "id": "IQQH.DE",
@@ -1986,8 +1788,7 @@
 "sector": "ETF Aktien",
 "country": "Welt",
 "index": "ETF",
-"currency": "EUR",
-"stooq": "iqqh.de"
+"currency": "EUR"
 },
 {
 "id": "2B76.DE",
@@ -1996,8 +1797,7 @@
 "sector": "ETF Aktien",
 "country": "Welt",
 "index": "ETF",
-"currency": "EUR",
-"stooq": "2b76.de"
+"currency": "EUR"
 },
 {
 "id": "QDVE.DE",
@@ -2006,8 +1806,7 @@
 "sector": "ETF Aktien",
 "country": "USA",
 "index": "ETF",
-"currency": "EUR",
-"stooq": "qdve.de"
+"currency": "EUR"
 },
 {
 "id": "EUNA.DE",
@@ -2016,8 +1815,7 @@
 "sector": "ETF Anleihen",
 "country": "Welt",
 "index": "ETF",
-"currency": "EUR",
-"stooq": "euna.de"
+"currency": "EUR"
 },
 {
 "id": "4GLD.DE",
@@ -2026,8 +1824,7 @@
 "sector": "Gold",
 "country": "Welt",
 "index": "ETF",
-"currency": "EUR",
-"stooq": "4gld.de"
+"currency": "EUR"
 },
 {
 "id": "SPY",
@@ -2036,8 +1833,7 @@
 "sector": "ETF Aktien",
 "country": "USA",
 "index": "ETF",
-"currency": "USD",
-"stooq": "spy.us"
+"currency": "USD"
 },
 {
 "id": "VOO",
@@ -2046,8 +1842,7 @@
 "sector": "ETF Aktien",
 "country": "USA",
 "index": "ETF",
-"currency": "USD",
-"stooq": "voo.us"
+"currency": "USD"
 },
 {
 "id": "VTI",
@@ -2056,8 +1851,7 @@
 "sector": "ETF Aktien",
 "country": "USA",
 "index": "ETF",
-"currency": "USD",
-"stooq": "vti.us"
+"currency": "USD"
 },
 {
 "id": "QQQ",
@@ -2066,8 +1860,7 @@
 "sector": "ETF Aktien",
 "country": "USA",
 "index": "ETF",
-"currency": "USD",
-"stooq": "qqq.us"
+"currency": "USD"
 },
 {
 "id": "VT",
@@ -2076,8 +1869,7 @@
 "sector": "ETF Aktien",
 "country": "Welt",
 "index": "ETF",
-"currency": "USD",
-"stooq": "vt.us"
+"currency": "USD"
 },
 {
 "id": "URTH",
@@ -2086,8 +1878,7 @@
 "sector": "ETF Aktien",
 "country": "Welt",
 "index": "ETF",
-"currency": "USD",
-"stooq": "urth.us"
+"currency": "USD"
 },
 {
 "id": "IWM",
@@ -2096,8 +1887,7 @@
 "sector": "ETF Aktien",
 "country": "USA",
 "index": "ETF",
-"currency": "USD",
-"stooq": "iwm.us"
+"currency": "USD"
 },
 {
 "id": "DIA",
@@ -2106,8 +1896,7 @@
 "sector": "ETF Aktien",
 "country": "USA",
 "index": "ETF",
-"currency": "USD",
-"stooq": "dia.us"
+"currency": "USD"
 },
 {
 "id": "EEM",
@@ -2116,8 +1905,7 @@
 "sector": "ETF Aktien",
 "country": "Schwellenländer",
 "index": "ETF",
-"currency": "USD",
-"stooq": "eem.us"
+"currency": "USD"
 },
 {
 "id": "SCHD",
@@ -2126,8 +1914,7 @@
 "sector": "ETF Aktien",
 "country": "USA",
 "index": "ETF",
-"currency": "USD",
-"stooq": "schd.us"
+"currency": "USD"
 },
 {
 "id": "VNQ",
@@ -2136,8 +1923,7 @@
 "sector": "Immobilien",
 "country": "USA",
 "index": "ETF",
-"currency": "USD",
-"stooq": "vnq.us"
+"currency": "USD"
 },
 {
 "id": "GLD",
@@ -2146,8 +1932,7 @@
 "sector": "Gold",
 "country": "Welt",
 "index": "ETF",
-"currency": "USD",
-"stooq": "gld.us"
+"currency": "USD"
 },
 {
 "id": "TLT",
@@ -2156,8 +1941,7 @@
 "sector": "ETF Anleihen",
 "country": "USA",
 "index": "ETF",
-"currency": "USD",
-"stooq": "tlt.us"
+"currency": "USD"
 },
 {
 "id": "ARKK",
@@ -2166,7 +1950,6 @@
 "sector": "ETF Aktien",
 "country": "USA",
 "index": "ETF",
-"currency": "USD",
-"stooq": "arkk.us"
+"currency": "USD"
 }
 ]

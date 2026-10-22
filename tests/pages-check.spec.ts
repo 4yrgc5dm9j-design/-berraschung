@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { readFileSync } from 'node:fs'
 import { mockExternal } from './mocks'
 
 // Prüft die statische Web-Version (GitHub Pages) – nur manuell mit laufendem Pages-Testserver.
@@ -48,18 +49,38 @@ test('Web-Version im Unterordner', async ({ page }) => {
   test('Börse mit verzögerten Kursen, Märkten, Depot-Analyse und 100.000 € Spielgeld', async ({ page }) => {
     const base = process.env.PAGES_URL!
     await mockExternal(page)
-    const now = Date.now()
-    const days = Array.from({ length: 120 }, (_, i) => new Date(now - (119 - i) * 86400e3).toISOString().slice(0, 10))
-    const mk = (start: number, drift: number) => days.map((d, i) => [d, Math.round((start * (1 + drift * i) + Math.sin(i) * 2) * 100) / 100])
-    const series = { 'SAP.DE': mk(200, 0.001), 'EUNL.DE': mk(100, 0.0008), AAPL: mk(200, 0.0015) }
-    await page.route('**/data/history.json*', (r) => r.fulfill({ json: { fetchedAt: new Date().toISOString(), series } }))
-    const q = (id: string, price: number, cur: string, eur: number, ch: number) => ({ symbol: id, price, currency: cur, priceEur: eur, change: price * ch, changePct: ch, at: new Date().toISOString() })
-    await page.route('**/data/quotes.json*', (r) =>
-      r.fulfill({ json: { source: 'Stooq (verzögert)', fetchedAt: new Date().toISOString(), fxDate: '2026-10-21', errors: [], quotes: { 'SAP.DE': q('SAP.DE', 250, 'EUR', 250, 0.012), 'EUNL.DE': q('EUNL.DE', 110, 'EUR', 110, -0.003), AAPL: q('AAPL', 240, 'USD', 200, 0.02) } } }),
-    )
+    // Veröffentlichte Google-Tabelle (Dailybase-Vorlage, deutsches Gebietsschema) mit 40 Wochenkursen
+    const weeks = Array.from({ length: 40 }, (_, i) => new Date(Date.now() - (40 - i) * 7 * 86400e3))
+    const de = (n: number) => n.toFixed(2).replace('.', ',')
+    const row = (id: string, ticker: string, price: number, prev: number, cur: string, start: number, drift: number) =>
+      [id, ticker, de(price), de(prev), cur, ...weeks.map((_, i) => de(start * (1 + drift * i) + Math.sin(i) * 3))].map((c) => `"${c}"`).join(',')
+    const csv = [
+      ['id', 'ticker', 'price', 'closeyest', 'currency', 'Date', ...weeks.map((d) => `${d.getDate()}.${d.getMonth() + 1}.${d.getFullYear()} 16:00:00`)].map((c) => `"${c}"`).join(','),
+      row('SAP.DE', 'ETR:SAP', 250, 247, 'EUR', 200, 0.006),
+      row('EUNL.DE', 'ETR:EUNL', 110, 110.33, 'EUR', 95, 0.004),
+      row('AAPL', 'AAPL', 240, 235.29, 'USD', 200, 0.005),
+      '"MSFT","MSFT","#N/A","#N/A","#N/A",""',
+    ].join('\n')
+    await page.route('https://docs.google.com/spreadsheets/d/e/**', (r) => r.fulfill({ body: csv, headers: { 'content-type': 'text/csv', 'access-control-allow-origin': '*' } }))
+    // Einrichten unter Profil
+    await page.goto(base + 'entdecken/boerse')
+    await page.getByRole('tab', { name: /Märkte/ }).click()
+    await expect(page.getByText(/Kurse nicht verfügbar/)).toBeVisible()
+    await page.getByRole('link', { name: 'Einrichten' }).click()
+    const dl = page.waitForEvent('download')
+    await page.getByRole('button', { name: 'Vorlage herunterladen' }).click()
+    const template = readFileSync(await (await dl).path(), 'utf8')
+    expect(template).toContain('"ETR:SAP","=GOOGLEFINANCE(B')
+    await page.getByLabel('Link der veröffentlichten Google-Tabelle').fill('https://docs.google.com/spreadsheets/d/abc/edit')
+    await page.getByRole('button', { name: 'Verbinden' }).click()
+    await expect(page.getByText(/Im Web veröffentlichen/).last()).toBeVisible()
+    await page.getByLabel('Link der veröffentlichten Google-Tabelle').fill('https://docs.google.com/spreadsheets/d/e/2PACX-test/pubhtml')
+    await page.getByRole('button', { name: 'Verbinden' }).click()
+    await expect(page.getByText('Verbunden – 3 Kurse gefunden, Wochenverlauf für 3 Werte.')).toBeVisible()
     // Märkte
     await page.goto(base + 'entdecken/boerse')
     await page.getByRole('tab', { name: /Märkte/ }).click()
+    await expect(page.getByText(/Google Finanzen \(bis 20 Min\. verzögert\)/).first()).toBeVisible()
     await expect(page.getByText('verzögert', { exact: true })).toBeVisible()
     await page.getByRole('button', { name: /SAP SAP/ }).click()
     await expect(page.getByRole('dialog').getByText(/Entwicklung 6M/)).toBeVisible()
@@ -72,7 +93,8 @@ test('Web-Version im Unterordner', async ({ page }) => {
     await expect(page.getByText(/Gekauft: 99,99/)).toBeVisible()
     await expect(page.getByText('Depot-Analyse')).toBeVisible()
     await expect(page.getByText('Schwankung p. a.')).toBeVisible()
-    await expect(page.getByText(/MSCI World \(EUNL\), 12 Monate/)).toBeVisible()
+    await expect(page.getByText(/MSCI World \(EUNL\) seit/)).toBeVisible()
+    await expect(page.getByText(/Beste Woche/)).toBeVisible()
   })
 
   test('Fußballmanager mit echten Kadern', async ({ page }) => {

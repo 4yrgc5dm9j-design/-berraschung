@@ -42,6 +42,7 @@ export const defaultSettings = (): Settings => ({
   focus: { work: 25, short: 5, long: 15, rounds: 4 },
   dashboard: defaultDashboard(),
   finnhubKey: '',
+  googleSheetUrl: '',
   onboarded: false,
 })
 

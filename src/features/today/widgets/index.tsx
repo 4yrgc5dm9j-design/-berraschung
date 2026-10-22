@@ -405,7 +405,7 @@ export function WatchlistWidget() {
           </div>
           {notConfigured ? (
             <Link to="/profil#kurse" className="mt-2 block text-xs font-semibold text-accent">
-              Live-Kurse einschalten →
+              Kurse einrichten →
             </Link>
           ) : q.error ? (
             <p className="mt-2 text-[11px] text-warn">{q.error}</p>
