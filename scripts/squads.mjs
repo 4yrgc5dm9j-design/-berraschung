@@ -5,7 +5,7 @@ export const norm = (x) => x.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCas
 const WD_UA = { 'User-Agent': 'Dailybase/0.1 (https://github.com/4yrgc5dm9j-design/-berraschung; persoenliche App)', Accept: 'application/json' }
 
 /** Bei Änderungen an der Abfrage erhöhen, damit alte Zwischenstände verworfen werden */
-export const RAW_VERSION = 5
+export const RAW_VERSION = 6
 
 export async function wikidataRaw(clubs) {
   // 1) Vereine in Wikidata finden: alle Suchtreffer sammeln, dann den Eintrag
@@ -54,6 +54,12 @@ export async function wikidataRaw(clubs) {
     for (const b of await sparql(query))
       rows.push({ club: c.qid, player: b.player.value.split('/').pop(), name: b.playerLabel?.value, pos: b.posLabel?.value || '', dob: b.dob?.value || null, start: b.start?.value || null, latest: null })
   }
+  // Abgänge: Zugehörigkeiten mit Enddatum (damit gepflegte Spieler, die gegangen sind, nicht auftauchen)
+  const ended = {}
+  for (const c of found) {
+    const q = `SELECT ?playerLabel WHERE { ?player p:P54 ?st . ?st ps:P54 wd:${c.qid} ; pq:P582 ?end . FILTER(YEAR(?end) >= ${minYear}) ?player wdt:P106 wd:Q937857 . SERVICE wikibase:label { bd:serviceParam wikibase:language "de,en". } }`
+    ended[c.qid] = (await sparql(q)).map((b) => b.playerLabel?.value).filter(Boolean)
+  }
   // 3) Jüngste Vereinsstation der Kandidaten (in Paketen), um längst gewechselte Spieler zu erkennen
   const ids = [...new Set(rows.map((r) => r.player))]
   const latest = new Map()
@@ -63,7 +69,7 @@ export async function wikidataRaw(clubs) {
     for (const b of await sparql(q)) latest.set(b.player.value.split('/').pop(), b.latest.value)
   }
   for (const r of rows) r.latest = latest.get(r.player) ?? null
-  return { version: RAW_VERSION, fetchedAt: new Date().toISOString(), clubs: found, rows }
+  return { version: RAW_VERSION, fetchedAt: new Date().toISOString(), clubs: found, rows, ended }
 }
 
 export function mapPos(label) {
@@ -81,37 +87,46 @@ function hashDev(name) {
   return (h % 9) - 4 // -4 … +4
 }
 
+/** Gepflegte Liste zum Verein finden ("Werder Bremen" ↔ "SV Werder Bremen", "1. FC Heidenheim" ↔ "1. FC Heidenheim 1846") */
+export function ratingsFor(clubName) {
+  const tokens = new Set(norm(clubName).split(' '))
+  const key = Object.keys(RATINGS).find((k) => norm(k).split(' ').every((t) => tokens.has(t)))
+  return key ? RATINGS[key] : []
+}
+
 export function buildSquads(raw, clubs, goalsByName) {
-  const ratingMap = new Map(RATINGS.map(([n, pos, r]) => [norm(n), { pos, r }]))
   const year = new Date().getFullYear()
+  const recentElsewhere = (clubQid) => new Set(raw.rows.filter((r) => r.club !== clubQid && r.start && r.start >= `${year - 1}-06-01`).map((r) => norm(r.name)))
   return clubs.map((club) => {
     const wd = raw.clubs.find((c) => c.name === club.name)
+    const curated = new Map(ratingsFor(club.name).map(([n, pos, r]) => [norm(n), { name: n, pos, r }]))
     const players = new Map()
     for (const row of raw.rows.filter((x) => wd && x.club === wd.qid)) {
       if (!row.name || /^Q\d+$/.test(row.name)) continue
       const born = row.dob ? Number(row.dob.slice(0, 4)) : null
       if (born && (born < year - 38 || born > year - 16)) continue
-      const known = ratingMap.has(norm(row.name))
-      // Nur wenn dieser Verein die jüngste Station ist (sonst längst gewechselt) – bekannte Spieler immer
-      if (!known) {
-        if (!row.start) continue
-        if (row.latest && row.start < row.latest) continue
-        if (Number(row.start.slice(0, 4)) < year - 8) continue
-      }
-      const p = players.get(row.player) ?? { name: row.name, born, positions: [], start: row.start }
+      const known = curated.has(norm(row.name))
+      // Nur wenn dieser Verein die jüngste Station ist; gepflegte Spieler auch ohne Startdatum
+      if (row.start && row.latest && row.start < row.latest) continue
+      if (!known && (!row.start || Number(row.start.slice(0, 4)) < year - 8)) continue
+      const p = players.get(norm(row.name)) ?? { name: row.name, born, positions: [], start: row.start }
       const mp = mapPos(row.pos)
       if (mp) p.positions.push(mp)
-      players.set(row.player, p)
+      players.set(norm(row.name), p)
     }
-    for (const extra of ALWAYS[club.name] ?? []) if (![...players.values()].some((p) => norm(p.name) === norm(extra.name))) players.set(`always:${extra.name}`, { name: extra.name, born: extra.born, positions: [extra.pos], start: null })
+    // Gepflegte Spieler ergänzen, solange Wikidata keinen Abgang oder neuen Verein zeigt
+    const left = new Set((raw.ended?.[wd?.qid] ?? []).map(norm))
+    const elsewhere = recentElsewhere(wd?.qid)
+    for (const [key, c] of curated) if (!players.has(key) && !left.has(key) && !elsewhere.has(key)) players.set(key, { name: c.name, born: null, positions: [c.pos], start: null })
+    for (const extra of ALWAYS[club.name] ?? []) if (!players.has(norm(extra.name))) players.set(norm(extra.name), { name: extra.name, born: extra.born, positions: [extra.pos], start: null })
     const list = [...players.values()].map((p) => {
-      const known = ratingMap.get(norm(p.name))
+      const known = curated.get(norm(p.name))
       const pos = known?.pos ?? (p.positions.includes('TW') ? 'TW' : p.positions[0] ?? 'MF')
-      return { name: p.name, pos, age: p.born ? year - p.born : 25, goals: goalsByName.get(norm(p.name)) ?? 0, rating: known?.r ?? null, start: p.start }
+      return { name: p.name, pos, age: p.born ? year - p.born : 26, goals: goalsByName.get(norm(p.name)) ?? 0, rating: known?.r ?? null, start: p.start }
     })
-    // Basis für Schätzungen: bekannte Werte des Vereins, sonst Tabellenstand
+    // Schätzungen: etwas unter dem Niveau der bekannten Stammspieler, sonst nach Tabellenstand
     const knownVals = list.filter((p) => p.rating).map((p) => p.rating).sort((a, b) => b - a)
-    const base = knownVals.length >= 3 ? knownVals.slice(0, 11).reduce((a, b) => a + b, 0) / Math.min(11, knownVals.length) - 4 : 68 + club.ppg * 3
+    const base = knownVals.length >= 5 ? knownVals.slice(0, 11).reduce((a, b) => a + b, 0) / Math.min(11, knownVals.length) - 7 : 66 + club.ppg * 3
     for (const p of list) {
       if (p.rating) {
         p.source = 'ea'
@@ -119,11 +134,10 @@ export function buildSquads(raw, clubs, goalsByName) {
       }
       const ageAdj = p.age <= 19 ? -6 : p.age <= 21 ? -3 : p.age <= 30 ? 0 : p.age <= 33 ? -1 : -3
       const goalAdj = p.pos === 'ST' || p.pos === 'MF' ? Math.min(6, p.goals * 0.7) : 0
-      p.rating = Math.round(Math.max(55, Math.min(84, base + hashDev(p.name) + ageAdj + goalAdj)))
+      p.rating = Math.round(Math.max(55, Math.min(82, base + hashDev(p.name) + ageAdj + goalAdj)))
       p.source = 'schaetzung'
     }
     list.sort((a, b) => (b.source === 'ea') - (a.source === 'ea') || (b.start ?? '').localeCompare(a.start ?? '') || b.rating - a.rating)
     return { name: club.name, short: club.short, qid: wd?.qid ?? null, players: list.slice(0, 30).map(({ start, ...p }) => p) }
   })
 }
-
