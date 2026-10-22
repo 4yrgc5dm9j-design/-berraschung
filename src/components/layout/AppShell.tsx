@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
-import { CalendarCheck, Compass, House, Layers, Plus, Search, UserRound } from 'lucide-react'
+import { CalendarCheck, Compass, Gamepad2, House, Layers, Plus, Search, UserRound } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useSettings } from '@/data/store'
 import { Toaster } from '@/components/ui/Toaster'
@@ -8,11 +8,12 @@ import { CommandSearch } from './CommandSearch'
 import { QuickAdd } from './QuickAdd'
 import { Logo } from './Logo'
 
-export const NAV = [
+export const NAV: { to: string; label: string; short?: string; icon: typeof House; end?: boolean }[] = [
   { to: '/', label: 'Heute', icon: House, end: true },
   { to: '/entdecken', label: 'Entdecken', icon: Compass },
-  { to: '/sammlungen', label: 'Sammlungen', icon: Layers },
+  { to: '/sammlungen', label: 'Sammlungen', short: 'Sammlung', icon: Layers },
   { to: '/planen', label: 'Planen', icon: CalendarCheck },
+  { to: '/spielen', label: 'Spielen', icon: Gamepad2 },
   { to: '/profil', label: 'Profil', icon: UserRound },
 ]
 
@@ -133,20 +134,20 @@ function BottomNav() {
   // Schwebende Leiste im Stil aktueller iOS-Apps
   return (
     <nav aria-label="Hauptnavigation" className="fixed inset-x-0 bottom-0 z-40 px-3 pb-[max(10px,env(safe-area-inset-bottom))] lg:hidden">
-      <div className="glass mx-auto grid max-w-md grid-cols-5 rounded-[26px] p-1.5 shadow-[0_10px_40px_-10px_rgba(16,24,40,0.28)] ring-1 ring-line">
+      <div className="glass mx-auto grid max-w-lg grid-cols-6 rounded-[26px] p-1 shadow-[0_10px_40px_-10px_rgba(16,24,40,0.28)] ring-1 ring-line">
         {NAV.map((n) => (
           <NavLink
             key={n.to}
             to={n.to}
             end={n.end}
             className={({ isActive }) =>
-              cn('flex min-h-[54px] flex-col items-center justify-center gap-0.5 rounded-[20px] text-[10.5px] font-semibold transition', isActive ? 'bg-accent-soft text-accent' : 'text-faint active:bg-surface-2')
+              cn('flex min-h-[54px] min-w-0 flex-col items-center justify-center gap-0.5 rounded-[20px] text-[10px] font-semibold tracking-tight transition', isActive ? 'bg-accent-soft text-accent' : 'text-faint active:bg-surface-2')
             }
           >
             {({ isActive }) => (
               <>
-                <n.icon className="size-[22px]" strokeWidth={isActive ? 2.4 : 2} />
-                {n.label}
+                <n.icon className="size-[21px]" strokeWidth={isActive ? 2.4 : 2} />
+                <span className="max-w-full truncate px-0.5">{n.short ?? n.label}</span>
               </>
             )}
           </NavLink>

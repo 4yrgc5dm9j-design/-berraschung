@@ -1,6 +1,6 @@
 # Dailybase
 
-Deine persönliche Alltagszentrale: **Heute** (Dashboard), **Entdecken** (News, Börse, Sport), **Sammlungen** (Links, Reels, Ideen), **Planen** (Aufgaben, Kalender, Notizen, Lernen, Fokus, Gewohnheiten, Einkauf, Finanzen) und **Profil**. Responsive Web-App, installierbar als PWA, komplett auf Deutsch.
+Deine persönliche Alltagszentrale: **Heute** (Dashboard), **Entdecken** (News, Börse, Sport), **Sammlungen** (Links, Reels, Ideen), **Planen** (Aufgaben, Kalender, Notizen, Lernen, Fokus, Gewohnheiten, Einkauf, Finanzen), **Spielen** (Börsenspiel mit Spielgeld, regelbasierter Börsen-Assistent, Karriere-Simulator, Fußballmanager) und **Profil**. Responsive Web-App, installierbar als PWA, komplett auf Deutsch.
 
 ## Starten
 
@@ -52,7 +52,7 @@ Alle Einträge haben `id`, `createdAt`, `updatedAt` – vorbereitet für Konten 
 | Wetter | Open-Meteo | frei, ohne Schlüssel | nicht-kommerzielle Nutzung |
 | Fußball | OpenLigaDB | frei, ohne Schlüssel | Community-gepflegt, 1.–3. Liga |
 | News | öffentliche RSS-Feeds (tagesschau, Spiegel, heise, golem, sportschau, kicker) | frei | nur Titel/Anriss, Link zum Original |
-| Börse | Finnhub (optional) | kostenloser Plan | v. a. US-Werte in USD; sonst manuelle Kurse in € |
+| Börse | Finnhub (optional, eigener Gratis-Schlüssel im Profil) | kostenloser Plan | US-Börsen, jede Minute; Umrechnung in € mit EZB-Kursen (Frankfurter); Xetra nur manuell |
 | Link-Vorschau | YouTube oEmbed, OpenGraph-Daten | frei | Instagram nur mit Meta-App (nicht eingebunden) |
 
 Es werden keine Live-Daten erfunden. Echte Daten zeigen Quelle und Aktualisierungszeit; offline erscheint der letzte Stand mit Hinweis.
@@ -69,4 +69,5 @@ Es werden keine Live-Daten erfunden. Echte Daten zeigen Quelle und Aktualisierun
 
 1. ✅ Grundversion: Navigation, Dashboard mit 3 Ansichten & anpassbaren Widgets, Aufgaben, Notizen, Sammlungen, Schnellzugriffe, Einstellungen, Export/Import, Rückgängig.
 2. ✅ Module: Kalender & Prüfungen, Lernkarten, Fokus-Timer, Gewohnheiten, Einkaufslisten, Ausgaben & Sparziele, News, Börse (Watchlist, Depot, Sparplanrechner, Spieldepot), Sport, globale Suche.
-3. ⏳ Geplant: Benutzerkonto & Sync, gemeinsame Sammlungen, Tippspiel, KI-Zusammenfassungen, historische Kurse, Instagram-oEmbed.
+3. ✅ Spielen: Handelsterminal mit Spielgeld und Live-Kursen, Börsen-Assistent (ohne KI), Karriere-Simulator (Monte-Carlo, Modellannahmen), Fußballmanager (fiktive Spieler, komplette Saisons).
+4. ⏳ Geplant: Benutzerkonto & Sync, gemeinsame Sammlungen, Tippspiel, KI-Zusammenfassungen, historische Kurse, Instagram-oEmbed.

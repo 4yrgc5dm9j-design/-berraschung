@@ -667,7 +667,7 @@ export function SavingsCalculator() {
 }
 
 export function MarketsView() {
-  const [tab, setTab] = useState<'watch' | 'depot' | 'rechner' | 'spiel'>('watch')
+  const [tab, setTab] = useState<'watch' | 'depot' | 'rechner'>('watch')
   return (
     <div>
       <Segmented
@@ -678,14 +678,21 @@ export function MarketsView() {
           { value: 'watch', label: 'Watchlist', icon: <Eye className="size-4" /> },
           { value: 'depot', label: 'Depot', icon: <Wallet className="size-4" /> },
           { value: 'rechner', label: 'Rechner', icon: <Calculator className="size-4" /> },
-          { value: 'spiel', label: 'Spiel', icon: <Gamepad2 className="size-4" /> },
         ]}
       />
       <div key={tab} className="animate-rise">
+        {tab === 'depot' && (
+          <Link to="/spielen/boerse" className="mb-4 flex items-center gap-3 rounded-2xl bg-accent-soft p-3 text-sm">
+            <Gamepad2 className="size-5 shrink-0 text-accent" />
+            <span className="flex-1 text-muted">
+              <b className="text-text">Lieber erst üben?</b> Das Börsenspiel mit Spielgeld findest du jetzt unter <b className="text-text">Spielen</b>.
+            </span>
+            <span className="font-semibold text-accent">Öffnen →</span>
+          </Link>
+        )}
         {tab === 'watch' && <WatchlistView />}
         {tab === 'depot' && <PortfolioView kind="real" />}
         {tab === 'rechner' && <SavingsCalculator />}
-        {tab === 'spiel' && <PortfolioView kind="virtual" />}
       </div>
     </div>
   )

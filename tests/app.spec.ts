@@ -185,7 +185,7 @@ test('Profil: Dark Mode, Wetter-Ort, Module, Export', async ({ page }, info) => 
 })
 
 test('Keine horizontale Überbreite auf allen Seiten', async ({ page }) => {
-  for (const path of ['/', '/entdecken/news', '/entdecken/boerse', '/entdecken/sport', '/sammlungen', '/planen/aufgaben', '/planen/kalender', '/planen/notizen', '/planen/lernen', '/planen/fokus', '/planen/gewohnheiten', '/planen/einkauf', '/planen/finanzen', '/profil']) {
+  for (const path of ['/', '/entdecken/news', '/entdecken/boerse', '/entdecken/sport', '/sammlungen', '/planen/aufgaben', '/planen/kalender', '/planen/notizen', '/planen/lernen', '/planen/fokus', '/planen/gewohnheiten', '/planen/einkauf', '/planen/finanzen', '/spielen/boerse', '/spielen/assistent', '/spielen/karriere', '/spielen/fussball', '/profil']) {
     await page.goto(path)
     await page.waitForTimeout(400)
     const over = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
@@ -194,4 +194,51 @@ test('Keine horizontale Überbreite auf allen Seiten', async ({ page }) => {
     const cardOver = await page.evaluate(() => Math.max(0, ...[...document.querySelectorAll('main .card')].map((c) => c.getBoundingClientRect().right - window.innerWidth)))
     expect(cardOver, `Karte ragt hinaus auf ${path}`).toBeLessThanOrEqual(1)
   }
+})
+
+test('Spielen: Börsenspiel, Assistent, Karriere und Fußballmanager', async ({ page }, info) => {
+  // Live-Kurse aktivieren
+  await page.goto('/profil#kurse')
+  await page.getByLabel('Finnhub-API-Schlüssel').fill('testkey')
+  await page.getByRole('button', { name: 'Verbinden' }).click()
+  await expect(page.getByText(/Verbunden – Apple/)).toBeVisible()
+
+  await page.getByRole('link', { name: 'Spielen' }).first().click()
+  await expect(page).toHaveURL(/\/spielen\/boerse/)
+  // AAPL kostet im Test 250 $ = 200 € → 1.000 € ergeben 4,995 Stück
+  await page.getByLabel('Betrag in Euro').fill('1000')
+  await page.getByRole('button', { name: 'Kauforder ausführen' }).click()
+  await expect(page.getByText(/Gekauft: 4,99/)).toBeVisible()
+  await expect(page.getByText('KAUF', { exact: true })).toBeVisible()
+  await page.screenshot({ path: shot('spielen-boerse', info.project.name), fullPage: true })
+
+  await page.getByRole('link', { name: /Börsen-Assistent/ }).click()
+  await page.getByRole('button', { name: 'Prüfe mein Spieldepot' }).click()
+  await expect(page.getByText(/1 Position\(en\)/)).toBeVisible()
+  await expect(page.getByText(/Klumpenrisiko/)).toBeVisible()
+  await page.getByLabel('Frage an den Assistenten').fill('Was ist eine Dividende?')
+  await page.keyboard.press('Enter')
+  await expect(page.getByText(/Gewinnausschüttung/)).toBeVisible()
+
+  await page.getByRole('link', { name: /Karriere-Simulator/ }).click()
+  await expect(page.getByText('Passt am besten')).toBeVisible()
+  await page.getByRole('button', { name: 'Lebenslauf durchspielen' }).first().click()
+  await expect(page.getByRole('dialog').getByText(/Erspartes nach 15 Jahren/)).toBeVisible()
+  await page.keyboard.press('Escape')
+  await page.screenshot({ path: shot('spielen-karriere', info.project.name), fullPage: true })
+
+  await page.getByRole('link', { name: /Fußballmanager/ }).click()
+  await page.getByRole('button', { name: 'Karriere starten' }).click()
+  await expect(page.getByText(/1\. von 34 Spieltagen/)).toBeVisible()
+  await page.getByRole('button', { name: 'Spieltag spielen' }).click()
+  await page.getByRole('dialog').getByRole('button', { name: 'Überspringen' }).click()
+  await expect(page.getByRole('dialog').getByText('Abpfiff')).toBeVisible()
+  await page.getByRole('dialog').getByRole('button', { name: 'Weiter' }).click()
+  await expect(page.getByText(/2\. von 34 Spieltagen/)).toBeVisible()
+  await page.getByRole('button', { name: /Transfers/ }).click()
+  await expect(page.getByText('Transfermarkt')).toBeVisible()
+  await page.screenshot({ path: shot('spielen-fussball', info.project.name), fullPage: true })
+  // Spielstand übersteht Neuladen
+  await page.reload()
+  await expect(page.getByText(/2\. von 34 Spieltagen/)).toBeVisible()
 })

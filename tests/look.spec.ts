@@ -1,25 +1,13 @@
 import { test } from '@playwright/test'
 import { mockExternal } from './mocks'
-// Nur zum Anschauen (Screenshots im Viewport, nach Animationen)
+// Nur zum Anschauen (Screenshots), nicht Teil der normalen Tests
 test.skip(!process.env.LOOK, 'nur mit LOOK=1')
-test('Ansicht', async ({ page }, info) => {
+test('Startseite alle Ansichten', async ({ page }, info) => {
   await mockExternal(page)
   await page.goto('/')
-  await page.getByRole('tab', { name: /Freizeit/ }).click()
-  await page.waitForTimeout(1200)
-  await page.screenshot({ path: `screenshots/look-${info.project.name}-heute.png` })
-  await page.goto('/entdecken/boerse')
-  await page.getByRole('button', { name: /Apple/ }).click()
-  await page.getByRole('button', { name: /NVIDIA/ }).click()
-  await page.evaluate(() => {})
-  await page.goto('/profil#kurse')
-  await page.getByLabel('Finnhub-API-Schlüssel').fill('testkey')
-  await page.getByRole('button', { name: 'Verbinden' }).click()
-  await page.waitForTimeout(500)
-  await page.goto('/entdecken/boerse')
-  await page.waitForTimeout(1200)
-  await page.screenshot({ path: `screenshots/look-${info.project.name}-boerse.png` })
-  await page.goto('/planen/aufgaben')
-  await page.waitForTimeout(1000)
-  await page.screenshot({ path: `screenshots/look-${info.project.name}-planen.png` })
+  for (const v of ['Arbeit', 'Uni', 'Freizeit']) {
+    await page.getByRole('tab', { name: new RegExp(v) }).click()
+    await page.waitForTimeout(1200)
+    await page.screenshot({ path: `screenshots/look-${info.project.name}-${v}.png`, fullPage: true })
+  }
 })

@@ -12,7 +12,7 @@ import { upcomingEvents } from '@/features/plan/calendar'
 import { useWeather } from '@/services/hooks'
 import { weatherInfo } from '@/services/weather'
 import { WIDGETS, widgetMeta } from './widgets'
-import { Search, Plus, CheckCircle2, CalendarDays } from 'lucide-react'
+import { Search, Plus } from 'lucide-react'
 
 export const VIEWS: { value: ViewId; label: string; icon: React.ReactNode }[] = [
   { value: 'arbeit', label: 'Arbeit', icon: <BriefcaseBusiness className="size-4" /> },
@@ -39,27 +39,31 @@ function DaySummary() {
   const dueToday = tasks.filter((t) => !t.done && t.due && t.due <= today).length
   const todayEvents = upcomingEvents(events, 0).length
   const nextExam = upcomingEvents(events.filter((e) => e.kind === 'pruefung'), 30)[0]
-  const pill = 'inline-flex min-h-9 items-center gap-1.5 rounded-full bg-white/18 px-3.5 text-sm font-semibold text-white ring-1 ring-white/20 backdrop-blur-md transition hover:bg-white/25'
+  const tile = 'flex min-w-0 flex-col rounded-2xl bg-white/16 px-3 py-2.5 ring-1 ring-white/20 backdrop-blur-md transition hover:bg-white/24 active:scale-[0.98]'
+  const info = w.data ? weatherInfo(w.data.current.code, w.data.current.isDay) : null
+  const examDays = nextExam ? Math.round((new Date(nextExam.date).getTime() - new Date(today).getTime()) / 86400000) : 0
   return (
-    <div className="flex flex-wrap gap-2">
-      <Link to="/planen/aufgaben" className={pill}>
-        <CheckCircle2 className="size-4" /> {dueToday} {dueToday === 1 ? 'Aufgabe' : 'Aufgaben'} fällig
-      </Link>
-      <Link to="/planen/kalender" className={pill}>
-        <CalendarDays className="size-4" /> {todayEvents} {todayEvents === 1 ? 'Termin' : 'Termine'} heute
-      </Link>
-      {w.data && weather && (
-        <span className={pill}>
-          {weatherInfo(w.data.current.code, w.data.current.isDay).emoji} {Math.round(w.data.current.temp)}° in {weather.name}
-        </span>
-      )}
+    <div className="space-y-2">
+      <div className="grid grid-cols-3 gap-2">
+        <Link to="/planen/aufgaben" className={tile} title="Heute fällige und überfällige Aufgaben">
+          <span className="font-display text-2xl font-bold leading-none tabular">{dueToday}</span>
+          <span className="mt-1 truncate text-xs font-semibold text-white/80">{dueToday === 1 ? 'Aufgabe' : 'Aufgaben'}</span>
+        </Link>
+        <Link to="/planen/kalender" className={tile} title="Termine heute">
+          <span className="font-display text-2xl font-bold leading-none tabular">{todayEvents}</span>
+          <span className="mt-1 truncate text-xs font-semibold text-white/80">{todayEvents === 1 ? 'Termin' : 'Termine'}</span>
+        </Link>
+        <Link to="/profil" className={tile}>
+          <span className="font-display text-2xl font-bold leading-none tabular">
+            {w.data ? `${Math.round(w.data.current.temp)}°` : '–'} <span className="text-lg">{info?.emoji}</span>
+          </span>
+          <span className="mt-1 truncate text-xs font-semibold text-white/80">{weather?.name ?? 'Wetter'}</span>
+        </Link>
+      </div>
       {nextExam && (
-        <Link to="/planen/kalender" className={cn(pill, 'bg-white text-[var(--accent-strong)] hover:bg-white')}>
-          🎓 Prüfung „{nextExam.event.title}“{' '}
-          {(() => {
-            const days = Math.round((new Date(nextExam.date).getTime() - new Date(today).getTime()) / 86400000)
-            return days === 0 ? 'heute' : `in ${days} ${days === 1 ? 'Tag' : 'Tagen'}`
-          })()}
+        <Link to="/planen/kalender" className="flex items-center gap-2 rounded-2xl bg-white px-3 py-2 text-sm font-semibold text-[var(--accent-strong)] shadow-sm">
+          🎓 <span className="min-w-0 flex-1 truncate">Prüfung „{nextExam.event.title}“</span>
+          <span className="shrink-0">{examDays === 0 ? 'heute' : `in ${examDays} ${examDays === 1 ? 'Tag' : 'Tagen'}`}</span>
         </Link>
       )}
     </div>
@@ -137,9 +141,15 @@ export default function TodayPage() {
           {/* dezente Lichtkreise */}
           <span className="pointer-events-none absolute -right-16 -top-20 size-64 rounded-full bg-white/12 blur-2xl" />
           <span className="pointer-events-none absolute -bottom-24 left-1/3 size-56 rounded-full bg-white/8 blur-2xl" />
-          <div className="relative flex items-start justify-between gap-3">
-            <p className="text-sm font-semibold capitalize text-white/80">{now.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
-            <div className="flex gap-1.5 lg:hidden">
+          <div className="relative flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold capitalize text-white/80">{now.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+              <h1 className="mt-1 font-display text-[30px] font-bold leading-[1.05] tracking-tight sm:text-[44px]">
+                {greeting(now)}
+                {name ? `, ${name}` : ''} 👋
+              </h1>
+            </div>
+            <div className="flex shrink-0 gap-1.5 self-start lg:hidden">
               <button aria-label="Suchen" onClick={openSearch} className="grid size-10 place-items-center rounded-full bg-white/18 ring-1 ring-white/20 backdrop-blur-md active:scale-95">
                 <Search className="size-[18px]" />
               </button>
@@ -148,17 +158,13 @@ export default function TodayPage() {
               </button>
             </div>
           </div>
-          <h1 className="relative mt-2 font-display text-[34px] font-bold leading-[1.05] tracking-tight sm:text-[48px]">
-            {greeting(now)}
-            {name ? `, ${name}` : ''} 👋
-          </h1>
-          <div className="relative mt-4">
+          <div className="relative mt-5 sm:max-w-xl">
             <DaySummary />
           </div>
         </section>
         <div className="mt-4 flex items-center gap-2">
           <Segmented className="min-w-0 flex-1 sm:flex-none sm:shrink-0" value={view} onChange={(v) => actions().setSettings({ activeView: v })} options={VIEWS} />
-          <IconButton label="Startseite anpassen" onClick={() => setCustomize(true)} className="ml-auto border border-line bg-surface shadow-sm">
+          <IconButton label="Startseite anpassen" onClick={() => setCustomize(true)} className="ml-auto size-12 rounded-2xl border border-line bg-surface shadow-sm">
             <Settings2 className="size-5" />
           </IconButton>
         </div>

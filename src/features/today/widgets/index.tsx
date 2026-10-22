@@ -62,7 +62,7 @@ export function WidgetShell({ title, to, action, children, className }: { title:
         <div className="flex items-center gap-1">
           {action}
           {to && (
-            <Link to={to} aria-label={`${title} öffnen`} className="grid size-9 place-items-center rounded-xl text-faint hover:bg-surface-2 hover:text-text">
+            <Link to={to} aria-label={`${title} öffnen`} className="grid size-8 place-items-center rounded-full bg-surface-2 text-muted transition hover:bg-surface-3 hover:text-text">
               <ArrowUpRight className="size-4" />
             </Link>
           )}
@@ -94,7 +94,7 @@ export function TasksWidget({ view }: { view: ViewId }) {
       title="Aufgaben"
       to="/planen/aufgaben"
       action={
-        <IconButton label="Aufgabe hinzufügen" size="sm" onClick={() => setCreate(true)}>
+        <IconButton label="Aufgabe hinzufügen" size="sm" className="size-8 rounded-full bg-accent-soft text-accent hover:bg-accent-soft hover:text-accent" onClick={() => setCreate(true)}>
           <Plus className="size-4" />
         </IconButton>
       }
@@ -118,7 +118,7 @@ export function TasksWidget({ view }: { view: ViewId }) {
         </div>
       )}
       {list.length === 0 ? (
-        <EmptyState compact icon="✨" title="Nichts Dringendes" text="Keine fälligen Aufgaben in den nächsten Tagen." />
+        <EmptyState inline icon="✨" title="Nichts Dringendes" text="Keine fälligen Aufgaben in den nächsten Tagen." />
       ) : (
         <div className="-mx-2">
           {list.map((t) => (
@@ -142,13 +142,13 @@ export function AgendaWidget() {
       title="Termine"
       to="/planen/kalender"
       action={
-        <IconButton label="Termin hinzufügen" size="sm" onClick={() => setCreate(true)}>
+        <IconButton label="Termin hinzufügen" size="sm" className="size-8 rounded-full bg-accent-soft text-accent hover:bg-accent-soft hover:text-accent" onClick={() => setCreate(true)}>
           <Plus className="size-4" />
         </IconButton>
       }
     >
       {upcoming.length === 0 ? (
-        <EmptyState compact icon="📅" title="Keine Termine" text="Die nächsten 7 Tage sind frei." />
+        <EmptyState inline icon="📅" title="Keine Termine" text="Die nächsten 7 Tage sind frei." />
       ) : (
         <div className="-mx-2">
           {upcoming.slice(0, 5).map(({ event, date }) => (
@@ -168,7 +168,7 @@ export function WeatherWidget() {
   if (!loc)
     return (
       <WidgetShell title="Wetter">
-        <EmptyState compact icon="🌤️" title="Kein Ort gewählt" action={<Link to="/profil" className="font-semibold text-accent">Ort festlegen</Link>} />
+        <EmptyState inline icon="🌤️" title="Kein Ort gewählt" action={<Link to="/profil" className="font-semibold text-accent">Ort festlegen</Link>} />
       </WidgetShell>
     )
   const d = w.data
@@ -306,12 +306,12 @@ export function QuickLinksWidget() {
     <WidgetShell
       title="Schnellzugriff"
       action={
-        <IconButton label={editing ? 'Fertig' : 'Bearbeiten'} size="sm" active={editing} onClick={() => setEditing(!editing)}>
+        <IconButton label={editing ? 'Fertig' : 'Bearbeiten'} size="sm" className="size-8 rounded-full bg-surface-2" active={editing} onClick={() => setEditing(!editing)}>
           <Pencil className="size-4" />
         </IconButton>
       }
     >
-      <div className="grid grid-cols-4 gap-2 sm:grid-cols-5 lg:grid-cols-4 xl:grid-cols-5">
+      <div className="grid grid-cols-5 gap-1 sm:gap-2">
         {links.map((l) => (
           <a
             key={l.id}
@@ -352,7 +352,7 @@ export function MatchWidget() {
   return (
     <WidgetShell title={club ? club.shortName || club.name : 'Mein Verein'} to="/entdecken/sport">
       {!club ? (
-        <EmptyState compact icon="⚽" title="Kein Verein gewählt" action={<Link className="font-semibold text-accent" to="/entdecken/sport">Verein wählen</Link>} />
+        <EmptyState inline icon="⚽" title="Kein Verein gewählt" action={<Link className="font-semibold text-accent" to="/entdecken/sport">Verein wählen</Link>} />
       ) : notFound ? (
         <p className="text-sm text-muted">„{club.name}“ wurde in den Ligen nicht gefunden.</p>
       ) : matches.error && !matches.data ? (
@@ -385,7 +385,7 @@ export function WatchlistWidget() {
   return (
     <WidgetShell title="Watchlist" to="/entdecken/boerse">
       {watch.length === 0 ? (
-        <EmptyState compact icon="📈" title="Noch leer" action={<Link className="font-semibold text-accent" to="/entdecken/boerse">Werte hinzufügen</Link>} />
+        <EmptyState inline icon="📈" title="Noch leer" action={<Link className="font-semibold text-accent" to="/entdecken/boerse">Werte hinzufügen</Link>} />
       ) : (
         <>
           <div className="divide-y divide-line">
@@ -432,7 +432,7 @@ export function NewsWidget() {
   return (
     <WidgetShell title="Nachrichten" to="/entdecken/news">
       {interests.length === 0 ? (
-        <EmptyState compact title="Keine Interessen gewählt" action={<Link to="/profil" className="font-semibold text-accent">Interessen wählen</Link>} />
+        <EmptyState inline title="Keine Interessen gewählt" action={<Link to="/profil" className="font-semibold text-accent">Interessen wählen</Link>} />
       ) : !news.data && news.loading ? (
         <div className="space-y-3">
           {[0, 1, 2].map((i) => (
@@ -463,9 +463,9 @@ export function HabitsWidget() {
   return (
     <WidgetShell title="Gewohnheiten" to="/planen/gewohnheiten" action={habits.length > 0 && <span className="text-xs font-semibold text-muted tabular">{done}/{habits.length}</span>}>
       {habits.length === 0 ? (
-        <EmptyState compact icon="🌱" title="Keine Gewohnheiten" action={<Link to="/planen/gewohnheiten" className="font-semibold text-accent">Anlegen</Link>} />
+        <EmptyState inline icon="🌱" title="Keine Gewohnheiten" action={<Link to="/planen/gewohnheiten" className="font-semibold text-accent">Anlegen</Link>} />
       ) : (
-        <div className="grid grid-cols-2 gap-2">
+        <div className="space-y-2">
           {habits.slice(0, 6).map((h) => {
             const on = h.days.includes(today)
             const s = streak(h)
@@ -474,15 +474,13 @@ export function HabitsWidget() {
                 key={h.id}
                 onClick={() => toggleHabitDay(h)}
                 aria-pressed={on}
-                className={cn('flex min-h-14 items-center gap-2 rounded-2xl border p-2.5 text-left transition active:scale-[0.97]', on ? 'border-transparent bg-success/12' : 'border-line hover:bg-surface-2')}
+                className={cn('flex min-h-12 w-full items-center gap-3 rounded-2xl border px-3 py-2 text-left transition active:scale-[0.98]', on ? 'border-transparent bg-success/12' : 'border-line hover:bg-surface-2')}
               >
                 <span className="text-xl">{h.emoji}</span>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-semibold">{h.name}</span>
-                  <span className={cn('inline-flex items-center gap-0.5 text-xs', s ? 'text-warn' : 'text-faint')}>
-                    <Flame className="size-3" />
-                    {s}
-                  </span>
+                <span className="min-w-0 flex-1 truncate text-sm font-semibold">{h.name}</span>
+                <span className={cn('inline-flex items-center gap-0.5 text-xs font-semibold tabular', s ? 'text-warn' : 'text-faint')} title="Serie in Tagen">
+                  <Flame className="size-3.5" />
+                  {s}
                 </span>
                 <span className={cn('grid size-6 place-items-center rounded-full', on ? 'animate-pop bg-success text-white' : 'border-2 border-line-strong')}>{on && <Check className="size-3.5" strokeWidth={3} />}</span>
               </button>
@@ -542,7 +540,7 @@ export function IdeaWidget() {
   return (
     <WidgetShell title="Zufallsidee" to="/sammlungen">
       {withItems.length === 0 ? (
-        <EmptyState compact icon="🎲" title="Sammlungen sind leer" text="Speichere Rezepte, Ausflüge oder Restaurants – dann schlägt Dailybase dir etwas vor." action={<Link to="/sammlungen" className="font-semibold text-accent">Zu den Sammlungen</Link>} />
+        <EmptyState inline icon="🎲" title="Sammlungen sind leer" text="Speichere Rezepte oder Ausflüge – dann gibt es Vorschläge." action={<Link to="/sammlungen" className="font-semibold text-accent">Zu den Sammlungen</Link>} />
       ) : (
         <>
           <div className="scroll-x -mx-1 mb-3 flex gap-1.5 px-1">
@@ -586,7 +584,7 @@ export function BudgetWidget() {
         )}
       </div>
       {budget > 0 && <ProgressBar className="mt-3" value={s.spent / budget} tone={s.spent > budget ? 'danger' : s.spent > budget * 0.8 ? 'warn' : 'success'} />}
-      <Button variant="ghost" size="sm" className="mt-3 w-full" icon={<Plus className="size-4" />} onClick={() => window.dispatchEvent(new CustomEvent('db:quickadd', { detail: 'expense' }))}>
+      <Button variant="soft" size="sm" className="mt-4 w-full" icon={<Plus className="size-4" />} onClick={() => window.dispatchEvent(new CustomEvent('db:quickadd', { detail: 'expense' }))}>
         Ausgabe erfassen
       </Button>
     </WidgetShell>

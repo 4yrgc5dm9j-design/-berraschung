@@ -3,13 +3,15 @@ import { emptyData } from '@/data/defaults'
 import type { DataState, Settings } from '@/data/types'
 import { toast, useToasts } from '@/data/toasts'
 import { todayKey } from '@/lib/dates'
+import { useGames } from '@/data/games'
+import type { ManagerState } from '@/features/play/football/engine'
 
 const FORMAT = 'dailybase-backup'
 
 export function exportData() {
   const { data, settings } = actions()
   // Persönlicher API-Schlüssel gehört nicht in Sicherungsdateien
-  const payload = { format: FORMAT, version: 1, exportedAt: new Date().toISOString(), data, settings: { ...settings, finnhubKey: '' } }
+  const payload = { format: FORMAT, version: 1, exportedAt: new Date().toISOString(), data, settings: { ...settings, finnhubKey: '' }, games: { football: useGames.getState().football } }
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
@@ -24,7 +26,7 @@ export function exportData() {
 
 /** Prüft die Datei grob und ersetzt danach alle Daten – mit „Rückgängig“. */
 export async function importData(file: File) {
-  let parsed: { format?: string; data?: Partial<DataState>; settings?: Partial<Settings> }
+  let parsed: { format?: string; data?: Partial<DataState>; settings?: Partial<Settings>; games?: { football?: unknown } }
   try {
     parsed = JSON.parse(await file.text())
   } catch {
@@ -41,7 +43,12 @@ export async function importData(file: File) {
     if (Array.isArray(v)) data[key] = v.filter((e) => e && typeof e === 'object' && typeof e.id === 'string') as never
   }
   const snap = { data: actions().data, settings: actions().settings }
+  const footballBefore = useGames.getState().football
+  if (parsed.games?.football && typeof parsed.games.football === 'object') useGames.getState().setFootball(parsed.games.football as ManagerState)
   actions().replaceAll(data, { ...(parsed.settings ?? snap.settings), finnhubKey: snap.settings.finnhubKey } as Settings)
   const n = Object.values(data).reduce((a, l) => a + l.length, 0)
-  useToasts.getState().push({ message: `${n} Einträge importiert`, tone: 'success', action: { label: 'Rückgängig', run: () => actions().replaceAll(snap.data, snap.settings) } }, 10000)
+  useToasts.getState().push({ message: `${n} Einträge importiert`, tone: 'success', action: { label: 'Rückgängig', run: () => {
+        actions().replaceAll(snap.data, snap.settings)
+        useGames.getState().setFootball(footballBefore)
+      } } }, 10000)
 }

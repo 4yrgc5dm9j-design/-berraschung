@@ -322,13 +322,27 @@ export function EmptyState({
   text,
   action,
   compact,
+  inline,
 }: {
   icon?: ReactNode
   title: string
   text?: ReactNode
   action?: ReactNode
   compact?: boolean
+  /** platzsparend nebeneinander, z. B. in Widgets */
+  inline?: boolean
 }) {
+  if (inline)
+    return (
+      <div className="flex items-center gap-3 rounded-2xl bg-surface-2 p-3">
+        {icon && <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-surface text-xl shadow-sm">{icon}</div>}
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold">{title}</p>
+          {text && <p className="text-xs text-muted">{text}</p>}
+          {action && <div className="mt-0.5 text-sm">{action}</div>}
+        </div>
+      </div>
+    )
   return (
     <div className={cn('flex flex-col items-center text-center', compact ? 'gap-2 py-6' : 'gap-3 py-12')}>
       {icon && <div className="grid size-12 place-items-center rounded-2xl bg-accent-soft text-2xl text-accent">{icon}</div>}

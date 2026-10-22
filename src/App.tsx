@@ -9,6 +9,7 @@ const CollectionsPage = lazy(() => import('@/features/collections/CollectionsPag
 const PlanPage = lazy(() => import('@/features/plan/PlanPage'))
 const ProfilePage = lazy(() => import('@/features/profile/ProfilePage'))
 const SharePage = lazy(() => import('@/features/collections/SharePage'))
+const PlayPage = lazy(() => import('@/features/play/PlayPage'))
 
 const page = (el: React.ReactNode) => (
   <Suspense
@@ -30,6 +31,7 @@ const router = createBrowserRouter([
       { path: 'entdecken/:tab?', element: page(<DiscoverPage />) },
       { path: 'sammlungen/:id?', element: page(<CollectionsPage />) },
       { path: 'planen/:tab?', element: page(<PlanPage />) },
+      { path: 'spielen/:tab?', element: page(<PlayPage />) },
       { path: 'profil', element: page(<ProfilePage />) },
       { path: 'teilen', element: page(<SharePage />) },
       { path: '*', element: <Navigate to="/" replace /> },
