@@ -9,7 +9,7 @@ export const instruments = JSON.parse(readFileSync(new URL('../src/data/instrume
 
 async function text(url) {
   const ctrl = new AbortController()
-  const t = setTimeout(() => ctrl.abort(), 20000)
+  const t = setTimeout(() => ctrl.abort(), 10000)
   try {
     const r = await fetch(url, { signal: ctrl.signal, headers: { 'User-Agent': UA } })
     if (!r.ok) throw new Error(`HTTP ${r.status}`)
@@ -58,15 +58,27 @@ export async function fetchQuotes(list) {
   return result
 }
 
-/** Ein Jahr Tagesschlusskurse (parallel, aber schonend) */
-export async function fetchHistory(list, days = 370) {
+/** Kurze Probeabfrage: Antwortet Stooq überhaupt mit Kursdaten? */
+export async function probe() {
+  try {
+    const body = await text('https://stooq.com/q/l/?s=aapl.us&f=sd2t2ohlcv&h&e=csv')
+    const [row] = parseCsv(body)
+    return { ok: !!num(row?.close), sample: body.slice(0, 160) }
+  } catch (e) {
+    return { ok: false, sample: String(e.message || e) }
+  }
+}
+
+/** Ein Jahr Tagesschlusskurse (parallel, aber schonend, mit Zeitbudget) */
+export async function fetchHistory(list, days = 370, budgetMs = 5 * 60e3) {
+  const deadline = Date.now() + budgetMs
   const to = new Date()
   const from = new Date(Date.now() - days * 86400e3)
   const fmt = (d) => d.toISOString().slice(0, 10).replace(/-/g, '')
   const series = {}
   const queue = [...list]
   async function worker() {
-    for (let inst = queue.shift(); inst; inst = queue.shift()) {
+    for (let inst = queue.shift(); inst && Date.now() < deadline; inst = queue.shift()) {
       try {
         const rows = parseCsv(await text(`https://stooq.com/q/d/l/?s=${inst.stooq}&d1=${fmt(from)}&d2=${fmt(to)}&i=d`))
         const s = rows.filter((r) => num(r.close)).map((r) => [r.date, Math.round(num(r.close) * 10000) / 10000])

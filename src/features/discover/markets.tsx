@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState, useLayoutEffect } from 'react'
-import { Plus, Trash2, Pencil, Gamepad2, Wallet, Calculator, Eye, Zap } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Plus, Trash2, Pencil, Gamepad2, Wallet, Calculator, Eye, Zap, Globe2 } from 'lucide-react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Badge, Button, Card, Chip, ConfirmDialog, EmptyState, ErrorNote, Field, IconButton, Modal, Segmented, SectionTitle, SourceLine } from '@/components/ui'
-import { AreaChart, Donut, seriesColor } from '@/components/ui/charts'
+import { AreaChart, seriesColor } from '@/components/ui/charts'
 import { actions, useData } from '@/data/store'
 import type { AssetKind, Portfolio, Transaction, WatchItem } from '@/data/types'
 import { cn, fmtEur, fmtMoney, fmtNum, fmtPct, parseNum } from '@/lib/utils'
@@ -11,15 +11,18 @@ import { useQuotes } from '@/services/hooks'
 import { searchSymbols, type Quote, type SymbolHit } from '@/services/server'
 import { toast } from '@/data/toasts'
 import { savingsPlan, summarize } from './portfolio'
+import { DepotAnalysis } from './DepotAnalysis'
+import { InstrumentSheet, MarketBrowser, PickButton } from './instruments-ui'
+import { instrument } from '@/data/instruments'
 
 // ---------------------------------------------------------------- Kurs-Hinweis
-export function QuoteSourceNote({ error, fetchedAt, loading, reload, errors }: { error: string | null; fetchedAt: string | null; loading: boolean; reload: () => void; errors?: string[] }) {
+export function QuoteSourceNote({ error, fetchedAt, loading, reload, errors, source }: { error: string | null; fetchedAt: string | null; loading: boolean; reload: () => void; errors?: string[]; source?: string }) {
   if (error && /Kursquelle|not_configured/i.test(error))
     return (
       <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-accent-soft p-3 text-sm">
         <Zap className="size-5 shrink-0 text-accent" />
         <p className="min-w-0 flex-1 text-muted">
-          <span className="font-semibold text-text">Live-Kurse einschalten:</span> mit einem kostenlosen Finnhub-Schlüssel aktualisieren sich Kurse jede Minute. Bis dahin pflegst du Kurse über das Stift-Symbol.
+          <span className="font-semibold text-text">Kurse nicht verfügbar.</span> Kurse für alle bekannten Werte gibt es in der Web-Version automatisch. Mit einem kostenlosen Finnhub-Schlüssel kommen US-Werte live dazu.
         </p>
         <Link to="/profil#kurse" className="inline-flex min-h-10 items-center rounded-xl bg-accent px-3 font-semibold text-accent-fg">
           Einrichten
@@ -28,17 +31,19 @@ export function QuoteSourceNote({ error, fetchedAt, loading, reload, errors }: {
     )
   if (error) return <ErrorNote error={error} onRetry={reload} compact />
   if (!fetchedAt) return null
+  const live = !!source && /Finnhub/.test(source)
+  const missing = errors?.length ?? 0
   return (
     <div className="space-y-1">
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <span className="relative flex size-2">
-          <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-60" />
-          <span className="relative inline-flex size-2 rounded-full bg-success" />
+          <span className={cn('absolute inline-flex size-full rounded-full opacity-60', live ? 'animate-ping bg-success' : 'bg-warn')} />
+          <span className={cn('relative inline-flex size-2 rounded-full', live ? 'bg-success' : 'bg-warn')} />
         </span>
-        <span className="text-xs font-semibold text-success">Live</span>
-        <SourceLine source="Finnhub, € via EZB" href="https://finnhub.io" fetchedAt={fetchedAt} loading={loading} onReload={reload} />
+        <span className={cn('text-xs font-semibold', live ? 'text-success' : 'text-warn')}>{live ? 'Live' : 'Verzögert (ca. 15–45 Min.)'}</span>
+        <SourceLine source={`${source ?? 'Finnhub'}, € via EZB`} fetchedAt={fetchedAt} loading={loading} onReload={reload} />
       </div>
-      {errors && errors.length > 0 && <p className="text-[11px] text-warn">{errors.join(' · ')}</p>}
+      {missing > 0 && <p className="text-[11px] text-faint">Für {missing} Wert(e) gibt es keinen Kurs – dort hilft der manuelle Kurs (Stift-Symbol).</p>}
     </div>
   )
 }
@@ -188,7 +193,15 @@ function WatchEditor({ open, item, onClose }: { open: boolean; item: WatchItem |
   return (
     <Modal open={open} onClose={onClose} title={item ? 'Wert bearbeiten' : 'Zur Watchlist'} footer={<Button variant="primary" onClick={save} disabled={!symbol.trim()}>Speichern</Button>}>
       <div className="space-y-4">
-        <Field label="Name" hint="Optional: Symbolsuche nutzt die verbundene Kursquelle.">
+        <PickButton
+          label="Aus über 200 Aktien & ETFs wählen"
+          onPick={(i) => {
+            setSymbol(i.id)
+            setName(i.name)
+            setKind(i.type)
+          }}
+        />
+        <Field label="Name" hint="Oder selbst eintragen: Suche nutzt die verbundene Kursquelle.">
           <div className="flex gap-2">
             <input className="field" value={name} onChange={(e) => setName(e.target.value)} placeholder="z. B. Apple, SAP, MSCI World" />
             <Button variant="secondary" onClick={search}>
@@ -235,6 +248,7 @@ export function WatchlistView() {
   const [open, setOpen] = useState(false)
   const [priceFor, setPriceFor] = useState<WatchItem | null>(null)
   const [confirm, setConfirm] = useState<WatchItem | null>(null)
+  const [sheet, setSheet] = useState<string | null>(null)
 
   return (
     <Card className="p-4 sm:p-5">
@@ -247,7 +261,7 @@ export function WatchlistView() {
       ) : (
         <>
           <div className="mb-3">
-            <QuoteSourceNote error={q.error} fetchedAt={q.fetchedAt} loading={q.loading} reload={q.reload} errors={q.data?.errors} />
+            <QuoteSourceNote error={q.error} fetchedAt={q.fetchedAt} loading={q.loading} reload={q.reload} errors={q.data?.errors} source={q.data?.source} />
           </div>
           <div className="divide-y divide-line">
             {watch.map((w) => {
@@ -256,7 +270,7 @@ export function WatchlistView() {
               return (
                 <div key={w.id} className="flex items-center gap-2 py-2.5 sm:gap-3">
                   <span className="hidden size-10 shrink-0 place-items-center rounded-xl bg-surface-2 text-xs font-bold sm:grid">{w.symbol.slice(0, 4)}</span>
-                  <button className="min-w-0 flex-1 text-left" onClick={() => { setEdit(w); setOpen(true) }}>
+                  <button className="min-w-0 flex-1 text-left" onClick={() => (instrument(w.symbol) ? setSheet(w.symbol) : (setEdit(w), setOpen(true)))}>
                     <span className="block truncate font-semibold">{w.name}</span>
                     <span className="block truncate text-xs text-muted">
                       {w.symbol} · {w.kind}
@@ -282,6 +296,7 @@ export function WatchlistView() {
         </div>
       )}
       <WatchEditor open={open} item={edit} onClose={() => setOpen(false)} />
+      <InstrumentSheet id={sheet} onClose={() => setSheet(null)} />
       {priceFor && <PriceEditor open symbol={priceFor.symbol} name={priceFor.name} onClose={() => setPriceFor(null)} />}
       <ConfirmDialog open={!!confirm} title="Von Watchlist entfernen?" message={confirm?.name} confirmLabel="Entfernen" onConfirm={() => confirm && actions().remove('watchlist', confirm.id, 'Von Watchlist entfernt')} onClose={() => setConfirm(null)} />
     </Card>
@@ -307,6 +322,7 @@ function TxEditor({ open, tx, portfolio, preset, onClose, cash }: { open: boolea
     setFees(init.fees ? String(init.fees).replace('.', ',') : '')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, tx?.id])
+  const pickQuotes = useQuotes(useMemo(() => (d.symbol ? [d.symbol.toUpperCase()] : []), [d.symbol]))
   const nq = parseNum(qty)
   const np = parseNum(price)
   const nf = fees.trim() ? parseNum(fees) : 0
@@ -343,6 +359,18 @@ function TxEditor({ open, tx, portfolio, preset, onClose, cash }: { open: boolea
     >
       <div className="space-y-4">
         <Segmented className="w-full" value={d.type} onChange={(v) => setD({ ...d, type: v })} options={[{ value: 'buy', label: 'Kauf' }, { value: 'sell', label: 'Verkauf' }]} />
+        <PickButton
+          label="Wert aus Liste wählen"
+          onPick={(i) => {
+            setD((x) => ({ ...x, symbol: i.id, name: i.name }))
+            setPrice('')
+          }}
+        />
+        {!price && pickQuotes.data?.quotes[d.symbol.toUpperCase()]?.priceEur != null && (
+          <button type="button" className="text-sm font-semibold text-accent" onClick={() => setPrice(String(pickQuotes.data!.quotes[d.symbol.toUpperCase()].priceEur!.toFixed(2)).replace('.', ','))}>
+            Aktuellen Kurs übernehmen: {fmtEur(pickQuotes.data.quotes[d.symbol.toUpperCase()].priceEur!)}
+          </button>
+        )}
         <div className="grid grid-cols-[1fr_120px] gap-3">
           <Field label="Name">
             <input className="field" value={d.name} onChange={(e) => setD({ ...d, name: e.target.value })} placeholder="z. B. iShares Core MSCI World" />
@@ -377,7 +405,7 @@ function TxEditor({ open, tx, portfolio, preset, onClose, cash }: { open: boolea
   )
 }
 
-export function PortfolioView({ kind }: { kind: 'real' | 'virtual' }) {
+export function PortfolioView({ kind, buy }: { kind: 'real' | 'virtual'; buy?: string | null }) {
   const portfolios = useData('portfolios').filter((p) => p.kind === kind)
   const allTx = useData('transactions')
   const prices = useData('prices')
@@ -390,9 +418,16 @@ export function PortfolioView({ kind }: { kind: 'real' | 'virtual' }) {
   const [preset, setPreset] = useState<Partial<TxDraft> | undefined>()
   const [priceFor, setPriceFor] = useState<{ symbol: string; name: string } | null>(null)
   const [resetOpen, setResetOpen] = useState(false)
+  useEffect(() => {
+    const inst = buy ? instrument(buy) : undefined
+    if (!inst) return
+    setTx(null)
+    setPreset({ symbol: inst.id, name: inst.name, type: 'buy' })
+    setTxOpen(true)
+  }, [buy])
 
   useEffect(() => {
-    if (!portfolio && !actions().data.portfolios.some((p) => p.kind === kind)) actions().add('portfolios', { name: kind === 'real' ? 'Mein Depot' : 'Spieldepot', kind, startCash: kind === 'virtual' ? 10000 : 0 })
+    if (!portfolio && !actions().data.portfolios.some((p) => p.kind === kind)) actions().add('portfolios', { name: kind === 'real' ? 'Mein Depot' : 'Spieldepot', kind, startCash: kind === 'virtual' ? 100000 : 0 })
   }, [portfolio, kind])
 
   const s = useMemo(() => (portfolio ? summarize(portfolio, allTx, prices, q.quotes) : null), [portfolio, allTx, prices, q.quotes])
@@ -448,9 +483,9 @@ export function PortfolioView({ kind }: { kind: 'real' | 'virtual' }) {
         </Card>
       </div>
 
-      {symbols.length > 0 && <QuoteSourceNote error={q.error} fetchedAt={q.fetchedAt} loading={q.loading} reload={q.reload} errors={q.data?.errors} />}
+      {symbols.length > 0 && <QuoteSourceNote error={q.error} fetchedAt={q.fetchedAt} loading={q.loading} reload={q.reload} errors={q.data?.errors} source={q.data?.source} />}
 
-      <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+      <div>
         <Card className="p-4 sm:p-5">
           <SectionTitle action={<Button size="sm" variant="primary" icon={<Plus className="size-4" />} onClick={() => openTx()}>Transaktion</Button>}>Positionen</SectionTitle>
           {s.positions.length === 0 ? (
@@ -489,33 +524,9 @@ export function PortfolioView({ kind }: { kind: 'real' | 'virtual' }) {
             </div>
           )}
         </Card>
-        <div className="space-y-4">
-          <Card className="p-4 sm:p-5">
-            <SectionTitle>Verteilung</SectionTitle>
-            {s.positions.length === 0 ? (
-              <p className="text-sm text-muted">Erscheint, sobald Positionen vorhanden sind.</p>
-            ) : (
-              <Donut slices={s.positions.map((p) => ({ label: p.name, value: p.value ?? p.cost }))} format={(v) => fmtEur(v, true)} centerLabel="Gesamt" centerValue={fmtEur(s.value, true)} />
-            )}
-          </Card>
-          <Card className="p-4 sm:p-5">
-            <SectionTitle>Investiertes Kapital</SectionTitle>
-            {s.history.length < 2 ? (
-              <p className="text-sm text-muted">Die Entwicklung erscheint ab zwei Transaktionen an unterschiedlichen Tagen.</p>
-            ) : (
-              <AreaChart
-                points={s.history.map((h) => ({ date: h.date, invested: h.invested }))}
-                series={[{ key: 'invested', label: 'Einstand', color: 'var(--accent)' }]}
-                stacked={false}
-                height={160}
-                xLabel={(p) => fmtDate(String(p.date), { month: 'short', year: '2-digit' })}
-                format={(v) => fmtEur(v, true)}
-              />
-            )}
-            <p className="mt-2 text-xs text-faint">Ein Kursverlauf des Depots braucht historische Kurse und folgt mit einer Kursquelle. <Badge tone="planned">Geplant</Badge></p>
-          </Card>
-        </div>
       </div>
+
+      <DepotAnalysis portfolio={portfolio} transactions={allTx} prices={prices} quotes={q.quotes} />
 
       <Card className="p-4 sm:p-5">
         <SectionTitle>Transaktionen</SectionTitle>
@@ -667,7 +678,17 @@ export function SavingsCalculator() {
 }
 
 export function MarketsView() {
-  const [tab, setTab] = useState<'watch' | 'depot' | 'rechner'>('watch')
+  const [params, setParams] = useSearchParams()
+  const buy = params.get('kauf')
+  const [tab, setTab] = useState<'watch' | 'maerkte' | 'depot' | 'rechner'>(buy ? 'depot' : 'watch')
+  useEffect(() => {
+    if (buy) {
+      setTab('depot')
+      // Parameter nach dem Öffnen entfernen, damit Neuladen nicht erneut einen Kauf öffnet
+      const t = setTimeout(() => setParams({}, { replace: true }), 50)
+      return () => clearTimeout(t)
+    }
+  }, [buy, setParams])
   return (
     <div>
       <Segmented
@@ -676,6 +697,7 @@ export function MarketsView() {
         onChange={setTab}
         options={[
           { value: 'watch', label: 'Watchlist', icon: <Eye className="size-4" /> },
+          { value: 'maerkte', label: 'Märkte', icon: <Globe2 className="size-4" /> },
           { value: 'depot', label: 'Depot', icon: <Wallet className="size-4" /> },
           { value: 'rechner', label: 'Rechner', icon: <Calculator className="size-4" /> },
         ]}
@@ -691,7 +713,8 @@ export function MarketsView() {
           </Link>
         )}
         {tab === 'watch' && <WatchlistView />}
-        {tab === 'depot' && <PortfolioView kind="real" />}
+        {tab === 'maerkte' && <MarketBrowser />}
+        {tab === 'depot' && <PortfolioView kind="real" buy={buy} />}
         {tab === 'rechner' && <SavingsCalculator />}
       </div>
     </div>

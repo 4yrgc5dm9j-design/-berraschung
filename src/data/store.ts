@@ -117,11 +117,14 @@ export const useApp = create<AppState>()(
     }),
     {
       name: 'dailybase-v1',
-      version: 2,
-      // v2: neues, helles Design – wer „System“ eingestellt hatte, startet einmalig in Hell
+      version: 3,
       migrate: (persisted, version) => {
         const p = persisted as Partial<AppState>
+        // v2: neues, helles Design – wer „System“ eingestellt hatte, startet einmalig in Hell
         if (version < 2 && p?.settings?.theme === 'system') p.settings = { ...p.settings, theme: 'light' }
+        // v3: Spieldepot startet mit 100.000 € statt 10.000 €
+        if (version < 3 && p?.data?.portfolios)
+          p.data = { ...p.data, portfolios: p.data.portfolios.map((x) => (x.kind === 'virtual' && x.startCash === 10000 ? { ...x, startCash: 100000 } : x)) }
         return p as AppState
       },
       storage: createJSONStorage(() => idbStorage),

@@ -63,6 +63,8 @@ export interface Quote {
   /** Kurs in Euro (umgerechnet mit EZB-Referenzkurs), falls möglich */
   priceEur?: number | null
   at: string
+  /** live (Finnhub) oder verzögert (Stooq) */
+  delayed?: boolean
 }
 
 export interface QuotesResponse {
@@ -101,9 +103,39 @@ export const fetchNews = async (topics: string[]): Promise<NewsResponse> => {
 const noQuotes = () => Promise.reject(new ApiError('Keine Kursquelle eingerichtet – Kurse pflegst du manuell.', 'not_configured'))
 const userKey = () => useApp.getState().settings.finnhubKey.trim()
 
-/** Eigener Schlüssel im Profil → direkt aus dem Browser; sonst eigener Server (falls vorhanden). */
-export const fetchQuotes = (symbols: string[]): Promise<QuotesResponse> =>
-  userKey() ? fetchQuotesDirect(symbols, userKey()) : STATIC_HOSTING ? noQuotes() : api<QuotesResponse>(`quotes?symbols=${encodeURIComponent(symbols.join(','))}`, 15000)
+/**
+ * Kurse zusammenführen:
+ * 1) Web-Version: verzögerte Kurse aller bekannten Werte (Stooq, von der GitHub Action geladen)
+ * 2) mit eigenem Finnhub-Schlüssel: Live-Kurse für US-Werte darüber legen
+ * 3) lokaler Server mit Schlüssel als Alternative
+ */
+export async function fetchQuotes(symbols: string[]): Promise<QuotesResponse> {
+  const key = userKey()
+  const [base, live] = await Promise.all([
+    STATIC_HOSTING ? staticData<QuotesResponse>('quotes.json', 15000).catch(() => null) : Promise.resolve(null),
+    key ? fetchQuotesDirect(symbols.filter((s) => !s.includes('.')), key).catch((e) => e as Error) : Promise.resolve(null),
+  ])
+  if (!base && !live && !STATIC_HOSTING) return api<QuotesResponse>(`quotes?symbols=${encodeURIComponent(symbols.join(','))}`, 15000)
+  if (!base && (!live || live instanceof Error)) {
+    if (live instanceof Error) throw live
+    return noQuotes()
+  }
+  const quotes: Record<string, Quote> = {}
+  for (const sym of symbols) {
+    const b = base?.quotes[sym.toUpperCase()]
+    if (b) quotes[sym] = { ...b, delayed: true }
+  }
+  const liveOk = live && !(live instanceof Error) ? live : null
+  if (liveOk) for (const [sym, q] of Object.entries(liveOk.quotes)) quotes[sym] = { ...q, delayed: false }
+  const errors = symbols.filter((s) => !quotes[s]).map((s) => `${s}: kein Kurs verfügbar`)
+  return {
+    source: liveOk ? (base ? 'Finnhub (live) + Stooq (verzögert)' : 'Finnhub (live)') : 'Stooq (verzögert)',
+    quotes,
+    errors,
+    fetchedAt: base?.fetchedAt ?? liveOk?.fetchedAt ?? new Date().toISOString(),
+    fxDate: base?.fxDate ?? liveOk?.fxDate ?? null,
+  }
+}
 export const searchSymbols = (q: string): Promise<{ results: SymbolHit[] }> =>
   userKey() ? searchSymbolsDirect(q, userKey()) : STATIC_HOSTING ? noQuotes() : api<{ results: SymbolHit[] }>(`symbols?q=${encodeURIComponent(q)}`)
 export const fetchPreview = (url: string): Promise<PreviewResponse> =>

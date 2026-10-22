@@ -235,7 +235,8 @@ export function Modal({
     document.body.style.overflow = 'hidden'
     const t = setTimeout(() => {
       const el = ref.current?.querySelector<HTMLElement>('[data-autofocus], input, textarea, select')
-      // Auf Touch-Geräten nicht automatisch die Tastatur öffnen
+      // Nicht wegspringen, wenn schon ein Feld im Fenster aktiv ist; auf Touch-Geräten keine Tastatur erzwingen
+      if (ref.current?.contains(document.activeElement)) return
       if (el && !matchMedia('(pointer: coarse)').matches) el.focus()
     }, 60)
     return () => {

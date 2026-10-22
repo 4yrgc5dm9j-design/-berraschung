@@ -1,17 +1,23 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { RotateCcw, Search, TrendingDown, TrendingUp, Zap } from 'lucide-react'
-import { Button, ConfirmDialog, Segmented } from '@/components/ui'
-import { actions, useData, useSettings } from '@/data/store'
+import { Button, Chip, ConfirmDialog, Segmented } from '@/components/ui'
+import { useSearchParams } from 'react-router-dom'
+import { instrument } from '@/data/instruments'
+import { InstrumentPicker } from '@/features/discover/instruments-ui'
+import { DepotAnalysis } from '@/features/discover/DepotAnalysis'
+import { actions, useData } from '@/data/store'
 import { toast } from '@/data/toasts'
 import { cn, fmtEur, fmtNum, fmtPct, parseNum } from '@/lib/utils'
 import { fmtDate, timeAgo, todayKey } from '@/lib/dates'
 import { useQuotes } from '@/services/hooks'
-import { searchSymbols, type Quote, type SymbolHit } from '@/services/server'
-import { POPULAR } from '@/features/discover/markets'
+import { type Quote } from '@/services/server'
 import { summarize } from '@/features/discover/portfolio'
 
 const FEE = 1 // € pro Order im Spiel
+const START_OPTIONS = [10_000, 50_000, 100_000, 1_000_000]
+/** Werte im Laufband: DAX-Schwergewichte, US-Tech, beliebte ETFs */
+const TAPE = ['SAP.DE', 'SIE.DE', 'ALV.DE', 'DTE.DE', 'RHM.DE', 'MBG.DE', 'AAPL', 'MSFT', 'NVDA', 'AMZN', 'GOOGL', 'TSLA', 'EUNL.DE', 'VWCE.DE', 'SXR8.DE']
 
 /** Live-Preis in Euro, sonst null */
 const eurPrice = (q?: Quote) => (q ? (q.priceEur ?? (q.currency === 'EUR' ? q.price : null)) : null)
@@ -29,31 +35,39 @@ function Panel({ title, children, className, action }: { title: string; children
 }
 
 export function TradingTerminal() {
-  const { finnhubKey } = useSettings()
   const portfolios = useData('portfolios')
   const allTx = useData('transactions')
   const prices = useData('prices')
   const portfolio = portfolios.find((p) => p.kind === 'virtual')
 
   useEffect(() => {
-    if (!portfolio && !actions().data.portfolios.some((p) => p.kind === 'virtual')) actions().add('portfolios', { name: 'Spieldepot', kind: 'virtual', startCash: 10000 })
+    if (!portfolio && !actions().data.portfolios.some((p) => p.kind === 'virtual')) actions().add('portfolios', { name: 'Spieldepot', kind: 'virtual', startCash: 100_000 })
   }, [portfolio])
+  const [params, setParams] = useSearchParams()
+  const [picker, setPicker] = useState(false)
+  const [startCash, setStartCash] = useState(100_000)
 
   const txs = useMemo(() => allTx.filter((t) => t.portfolioId === portfolio?.id), [allTx, portfolio?.id])
   const held = useMemo(() => [...new Set(txs.map((t) => t.symbol))], [txs])
-  const symbols = useMemo(() => [...new Set([...POPULAR.map((p) => p.symbol), ...held])], [held])
+  const [symbol, setSymbol] = useState(() => (params.get('wert') ?? 'SAP.DE').toUpperCase())
+  const [name, setName] = useState(() => instrument(params.get('wert') ?? 'SAP.DE')?.name ?? params.get('wert') ?? 'SAP')
+  useEffect(() => {
+    const w = params.get('wert')
+    if (w) {
+      setSymbol(w.toUpperCase())
+      setName(instrument(w)?.name ?? w)
+      setParams({}, { replace: true })
+    }
+  }, [params, setParams])
+  const symbols = useMemo(() => [...new Set([...TAPE, ...held, symbol])], [held, symbol])
   const q = useQuotes(symbols)
   const quotes = q.data?.quotes ?? null
-  const live = !!finnhubKey && !!quotes
+  const live = !!quotes && /Finnhub/.test(q.data?.source ?? '')
 
-  const [symbol, setSymbol] = useState('AAPL')
-  const [name, setName] = useState('Apple')
   const [side, setSide] = useState<'buy' | 'sell'>('buy')
   const [mode, setMode] = useState<'stueck' | 'betrag'>('betrag')
   const [amount, setAmount] = useState('1000')
   const [manualPrice, setManualPrice] = useState('')
-  const [search, setSearch] = useState('')
-  const [hits, setHits] = useState<SymbolHit[]>([])
   const [reset, setReset] = useState(false)
 
   if (!portfolio) return null
@@ -73,21 +87,8 @@ export function TradingTerminal() {
     setSymbol(sym.toUpperCase())
     setName(nm)
     setManualPrice('')
-    setHits([])
-    setSearch('')
   }
-
-  const doSearch = async () => {
-    if (!search.trim()) return
-    try {
-      const r = await searchSymbols(search.trim())
-      setHits(r.results.filter((h) => !h.symbol.includes('.')).slice(0, 8))
-      if (!r.results.length) toast('Nichts gefunden')
-    } catch {
-      // ohne Kursquelle: Eingabe direkt als Kürzel übernehmen
-      choose(search.trim(), search.trim().toUpperCase())
-    }
-  }
+  const selectedQuote = quotes?.[symbol]
 
   const execute = () => {
     if (!valid) return
@@ -95,9 +96,10 @@ export function TradingTerminal() {
     toast(`${side === 'buy' ? 'Gekauft' : 'Verkauft'}: ${fmtNum(qty)} × ${name} zu ${fmtEur(price)}`, 'success')
   }
 
-  const tape = POPULAR.map((p) => ({ ...p, q: quotes?.[p.symbol] }))
+  const tape = TAPE.map((id) => ({ symbol: id, name: instrument(id)?.name ?? id, q: quotes?.[id] }))
 
   return (
+    <div className="space-y-4">
     <div className="overflow-hidden rounded-[28px] bg-[#0a0f1c] text-white shadow-2xl ring-1 ring-white/10">
       {/* Kopfzeile */}
       <div className="flex flex-wrap items-end justify-between gap-4 border-b border-white/8 bg-gradient-to-r from-[#111a33] to-[#0a0f1c] px-5 py-4">
@@ -108,6 +110,8 @@ export function TradingTerminal() {
               <span className="inline-flex items-center gap-1 text-emerald-400">
                 <span className="size-1.5 animate-pulse rounded-full bg-emerald-400" /> Live
               </span>
+            ) : quotes ? (
+              <span className="text-amber-300">Kurse verzögert</span>
             ) : (
               <span className="text-amber-300">Manuelle Kurse</span>
             )}
@@ -134,7 +138,7 @@ export function TradingTerminal() {
         <div className="flex w-max animate-ticker gap-8 whitespace-nowrap px-4 font-mono text-xs">
           {[...tape, ...tape].map((t, i) => (
             <button key={i} onClick={() => choose(t.symbol, t.name)} className="inline-flex items-center gap-2 hover:text-sky-300">
-              <span className="font-bold text-white/80">{t.symbol}</span>
+              <span className="font-bold text-white/80">{t.symbol.replace('.DE', '')}</span>
               {t.q ? (
                 <>
                   <span className="tabular">{t.q.price.toFixed(2)}</span>
@@ -148,10 +152,10 @@ export function TradingTerminal() {
         </div>
       </div>
 
-      {!finnhubKey && (
+      {!quotes && !q.loading && (
         <div className="flex flex-wrap items-center gap-3 border-b border-white/8 bg-amber-400/10 px-5 py-2.5 text-sm text-amber-100">
           <Zap className="size-4 shrink-0" />
-          <span className="flex-1">Ohne Live-Kurse trägst du den Preis selbst ein. Mit kostenlosem Finnhub-Schlüssel handelst du zu echten Kursen.</span>
+          <span className="flex-1">Gerade keine Kurse verfügbar – du kannst den Preis selbst eintragen.</span>
           <Link to="/profil#kurse" className="rounded-lg bg-amber-300 px-3 py-1.5 font-semibold text-black">
             Live-Kurse einschalten
           </Link>
@@ -161,28 +165,9 @@ export function TradingTerminal() {
       <div className="grid gap-3 p-3 sm:p-4 lg:grid-cols-[360px_1fr]">
         {/* Order-Maske */}
         <Panel title="Order">
-          <form
-            className="flex gap-2"
-            onSubmit={(e) => {
-              e.preventDefault()
-              doSearch()
-            }}
-          >
-            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Wert suchen oder Kürzel" className="min-h-10 flex-1 rounded-xl border border-white/10 bg-white/5 px-3 text-sm outline-none placeholder:text-white/30 focus:border-sky-400" aria-label="Wert suchen" />
-            <button type="submit" aria-label="Suchen" className="grid size-10 place-items-center rounded-xl bg-white/10 hover:bg-white/15">
-              <Search className="size-4" />
-            </button>
-          </form>
-          {hits.length > 0 && (
-            <div className="mt-2 max-h-40 overflow-y-auto rounded-xl border border-white/10">
-              {hits.map((h) => (
-                <button key={h.symbol} onClick={() => choose(h.symbol, h.name)} className="flex w-full justify-between gap-2 px-3 py-2 text-left text-sm hover:bg-white/5">
-                  <span className="truncate">{h.name}</span>
-                  <span className="font-mono font-bold">{h.symbol}</span>
-                </button>
-              ))}
-            </div>
-          )}
+          <button onClick={() => setPicker(true)} className="flex min-h-11 w-full items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 text-left text-sm text-white/60 hover:border-sky-400">
+            <Search className="size-4" /> Aus über 200 Aktien & ETFs wählen …
+          </button>
           <div className="mt-3 rounded-xl bg-white/5 p-3">
             <p className="text-sm text-white/60">{name}</p>
             <div className="flex items-baseline justify-between">
@@ -200,6 +185,13 @@ export function TradingTerminal() {
                 />
               )}
             </div>
+            {selectedQuote && livePrice != null && (
+              <p className="mt-1 text-xs text-white/50">
+                {selectedQuote.delayed === false ? 'Live-Kurs' : 'Verzögerter Kurs'}
+                {selectedQuote.currency !== 'EUR' && ` · ${selectedQuote.price.toFixed(2)} ${selectedQuote.currency}`}
+                {selectedQuote.changePct != null && ` · heute ${fmtPct(selectedQuote.changePct)}`}
+              </p>
+            )}
             {pos && <p className="mt-1 text-xs text-white/50">Im Bestand: {fmtNum(pos.qty)} Stück</p>}
           </div>
           <div className="mt-3 grid grid-cols-2 gap-2">
@@ -296,20 +288,37 @@ export function TradingTerminal() {
             )}
           </Panel>
           <div className="flex flex-wrap gap-2">
-            <Button variant="ghost" className="text-white/60 hover:bg-white/10 hover:text-white" icon={<RotateCcw className="size-4" />} onClick={() => setReset(true)} disabled={!txs.length}>
-              Spieldepot zurücksetzen
+            <Button variant="ghost" className="text-white/60 hover:bg-white/10 hover:text-white" icon={<RotateCcw className="size-4" />} onClick={() => { setStartCash(portfolio.startCash); setReset(true) }}>
+              Neu starten / Startkapital ändern
             </Button>
           </div>
         </div>
       </div>
       <ConfirmDialog
         open={reset}
-        title="Spieldepot zurücksetzen?"
-        message={`Alle Spiel-Orders werden gelöscht, du startest wieder mit ${fmtEur(portfolio.startCash, true)}.`}
-        confirmLabel="Zurücksetzen"
-        onConfirm={() => actions().removeMany('transactions', txs.map((t) => t.id), 'Spieldepot zurückgesetzt')}
+        title="Spieldepot neu starten?"
+        message={
+          <div className="space-y-3">
+            <p>Alle Spiel-Orders werden gelöscht. Mit wie viel Spielgeld möchtest du starten?</p>
+            <div className="flex flex-wrap gap-2">
+              {START_OPTIONS.map((v) => (
+                <Chip key={v} active={startCash === v} onClick={() => setStartCash(v)}>
+                  {fmtEur(v, true)}
+                </Chip>
+              ))}
+            </div>
+          </div>
+        }
+        confirmLabel="Neu starten"
+        onConfirm={() => {
+          actions().removeMany('transactions', txs.map((t) => t.id), 'Spieldepot neu gestartet')
+          actions().update('portfolios', portfolio.id, { startCash })
+        }}
         onClose={() => setReset(false)}
       />
+      <InstrumentPicker open={picker} onClose={() => setPicker(false)} onPick={(i) => choose(i.id, i.name)} title="Wert für die Order" />
+    </div>
+    <DepotAnalysis portfolio={portfolio} transactions={allTx} prices={prices} quotes={quotes} />
     </div>
   )
 }

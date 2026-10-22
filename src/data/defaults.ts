@@ -116,7 +116,7 @@ export function seedData(): DataState {
     goals: [],
     portfolios: [
       { ...base(), name: 'Mein Depot', kind: 'real', startCash: 0 },
-      { ...base(), name: 'Spieldepot', kind: 'virtual', startCash: 10000 },
+      { ...base(), name: 'Spieldepot', kind: 'virtual', startCash: 100000 },
     ],
     transactions: [],
     watchlist: [],

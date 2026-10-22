@@ -45,6 +45,36 @@ test('Web-Version im Unterordner', async ({ page }) => {
   await expect(page.getByText(/alle 30 Minuten automatisch abgerufen \(zuletzt vor 12 Min/)).toBeVisible()
   })
 
+  test('Börse mit verzögerten Kursen, Märkten, Depot-Analyse und 100.000 € Spielgeld', async ({ page }) => {
+    const base = process.env.PAGES_URL!
+    await mockExternal(page)
+    const now = Date.now()
+    const days = Array.from({ length: 120 }, (_, i) => new Date(now - (119 - i) * 86400e3).toISOString().slice(0, 10))
+    const mk = (start: number, drift: number) => days.map((d, i) => [d, Math.round((start * (1 + drift * i) + Math.sin(i) * 2) * 100) / 100])
+    const series = { 'SAP.DE': mk(200, 0.001), 'EUNL.DE': mk(100, 0.0008), AAPL: mk(200, 0.0015) }
+    await page.route('**/data/history.json*', (r) => r.fulfill({ json: { fetchedAt: new Date().toISOString(), series } }))
+    const q = (id: string, price: number, cur: string, eur: number, ch: number) => ({ symbol: id, price, currency: cur, priceEur: eur, change: price * ch, changePct: ch, at: new Date().toISOString() })
+    await page.route('**/data/quotes.json*', (r) =>
+      r.fulfill({ json: { source: 'Stooq (verzögert)', fetchedAt: new Date().toISOString(), fxDate: '2026-10-21', errors: [], quotes: { 'SAP.DE': q('SAP.DE', 250, 'EUR', 250, 0.012), 'EUNL.DE': q('EUNL.DE', 110, 'EUR', 110, -0.003), AAPL: q('AAPL', 240, 'USD', 200, 0.02) } } }),
+    )
+    // Märkte
+    await page.goto(base + 'entdecken/boerse')
+    await page.getByRole('tab', { name: /Märkte/ }).click()
+    await expect(page.getByText('verzögert', { exact: true })).toBeVisible()
+    await page.getByRole('button', { name: /SAP SAP/ }).click()
+    await expect(page.getByRole('dialog').getByText(/Entwicklung 6M/)).toBeVisible()
+    await page.getByRole('dialog').getByRole('button', { name: 'Im Börsenspiel handeln' }).click()
+    // Börsenspiel mit 100.000 € und SAP vorausgewählt
+    await expect(page.getByText(/seit Start \(100\.000\s€\)/)).toBeVisible()
+    await expect(page.getByText('Verzögerter Kurs', { exact: false })).toBeVisible()
+    await page.getByLabel('Betrag in Euro').fill('25000')
+    await page.getByRole('button', { name: 'Kauforder ausführen' }).click()
+    await expect(page.getByText(/Gekauft: 99,99/)).toBeVisible()
+    await expect(page.getByText('Depot-Analyse')).toBeVisible()
+    await expect(page.getByText('Schwankung p. a.')).toBeVisible()
+    await expect(page.getByText(/MSCI World \(EUNL\), 12 Monate/)).toBeVisible()
+  })
+
   test('Fußballmanager mit echten Kadern', async ({ page }) => {
     const base = process.env.PAGES_URL!
     await mockExternal(page)

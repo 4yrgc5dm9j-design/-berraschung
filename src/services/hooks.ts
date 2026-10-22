@@ -19,7 +19,8 @@ export function useQuotes(symbols: string[]) {
   const list = useMemo(() => [...new Set(symbols.map((s) => s.toUpperCase()))].sort(), [symbols])
   const key = useSettings().finnhubKey.trim()
   // Schlüssel-Ende im Cache-Schlüssel: nach Eingabe eines neuen Schlüssels sofort neu laden
-  return useRemote(list.length ? `quotes:${key.slice(-4)}:${list.join(',')}` : null, () => fetchQuotes(list), 55 * 1000, key ? 60 * 1000 : 0)
+  // mit Schlüssel jede Minute (live), sonst alle 5 Minuten die verzögerten Kurse neu lesen
+  return useRemote(list.length ? `quotes:${key.slice(-4)}:${list.join(',')}` : null, () => fetchQuotes(list), 55 * 1000, key ? 60 * 1000 : 5 * 60 * 1000)
 }
 
 export function useWeather() {

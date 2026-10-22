@@ -7,7 +7,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { FEEDS, parseFeed } from '../server/feeds.mjs'
 import { buildSquads, norm, RAW_VERSION, wikidataRaw } from './squads.mjs'
-import { buildQuotes, fetchFx, fetchHistory, fetchQuotes, instruments } from './market-data.mjs'
+import { buildQuotes, fetchFx, fetchHistory, fetchQuotes, instruments, probe } from './market-data.mjs'
 
 const OUT = process.argv[2] || 'dist/data'
 const UA = 'Dailybase/0.1 (persoenliche Alltags-App; Feed-Reader)'
@@ -129,6 +129,9 @@ try {
 
 // ---------------------------------------------------------------- Börse (Stooq, ohne Schlüssel)
 try {
+  const test = await probe()
+  console.log('Stooq-Probe:', JSON.stringify(test))
+  if (!test.ok) throw new Error(`Stooq antwortet nicht mit Kursen: ${test.sample}`)
   const siteBase = process.env.SQUADS_CACHE_URL ? process.env.SQUADS_CACHE_URL.replace('squads-raw.json', '') : null
   // Tagesverlauf höchstens alle 12 Stunden neu laden, sonst von der Webseite übernehmen
   let history = null

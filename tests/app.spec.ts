@@ -139,9 +139,8 @@ test('Entdecken: News, Sport, Börse mit Depot und Rechner', async ({ page }, in
 
 test('Live-Kurse: Schlüssel eintragen, Watchlist live mit Euro-Umrechnung', async ({ page }, info) => {
   await page.goto('/entdecken/boerse')
-  await expect(page.getByText(/Live-Kurse einschalten/)).toHaveCount(0) // leere Watchlist zeigt Vorschläge
-  await page.getByRole('button', { name: /Apple/ }).click()
-  await expect(page.getByText(/Live-Kurse einschalten/)).toBeVisible()
+  await page.getByRole('button', { name: /Apple/ }).click() // leere Watchlist zeigt Vorschläge
+  await expect(page.getByText(/Kurse nicht verfügbar/)).toBeVisible()
   await page.getByRole('link', { name: 'Einrichten' }).click()
   await page.getByLabel('Finnhub-API-Schlüssel').fill('falsch')
   await page.getByRole('button', { name: 'Verbinden' }).click()
@@ -205,7 +204,10 @@ test('Spielen: Börsenspiel, Assistent, Karriere und Fußballmanager', async ({ 
 
   await page.getByRole('link', { name: 'Spielen' }).first().click()
   await expect(page).toHaveURL(/\/spielen\/boerse/)
-  // AAPL kostet im Test 250 $ = 200 € → 1.000 € ergeben 4,995 Stück
+  // Apple aus der Liste wählen; kostet im Test 250 $ = 200 € → 1.000 € ergeben 4,99 Stück
+  await page.getByRole('button', { name: /Aus über 200 Aktien/ }).click()
+  await page.getByLabel('Wert suchen').fill('Apple')
+  await page.getByRole('dialog').getByRole('button', { name: /^AAPL Apple/ }).click()
   await page.getByLabel('Betrag in Euro').fill('1000')
   await page.getByRole('button', { name: 'Kauforder ausführen' }).click()
   await expect(page.getByText(/Gekauft: 4,99/)).toBeVisible()
@@ -215,6 +217,7 @@ test('Spielen: Börsenspiel, Assistent, Karriere und Fußballmanager', async ({ 
   await page.getByRole('link', { name: /Börsen-Assistent/ }).click()
   await page.getByRole('button', { name: 'Prüfe mein Spieldepot' }).click()
   await expect(page.getByText(/1 Position\(en\)/)).toBeVisible()
+  // (Depot-Analyse unter dem Terminal wird im Web-Versionstest geprüft)
   await expect(page.getByText(/⚠️ Klumpenrisiko/)).toBeVisible()
   await page.getByLabel('Frage an den Assistenten').fill('Was ist eine Dividende?')
   await page.keyboard.press('Enter')
