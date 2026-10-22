@@ -5,7 +5,7 @@ export const norm = (x) => x.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCas
 const WD_UA = { 'User-Agent': 'Dailybase/0.1 (https://github.com/4yrgc5dm9j-design/-berraschung; persoenliche App)', Accept: 'application/json' }
 
 /** Bei Änderungen an der Abfrage erhöhen, damit alte Zwischenstände verworfen werden */
-export const RAW_VERSION = 6
+export const RAW_VERSION = 7
 
 export async function wikidataRaw(clubs) {
   // 1) Vereine in Wikidata finden: alle Suchtreffer sammeln, dann den Eintrag
@@ -69,7 +69,15 @@ export async function wikidataRaw(clubs) {
     for (const b of await sparql(q)) latest.set(b.player.value.split('/').pop(), b.latest.value)
   }
   for (const r of rows) r.latest = latest.get(r.player) ?? null
-  return { version: RAW_VERSION, fetchedAt: new Date().toISOString(), clubs: found, rows, ended }
+  // Geburtsjahre der gepflegten Spieler (für das Alter im Spiel)
+  const curatedNames = [...new Set(Object.values(RATINGS).flat().map(([n]) => n))]
+  const birth = {}
+  for (let i = 0; i < curatedNames.length; i += 120) {
+    const vals = curatedNames.slice(i, i + 120).map((n) => `"${n.replace(/"/g, '')}"@de`).join(' ')
+    const q = `SELECT ?name (MIN(?dob) AS ?born) WHERE { VALUES ?name { ${vals} } ?p rdfs:label ?name ; wdt:P106 wd:Q937857 ; wdt:P569 ?dob . } GROUP BY ?name`
+    for (const b of await sparql(q)) birth[norm(b.name.value)] = Number(b.born.value.slice(0, 4))
+  }
+  return { version: RAW_VERSION, fetchedAt: new Date().toISOString(), clubs: found, rows, ended, birth }
 }
 
 export function mapPos(label) {
@@ -100,12 +108,15 @@ export function buildSquads(raw, clubs, goalsByName) {
   return clubs.map((club) => {
     const wd = raw.clubs.find((c) => c.name === club.name)
     const curated = new Map(ratingsFor(club.name).map(([n, pos, r]) => [norm(n), { name: n, pos, r }]))
+    // Spieler, die in der gepflegten Liste einem anderen Verein gehören
+    const otherClubs = new Set(Object.entries(RATINGS).filter(([, list]) => list !== ratingsFor(club.name)).flatMap(([, list]) => list.map(([n]) => norm(n))))
     const players = new Map()
     for (const row of raw.rows.filter((x) => wd && x.club === wd.qid)) {
       if (!row.name || /^Q\d+$/.test(row.name)) continue
       const born = row.dob ? Number(row.dob.slice(0, 4)) : null
       if (born && (born < year - 38 || born > year - 16)) continue
       const known = curated.has(norm(row.name))
+      if (!known && otherClubs.has(norm(row.name))) continue
       // Nur wenn dieser Verein die jüngste Station ist; gepflegte Spieler auch ohne Startdatum
       if (row.start && row.latest && row.start < row.latest) continue
       if (!known && (!row.start || Number(row.start.slice(0, 4)) < year - 8)) continue
@@ -122,7 +133,8 @@ export function buildSquads(raw, clubs, goalsByName) {
     const list = [...players.values()].map((p) => {
       const known = curated.get(norm(p.name))
       const pos = known?.pos ?? (p.positions.includes('TW') ? 'TW' : p.positions[0] ?? 'MF')
-      return { name: p.name, pos, age: p.born ? year - p.born : 26, goals: goalsByName.get(norm(p.name)) ?? 0, rating: known?.r ?? null, start: p.start }
+      const born = p.born ?? raw.birth?.[norm(p.name)] ?? null
+      return { name: p.name, pos, age: born ? year - born : 26, goals: goalsByName.get(norm(p.name)) ?? 0, rating: known?.r ?? null, start: p.start }
     })
     // Schätzungen: etwas unter dem Niveau der bekannten Stammspieler, sonst nach Tabellenstand
     const knownVals = list.filter((p) => p.rating).map((p) => p.rating).sort((a, b) => b - a)
