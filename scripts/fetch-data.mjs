@@ -131,7 +131,8 @@ try {
 try {
   const test = await probe()
   console.log('Stooq-Probe:', JSON.stringify(test))
-  if (!test.ok) throw new Error(`Stooq antwortet nicht mit Kursen: ${test.sample}`)
+  status.marketProbe = test
+  if (!test.ok) throw new Error('Stooq liefert keine Kurse (Details in marketProbe)')
   const siteBase = process.env.SQUADS_CACHE_URL ? process.env.SQUADS_CACHE_URL.replace('squads-raw.json', '') : null
   // Tagesverlauf höchstens alle 12 Stunden neu laden, sonst von der Webseite übernehmen
   let history = null

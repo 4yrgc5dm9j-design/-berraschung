@@ -11,7 +11,8 @@ async function text(url) {
   const ctrl = new AbortController()
   const t = setTimeout(() => ctrl.abort(), 10000)
   try {
-    const r = await fetch(url, { signal: ctrl.signal, headers: { 'User-Agent': UA } })
+    const v = active
+    const r = await fetch(url.replace('https://stooq.com', v.host), { signal: ctrl.signal, headers: { 'User-Agent': v.ua } })
     if (!r.ok) throw new Error(`HTTP ${r.status}`)
     return await r.text()
   } finally {
@@ -58,15 +59,35 @@ export async function fetchQuotes(list) {
   return result
 }
 
-/** Kurze Probeabfrage: Antwortet Stooq überhaupt mit Kursdaten? */
+/** Probeabfragen: Welche Stooq-Adresse liefert Kursdaten? (Ergebnis landet in status.json) */
+const BROWSER_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15'
+export const VARIANTS = [
+  { host: 'https://stooq.com', ua: UA },
+  { host: 'https://stooq.pl', ua: UA },
+  { host: 'https://stooq.com', ua: BROWSER_UA },
+  { host: 'https://stooq.pl', ua: BROWSER_UA },
+]
+export let active = VARIANTS[0]
+
 export async function probe() {
-  try {
-    const body = await text('https://stooq.com/q/l/?s=aapl.us&f=sd2t2ohlcv&h&e=csv')
-    const [row] = parseCsv(body)
-    return { ok: !!num(row?.close), sample: body.slice(0, 160) }
-  } catch (e) {
-    return { ok: false, sample: String(e.message || e) }
+  const results = []
+  for (const v of VARIANTS) {
+    for (const path of ['/q/l/?s=aapl.us&f=sd2t2ohlcv&h&e=csv', '/q/d/l/?s=aapl.us&i=d']) {
+      try {
+        const r = await fetch(v.host + path, { headers: { 'User-Agent': v.ua }, redirect: 'follow' })
+        const body = await r.text()
+        const ok = r.ok && /close/i.test(body.split('\n')[0]) && body.split('\n').length > 1
+        results.push({ url: v.host + path, browserUa: v.ua !== UA, status: r.status, ok, sample: body.slice(0, 120) })
+        if (ok && path.startsWith('/q/l/')) {
+          active = v
+          return { ok: true, variant: v.host + (v.ua === UA ? '' : ' (Browser-Kennung)'), results }
+        }
+      } catch (e) {
+        results.push({ url: v.host + path, status: 0, ok: false, sample: String(e.message || e) })
+      }
+    }
   }
+  return { ok: false, results }
 }
 
 /** Ein Jahr Tagesschlusskurse (parallel, aber schonend, mit Zeitbudget) */
