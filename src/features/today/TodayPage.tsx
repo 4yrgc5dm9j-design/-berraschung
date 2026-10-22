@@ -123,6 +123,8 @@ function Customize({ open, view, onClose }: { open: boolean; view: ViewId; onClo
   )
 }
 
+// Widgets liegen in einem Raster: nebeneinander, pro Reihe oben bündig und gleich hoch;
+// was nicht mehr passt, rutscht in die nächste Reihe (keine Zeitungsspalten mit Lücken).
 export default function TodayPage() {
   const settings = useSettings()
   const name = useApp((s) => s.settings.name)
@@ -179,9 +181,9 @@ export default function TodayPage() {
           </Button>
         </div>
       ) : (
-        <div key={view} className="gap-4 md:columns-2 xl:columns-3">
+        <div key={view} className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {widgets.map((w, i) => (
-            <div key={w.id} className="mb-4 min-w-0 animate-rise break-inside-avoid" style={{ animationDelay: `${i * 40}ms` }}>
+            <div key={w.id} className="flex min-w-0 animate-rise flex-col [&>section]:flex-1" style={{ animationDelay: `${i * 40}ms` }}>
               {WIDGETS[w.id]({ view })}
             </div>
           ))}
