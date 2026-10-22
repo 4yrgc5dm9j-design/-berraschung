@@ -5,18 +5,18 @@ export const norm = (x) => x.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCas
 const WD_UA = { 'User-Agent': 'Dailybase/0.1 (https://github.com/4yrgc5dm9j-design/-berraschung; persoenliche App)', Accept: 'application/json' }
 
 /** Bei Änderungen an der Abfrage erhöhen, damit alte Zwischenstände verworfen werden */
-export const RAW_VERSION = 2
+export const RAW_VERSION = 3
 
 export async function wikidataRaw(clubs) {
   // 1) Vereine in Wikidata finden (Suche nach dem Namen aus OpenLigaDB)
   const found = []
   for (const c of clubs) {
-    const url = `https://www.wikidata.org/w/api.php?action=wbsearchentities&format=json&language=de&uselang=de&type=item&limit=7&search=${encodeURIComponent(c.name)}`
+    const url = `https://www.wikidata.org/w/api.php?action=wbsearchentities&format=json&language=de&uselang=de&type=item&limit=30&search=${encodeURIComponent(c.name)}`
     const r = await fetch(url, { headers: WD_UA })
     const j = await r.json()
     // Profivereine haben die älteren (niedrigeren) Wikidata-Nummern; Frauen-, Nachwuchs- und Zweitteams ausschließen
     const hits = (j.search || [])
-      .filter((x) => /fußball|fussball|football|soccer/i.test(x.description || '') && !/frauen|women|female|\bii\b|u\d\d|jugend|youth|reserve|esport/i.test(`${x.label} ${x.description}`))
+      .filter((x) => /fußball|fussball|football|soccer/i.test(x.description || '') && !/frauen|women|female|\bii\b|u\d\d|jugend|youth|reserve|esport|saison|season|\d{4}/i.test(`${x.label} ${x.description}`))
       .sort((a, b) => Number(a.id.slice(1)) - Number(b.id.slice(1)))
     if (hits[0]) found.push({ ...c, qid: hits[0].id })
   }
