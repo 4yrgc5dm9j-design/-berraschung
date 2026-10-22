@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useLayoutEffect } from 'react'
 import { Plus, Trash2, Pencil, Gamepad2, Wallet, Calculator, Eye, Zap } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Badge, Button, Card, Chip, ConfirmDialog, EmptyState, ErrorNote, Field, IconButton, Modal, Segmented, SectionTitle, SourceLine } from '@/components/ui'
@@ -112,7 +112,7 @@ export function PriceEditor({ symbol, name, open, onClose }: { symbol: string; n
   const prices = useData('prices')
   const current = prices.find((p) => p.id === symbol)
   const [v, setV] = useState('')
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (open) setV(current ? String(current.price).replace('.', ',') : '')
   }, [open, current])
   const n = parseNum(v)
@@ -158,7 +158,7 @@ function WatchEditor({ open, item, onClose }: { open: boolean; item: WatchItem |
   const [note, setNote] = useState('')
   const [hits, setHits] = useState<SymbolHit[]>([])
   const [searchErr, setSearchErr] = useState<string | null>(null)
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (open) {
       setSymbol(item?.symbol ?? '')
       setName(item?.name ?? '')
@@ -297,7 +297,7 @@ function TxEditor({ open, tx, portfolio, preset, onClose, cash }: { open: boolea
   const [qty, setQty] = useState('')
   const [price, setPrice] = useState('')
   const [fees, setFees] = useState('')
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!open) return
     const init = tx ?? { portfolioId: portfolio.id, symbol: '', name: '', type: 'buy' as const, date: todayKey(), qty: 0, price: 0, fees: portfolio.kind === 'virtual' ? 1 : 0, ...preset }
     setD(init)

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState, useLayoutEffect } from 'react'
 import { CalendarPlus, CheckSquare, Link2, NotebookPen, Wallet } from 'lucide-react'
 import { Modal } from '@/components/ui'
 import { TaskEditor } from '@/features/plan/tasks'
@@ -14,7 +14,7 @@ type Kind = 'task' | 'event' | 'note' | 'link' | 'expense'
 export function QuickAdd({ open, initialKind, onClose }: { open: boolean; initialKind?: string; onClose: () => void }) {
   const [kind, setKind] = useState<Kind | null>(null)
   const { modules } = useSettings()
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (open) setKind((initialKind as Kind) ?? null)
   }, [open, initialKind])
 

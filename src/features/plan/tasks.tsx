@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useLayoutEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Check, ChevronDown, Flag, Plus, Repeat, Trash2, Link2 } from 'lucide-react'
 import { Button, Chip, ConfirmDialog, EmptyState, Field, IconButton, Modal, Segmented } from '@/components/ui'
@@ -112,7 +112,7 @@ export function TaskEditor({ open, task, initial, onClose }: { open: boolean; ta
   const [d, setD] = useState<Draft>(emptyTask())
   const [confirm, setConfirm] = useState(false)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (open) setD(task ? { ...task } : { ...emptyTask(settings.taskCategories[0]), ...initial })
   }, [open, task?.id])
 

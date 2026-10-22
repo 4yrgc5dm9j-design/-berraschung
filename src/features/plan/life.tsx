@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState, useLayoutEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Check, Minus, Plus, Trash2, Pencil, Flame, Archive } from 'lucide-react'
 import { Button, Card, Chip, ConfirmDialog, EmptyState, Field, IconButton, Modal, ProgressBar, Segmented, SectionTitle } from '@/components/ui'
@@ -39,7 +39,7 @@ export function HabitsView() {
   const today = todayKey()
   const days = Array.from({ length: 7 }, (_, i) => addDays(today, i - 6))
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (open) {
       setName(edit?.name ?? '')
       setEmoji(edit?.emoji ?? '💧')
@@ -308,7 +308,7 @@ export function ExpenseEditor({ open, expense, onClose }: { open: boolean; expen
   const settings = useSettings()
   const [d, setD] = useState<ExpDraft>({ date: todayKey(), amount: 0, type: 'expense', category: settings.expenseCategories[0], note: '' })
   const [amount, setAmount] = useState('')
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (open) {
       const init = expense ?? { date: todayKey(), amount: 0, type: 'expense' as const, category: settings.expenseCategories[0], note: '' }
       setD(init)
@@ -524,7 +524,7 @@ function GoalEditor({ open, goal, onClose }: { open: boolean; goal: SavingsGoal 
   const [target, setTarget] = useState('')
   const [deadline, setDeadline] = useState('')
   const [confirm, setConfirm] = useState(false)
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (open) {
       setName(goal?.name ?? '')
       setEmoji(goal?.emoji ?? '🎯')

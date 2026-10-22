@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useLayoutEffect } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, ExternalLink, Heart, Pencil, Plus, Search, Shuffle, Star, Users, Check, Trash2 } from 'lucide-react'
 import { Badge, Button, Card, Chip, ConfirmDialog, EmptyState, Field, IconButton, Modal, PlannedBadge, Stars } from '@/components/ui'
@@ -92,7 +92,7 @@ export function CollectionEditor({ open, collection, onClose }: { open: boolean;
   const navigate = useNavigate()
   const count = useData('items').filter((i) => i.collectionId === collection?.id).length
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!open) return
     setName(collection?.name ?? '')
     setEmoji(collection?.emoji ?? '💡')

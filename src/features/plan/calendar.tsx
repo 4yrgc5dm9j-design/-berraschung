@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useLayoutEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { ChevronLeft, ChevronRight, MapPin, Plus, Repeat, Trash2 } from 'lucide-react'
 import { Button, ConfirmDialog, EmptyState, Field, IconButton, Modal } from '@/components/ui'
@@ -67,7 +67,7 @@ export function EventEditor({ open, event, date, onClose }: { open: boolean; eve
   const [d, setD] = useState<Draft>(emptyEvent())
   const [allDay, setAllDay] = useState(false)
   const [confirm, setConfirm] = useState(false)
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (open) {
       const init = event ? { ...event } : emptyEvent(date)
       setD(init)

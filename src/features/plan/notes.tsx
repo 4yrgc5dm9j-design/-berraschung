@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useLayoutEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { CheckSquare, Pin, PinOff, Plus, Search, Trash2 } from 'lucide-react'
 import { Button, Chip, ConfirmDialog, EmptyState, Field, IconButton, Modal } from '@/components/ui'
@@ -25,7 +25,7 @@ export function NoteEditor({ open, note, onClose }: { open: boolean; note?: Note
   const [d, setD] = useState<Draft>(emptyNote())
   const [tags, setTags] = useState('')
   const [confirm, setConfirm] = useState(false)
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (open) {
       setD(note ? { ...note } : emptyNote())
       setTags(note ? note.tags.join(', ') : '')

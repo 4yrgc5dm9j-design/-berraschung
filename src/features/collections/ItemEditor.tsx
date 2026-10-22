@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState, useLayoutEffect } from 'react'
 import { ClipboardPaste, ImagePlus, Loader2, Trash2, X, CheckSquare } from 'lucide-react'
 import { Button, ConfirmDialog, Field, Modal, Segmented, Stars } from '@/components/ui'
 import { SourceIcon } from '@/components/ui/LinkIcon'
@@ -66,7 +66,7 @@ export function ItemEditor({
   const fileRef = useRef<HTMLInputElement>(null)
   const lastFetched = useRef('')
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!open) return
     const init = item ? { ...item } : { ...emptyItem(collectionId ?? collections[0]?.id ?? ''), url: initialUrl ?? '' }
     setD(init)
