@@ -20,6 +20,17 @@ export interface Player {
   salary: number // € pro Spieltag
   goals: number
   games: number
+  /** Herkunft des Stärkewerts: an EA FC angelehnt, geschätzt oder fiktiver Spieler */
+  source?: 'ea' | 'schaetzung' | 'fiktiv'
+  /** bisheriger Verein (Transfermarkt) */
+  club?: string
+}
+
+/** Echter Kader aus data/squads.json */
+export interface RealClub {
+  name: string
+  short: string
+  players: { name: string; pos: Pos; age: number; goals: number; rating: number; source: 'ea' | 'schaetzung' }[]
 }
 
 export interface Club {
@@ -61,6 +72,9 @@ export interface ManagerState {
   log: { matchday: number; text: string }[]
   objective: { label: string; maxRank: number }
   history: { season: number; rank: number; points: number }[]
+  /** Spieler anderer Vereine für den Transfermarkt (nur mit echten Kadern) */
+  realPool?: Player[]
+  realSquads?: boolean
 }
 
 // ---------------------------------------------------------------- Zufall (reproduzierbar)
@@ -112,7 +126,49 @@ export function makePlayer(r: Rand, pos: Pos, base: number): Player {
     salary: Math.round((rating * rating * 11) / 1000) * 1000, // € pro Spieltag
     goals: 0,
     games: 0,
+    source: 'fiktiv',
   }
+}
+
+export function fromReal(r: Rand, rp: RealClub['players'][number], club: string): Player {
+  const potential = Math.min(95, rp.rating + (rp.age < 23 ? 2 + Math.round(r() * 6) : rp.age < 26 ? Math.round(r() * 2) : 0))
+  return {
+    id: id(r),
+    name: rp.name,
+    pos: rp.pos,
+    age: rp.age,
+    rating: rp.rating,
+    potential,
+    form: 0,
+    injuredDays: 0,
+    value: valueFor(rp.rating, rp.age),
+    salary: Math.round((rp.rating * rp.rating * 11) / 1000) * 1000,
+    goals: 0,
+    games: 0,
+    source: rp.source,
+    club,
+  }
+}
+
+/** Fehlende Positionen mit Nachwuchsspielern auffüllen, damit immer eine Elf möglich ist. */
+function fillSquad(r: Rand, squad: Player[], base: number) {
+  const min: Record<Pos, number> = { TW: 2, AB: 6, MF: 6, ST: 3 }
+  for (const pos of ['TW', 'AB', 'MF', 'ST'] as Pos[]) {
+    let have = squad.filter((p) => p.pos === pos).length
+    while (have < min[pos]) {
+      const p = makePlayer(r, pos, base - 6)
+      p.age = 18 + Math.floor(r() * 3)
+      p.name = `${p.name} (Nachwuchs)`
+      squad.push(p)
+      have++
+    }
+  }
+  return squad
+}
+
+const top11 = (ratings: number[]) => {
+  const t = [...ratings].sort((a, b) => b - a).slice(0, 11)
+  return t.reduce((a, b) => a + b, 0) / Math.max(1, t.length)
 }
 
 function makeSquad(r: Rand, base: number): Player[] {
@@ -151,8 +207,10 @@ export function bestLineup(squad: Player[], formation: Formation): string[] {
   return chosen.slice(0, 11).map((p) => p.id)
 }
 
-export function newGame(clubNames: { name: string; short: string }[], userIndex: number, seed = Date.now()): ManagerState {
+export function newGame(clubNames: { name: string; short: string }[], userIndex: number, seed = Date.now(), real?: RealClub[]): ManagerState {
   const r = rng(seed)
+  const realFor = (name: string) => real?.find((c) => c.name === name && c.players.length >= 11)
+  if (real && realFor(clubNames[userIndex].name)) return newRealGame(clubNames, userIndex, seed, real)
   const clubs: Club[] = clubNames.map((c, i) => ({
     id: `c${i}`,
     name: c.name,
@@ -184,6 +242,55 @@ export function newGame(clubNames: { name: string; short: string }[], userIndex:
     objective: objectiveFor(1),
     history: [],
   }
+}
+
+function newRealGame(clubNames: { name: string; short: string }[], userIndex: number, seed: number, real: RealClub[]): ManagerState {
+  const r = rng(seed)
+  const realFor = (name: string) => real.find((c) => c.name === name && c.players.length >= 11)
+  const clubs: Club[] = clubNames.map((c, i) => {
+    const rc = realFor(c.name)
+    return { id: `c${i}`, name: c.name, short: c.short, strength: rc ? Math.round(top11(rc.players.map((p) => p.rating))) : Math.round(64 + r() * 10), isUser: i === userIndex }
+  })
+  const user = clubs[userIndex]
+  const squad = fillSquad(r, realFor(user.name)!.players.map((p) => fromReal(r, p, user.name)), user.strength)
+  const realPool = clubs
+    .filter((c) => !c.isUser)
+    .flatMap((c) => (realFor(c.name)?.players ?? []).map((p) => fromReal(r, p, c.name)))
+  const formation: Formation = '4-4-2'
+  const state: ManagerState = {
+    version: 1,
+    seed,
+    season: 1,
+    clubId: user.id,
+    clubs,
+    squad,
+    lineup: bestLineup(squad, formation),
+    formation,
+    tactic: 'ausgewogen',
+    training: 'technik',
+    budget: 15_000_000,
+    matchday: 0,
+    schedule: roundRobin(clubs.map((c) => c.id)),
+    market: [],
+    log: [],
+    objective: objectiveFor(1),
+    history: [],
+    realPool,
+    realSquads: true,
+  }
+  state.market = marketFromPool(state, r)
+  state.log = [{ matchday: 0, text: `Willkommen als Trainer von ${user.name}! Echter Kader mit ${squad.length} Spielern. Saisonziel: ${state.objective.label}.` }]
+  return state
+}
+
+/** 8 Angebote aus dem Spielerpool, eher in Reichweite der eigenen Teamstärke */
+function marketFromPool(s: ManagerState, r: Rand): Player[] {
+  const own = new Set(s.squad.map((p) => p.name))
+  const userStrength = s.clubs.find((c) => c.isUser)!.strength
+  const pool = (s.realPool ?? []).filter((p) => !own.has(p.name) && p.rating <= userStrength + 10)
+  const picks: Player[] = []
+  while (picks.length < 8 && pool.length) picks.push(pool.splice(Math.floor(r() * pool.length), 1)[0])
+  return picks
 }
 
 function objectiveFor(season: number) {
@@ -367,7 +474,7 @@ export function playMatchday(state: ManagerState): { state: ManagerState; own: M
   // Transfermarkt alle 3 Spieltage erneuern
   if ((s.matchday + 1) % 3 === 0) {
     const base = s.clubs.find((c) => c.isUser)!.strength
-    s.market = Array.from({ length: 8 }, () => makePlayer(r, pick(r, ['TW', 'AB', 'AB', 'MF', 'MF', 'ST', 'ST'] as Pos[]), base + 3))
+    s.market = s.realPool?.length ? marketFromPool(s, r) : Array.from({ length: 8 }, () => makePlayer(r, pick(r, ['TW', 'AB', 'AB', 'MF', 'MF', 'ST', 'ST'] as Pos[]), base + 3))
   }
   s.matchday++
   s.log = s.log.slice(0, 60)
@@ -416,7 +523,8 @@ export function buyPlayer(state: ManagerState, playerId: string): ManagerState |
     budget: state.budget - p.value,
     squad: [...state.squad, p],
     market: state.market.filter((x) => x.id !== playerId),
-    log: [{ matchday: state.matchday, text: `✍️ ${p.name} (${POS_LABEL[p.pos]}, Stärke ${p.rating}) verpflichtet.` }, ...state.log],
+    realPool: state.realPool?.filter((x) => x.name !== p.name),
+    log: [{ matchday: state.matchday, text: `✍️ ${p.name}${p.club ? ` (von ${p.club})` : ''} verpflichtet – ${POS_LABEL[p.pos]}, Stärke ${p.rating}.` }, ...state.log],
   }
 }
 

@@ -44,6 +44,31 @@ test('Web-Version im Unterordner', async ({ page }) => {
   await page.goto(base + 'profil')
   await expect(page.getByText(/alle 30 Minuten automatisch abgerufen \(zuletzt vor 12 Min/)).toBeVisible()
   })
+
+  test('Fußballmanager mit echten Kadern', async ({ page }) => {
+    const base = process.env.PAGES_URL!
+    await mockExternal(page)
+    const names = ['FC Bayern München', 'Borussia Dortmund', 'Bayer 04 Leverkusen', 'RB Leipzig', 'VfB Stuttgart', 'Eintracht Frankfurt', 'SC Freiburg', 'VfL Wolfsburg', 'Borussia Mönchengladbach', 'Werder Bremen', '1. FSV Mainz 05', 'TSG Hoffenheim', 'FC Augsburg', '1. FC Union Berlin', '1. FC Heidenheim 1846', 'FC St. Pauli', '1. FC Köln', 'Hamburger SV']
+    const pos = ['TW', 'AB', 'AB', 'AB', 'MF', 'MF', 'MF', 'ST', 'ST', 'AB', 'MF', 'ST', 'TW', 'MF', 'AB', 'ST']
+    const clubs = names.map((name, i) => ({
+      name,
+      short: name === 'Hamburger SV' ? 'HSV' : `V${i}`,
+      players: [
+        ...(name === 'Hamburger SV' ? [{ name: 'Mario Vušković', pos: 'AB', age: 25, goals: 0, rating: 75, source: 'ea' }, { name: 'Jean-Luc Dompé', pos: 'ST', age: 30, goals: 3, rating: 75, source: 'ea' }] : []),
+        ...pos.map((p, k) => ({ name: `Spieler ${i}-${k}`, pos: p, age: 24, goals: 0, rating: 68 + (k % 5), source: 'schaetzung' })),
+      ],
+    }))
+    await page.route('**/data/squads.json*', (r) => r.fulfill({ json: { fetchedAt: new Date().toISOString(), season: 2026, clubs } }))
+    await page.goto(base + 'spielen/fussball')
+    await expect(page.getByText(/Echte Kader/)).toBeVisible()
+    await expect(page.getByRole('combobox')).toHaveValue('17') // Lieblingsverein HSV vorausgewählt
+    await page.getByRole('button', { name: 'Karriere starten' }).click()
+    await page.getByRole('button', { name: /Kader/ }).click()
+    await expect(page.getByText('Mario Vušković')).toBeVisible()
+    await expect(page.getByText('EA').first()).toBeVisible()
+    await page.getByRole('button', { name: /Transfers/ }).click()
+    await expect(page.getByText(/Spieler \d+-\d+/).first()).toBeVisible()
+  })
 })
 
 test('Web-Version: Manifest und Service Worker', async ({ page }) => {

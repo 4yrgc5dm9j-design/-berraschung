@@ -53,3 +53,38 @@ describe('Fußballmanager', () => {
     expect(bestLineup(g.squad, g.formation)).not.toContain(hurt.id)
   })
 })
+
+describe('Fußballmanager mit echten Kadern', () => {
+  const mk = (n: number, rating: number) =>
+    Array.from({ length: n }, (_, i) => ({ name: `Spieler ${rating}-${i}`, pos: (['TW', 'AB', 'AB', 'MF', 'MF', 'ST'] as const)[i % 6], age: 20 + (i % 12), goals: 0, rating, source: 'ea' as const }))
+  const real = clubs.map((c, i) => ({ ...c, players: mk(22, 70 + (i % 10)) }))
+  real[3].players.push({ name: 'Mario Vušković', pos: 'AB', age: 25, goals: 0, rating: 75, source: 'ea' })
+
+  it('übernimmt den echten Kader inklusive Mario Vušković', () => {
+    const g = newGame(clubs, 3, 5, real)
+    expect(g.realSquads).toBe(true)
+    expect(g.squad.some((p) => p.name === 'Mario Vušković' && p.rating === 75)).toBe(true)
+    expect(g.lineup).toHaveLength(11)
+    expect(g.market.every((p) => p.club && p.club !== clubs[3].name)).toBe(true)
+  })
+
+  it('Gegnerstärke folgt den Spielerwerten', () => {
+    const g = newGame(clubs, 3, 5, real)
+    expect(g.clubs[9].strength).toBe(79)
+    expect(g.clubs[0].strength).toBe(70)
+  })
+
+  it('gekaufte Spieler verschwinden aus dem Pool', () => {
+    const g = newGame(clubs, 3, 5, real)
+    const p = g.market[0]
+    const after = buyPlayer({ ...g, budget: 1e9 }, p.id)
+    expect(typeof after).toBe('object')
+    if (typeof after === 'object') expect(after.realPool!.some((x) => x.name === p.name)).toBe(false)
+  })
+
+  it('fällt ohne passende Kaderdaten auf fiktive Spieler zurück', () => {
+    const g = newGame(clubs, 3, 5, [])
+    expect(g.realSquads).toBeUndefined()
+    expect(g.squad.every((p) => p.source === 'fiktiv')).toBe(true)
+  })
+})

@@ -33,8 +33,10 @@ jobs:
       - run: npm run build:pages
         env:
           DAILYBASE_BASE: /${{ github.event.repository.name }}/
-      - name: News & Sportdaten abrufen
+      - name: News, Sportdaten & Kader abrufen
         run: node scripts/fetch-data.mjs dist/data
+        env:
+          SQUADS_CACHE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/data/squads-raw.json
       - name: In gh-pages veröffentlichen
         run: |
           cd dist

@@ -6,6 +6,7 @@
 // - status.json: Ergebnis jeder Quelle, damit Probleme in der App sichtbar sind
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { FEEDS, parseFeed } from '../server/feeds.mjs'
+import { buildSquads, norm, wikidataRaw } from './squads.mjs'
 
 const OUT = process.argv[2] || 'dist/data'
 const UA = 'Dailybase/0.1 (persoenliche Alltags-App; Feed-Reader)'
@@ -56,6 +57,7 @@ writeFileSync(`${OUT}/news.json`, JSON.stringify({ items: kept, fetchedAt: statu
 console.log(`News: ${kept.length} Artikel, ${errors.length} Quellen nicht erreichbar`)
 
 // ---------------------------------------------------------------- Sport
+const sportData = {}
 const d = new Date()
 const season = d.getMonth() >= 6 ? d.getFullYear() : d.getFullYear() - 1
 for (const league of ['bl1', 'bl2', 'bl3']) {
@@ -63,6 +65,7 @@ for (const league of ['bl1', 'bl2', 'bl3']) {
     const path = `${endpoint}/${league}/${season}`
     try {
       const json = await (await get(`https://api.openligadb.de/${path}`, 'application/json')).json()
+      sportData[path] = json
       writeFileSync(`${OUT}/sport/${path.replace(/\//g, '_')}.json`, JSON.stringify(json))
       status.sport.push({ path, ok: true })
     } catch (e) {
@@ -71,6 +74,46 @@ for (const league of ['bl1', 'bl2', 'bl3']) {
   }
 }
 console.log(`Sport: ${status.sport.filter((s) => s.ok).length}/${status.sport.length} Dateien`)
+
+// ---------------------------------------------------------------- Kader (Fußballmanager)
+// Echte Spielernamen aus Wikidata (aktuelle Vereinszugehörigkeit), Saisontore aus
+// OpenLigaDB, Stärken angelehnt an EA-FC-Ratings (scripts/player-ratings.mjs) oder geschätzt.
+try {
+  const teams = sportData[`getavailableteams/bl1/${season}`] || []
+  const tableRows = sportData[`getbltable/bl1/${season}`] || []
+  const clubs = teams.map((t) => {
+    const row = tableRows.find((r) => r.teamInfoId === t.teamId)
+    return { name: t.teamName, short: t.shortName || t.teamName.slice(0, 3).toUpperCase(), ppg: row && row.matches ? row.points / row.matches : 1.4 }
+  })
+  if (clubs.length < 10) throw new Error('keine Bundesliga-Vereine aus OpenLigaDB')
+  // Saisontore aus OpenLigaDB
+  const goalsByName = new Map()
+  for (const m of sportData[`getmatchdata/bl1/${season}`] || [])
+    for (const g of m.goals || []) if (g.goalGetterName && !g.isOwnGoal) goalsByName.set(norm(g.goalGetterName), (goalsByName.get(norm(g.goalGetterName)) || 0) + 1)
+  // Wikidata höchstens einmal am Tag abfragen: vorhandene Rohdaten der Webseite wiederverwenden
+  let raw = null
+  if (process.env.SQUADS_CACHE_URL) {
+    try {
+      const r = await fetch(process.env.SQUADS_CACHE_URL)
+      if (r.ok) {
+        const cached = await r.json()
+        if (Date.now() - new Date(cached.fetchedAt).getTime() < 24 * 3600e3 && cached.rows?.length) raw = cached
+      }
+    } catch {
+      /* kein Cache */
+    }
+  }
+  if (!raw) raw = await wikidataRaw(clubs)
+  writeFileSync(`${OUT}/squads-raw.json`, JSON.stringify(raw))
+  const squads = buildSquads(raw, clubs, goalsByName)
+  writeFileSync(`${OUT}/squads.json`, JSON.stringify({ fetchedAt: raw.fetchedAt, season, clubs: squads }))
+  const sizes = squads.map((c) => `${c.short}:${c.players.length}`).join(' ')
+  status.squads = { ok: true, clubs: squads.length, sizes }
+  console.log(`Kader: ${sizes}`)
+} catch (e) {
+  status.squads = { ok: false, error: String(e.message || e) }
+  console.log('Kader: Fehler', e.message)
+}
 
 // ---------------------------------------------------------------- CORS-Prüfung der Direktquellen
 for (const [name, url] of [

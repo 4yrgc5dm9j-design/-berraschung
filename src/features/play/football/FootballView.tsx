@@ -8,6 +8,8 @@ import { cn, fmtEur } from '@/lib/utils'
 import { normalize } from '@/lib/utils'
 import { useRemote } from '@/services/remote'
 import { fetchTeams } from '@/services/sport'
+import { staticData } from '@/services/server'
+import { timeAgo } from '@/lib/dates'
 import {
   FORMATIONS,
   POS_LABEL,
@@ -24,6 +26,7 @@ import {
   type ManagerState,
   type MatchResult,
   type Player,
+  type RealClub,
   type Pos,
   type Tactic,
   type TrainingFocus,
@@ -49,14 +52,29 @@ function PosBadge({ pos }: { pos: Pos }) {
   )
 }
 
+/** kleines Kennzeichen: an EA FC angelehnt oder geschätzt */
+function SourceMark({ p }: { p: Player }) {
+  if (p.source === 'ea') return <span title="Wert an EA-FC-Rating angelehnt (ungefähr)" className="mr-1 align-middle text-[9px] font-bold text-accent">EA</span>
+  if (p.source === 'schaetzung') return <span title="Wert geschätzt" className="mr-1 align-middle text-[10px] font-bold text-faint">≈</span>
+  return null
+}
+
 // ---------------------------------------------------------------- Start
+/** Echte Kader aus der Web-Version (data/squads.json, täglich von der GitHub Action erzeugt) */
+export function useSquads() {
+  return useRemote('squads', () => staticData<{ fetchedAt: string; clubs: RealClub[] }>('squads.json', 15000), 6 * 3600e3)
+}
+
 function NewGame({ onStart }: { onStart: (s: ManagerState) => void }) {
   const { clubs: favs } = useSettings()
   const teams = useRemote('teams:bl1', () => fetchTeams('bl1'), 24 * 3600e3)
+  const squads = useSquads()
+  const real = squads.data?.clubs.filter((c) => c.players.length >= 11) ?? []
   const list = useMemo(() => {
+    if (squads.data && squads.data.clubs.length === 18) return squads.data.clubs.map((c) => ({ name: c.name, short: c.short }))
     const t = teams.data ?? []
     return t.length === 18 ? t.map((x) => ({ name: x.teamName, short: x.shortName || x.teamName.slice(0, 3).toUpperCase() })) : FALLBACK_CLUBS
-  }, [teams.data])
+  }, [teams.data, squads.data])
   const fav = favs[0] ? list.findIndex((c) => normalize(c.name).includes(normalize(favs[0].name))) : -1
   const [choice, setChoice] = useState(-1)
   const sel = choice >= 0 ? choice : fav >= 0 ? fav : 0
@@ -77,8 +95,14 @@ function NewGame({ onStart }: { onStart: (s: ManagerState) => void }) {
             ))}
           </select>
         </Field>
-        <p className="mt-3 text-xs text-faint">Simulation: alle Spieler sind frei erfunden, Stärken und Ergebnisse werden ausgewürfelt. Die Vereinsnamen dienen nur als Kulisse.</p>
-        <Button variant="primary" size="lg" className="mt-4 w-full sm:w-auto" icon={<Play className="size-5" />} onClick={() => onStart(newGame(list, sel))}>
+        {real.length > 0 ? (
+          <p className="mt-3 rounded-xl bg-success/10 p-3 text-xs text-muted">
+            <b className="text-success">Echte Kader</b> von {real.length} Vereinen aus Wikidata (Stand {timeAgo(squads.data!.fetchedAt)}, kann Wechseln etwas hinterherhinken). Stärken angelehnt an EA-FC-Ratings (ungefähr, nicht offiziell) bzw. geschätzt.
+          </p>
+        ) : (
+          <p className="mt-3 text-xs text-faint">{squads.loading ? 'Echte Kader werden geladen …' : 'Echte Kader sind gerade nicht verfügbar – du spielst mit erfundenen Spielern.'} Ergebnisse werden simuliert.</p>
+        )}
+        <Button variant="primary" size="lg" className="mt-4 w-full sm:w-auto" icon={<Play className="size-5" />} disabled={squads.loading && !squads.data} onClick={() => onStart(newGame(list, sel, Date.now(), real))}>
           Karriere starten
         </Button>
       </div>
@@ -281,7 +305,10 @@ function Squad({ s, update }: { s: ManagerState; update: (n: ManagerState) => vo
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-display text-lg font-bold leading-none tabular">{p.rating}</p>
+                    <p className="font-display text-lg font-bold leading-none tabular">
+                      <SourceMark p={p} />
+                      {p.rating}
+                    </p>
                     <p className="text-[11px] text-faint">{mio(p.value)}</p>
                   </div>
                   <button className="rounded-lg px-2 py-1 text-xs font-semibold text-muted hover:bg-surface-2" onClick={() => setConfirm(p)}>
@@ -385,11 +412,15 @@ function Transfers({ s, update }: { s: ManagerState; update: (n: ManagerState) =
               <PosBadge pos={p.pos} />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-semibold">{p.name}</p>
-                <p className="text-xs text-muted">
+                <p className="truncate text-xs text-muted">
                   {p.age} J. · Potenzial {p.potential}
+                  {p.club && ` · ${p.club}`}
                 </p>
               </div>
-              <span className="font-display text-lg font-bold tabular">{p.rating}</span>
+              <span className="font-display text-lg font-bold tabular">
+                <SourceMark p={p} />
+                {p.rating}
+              </span>
               <Button
                 size="sm"
                 variant={p.value <= s.budget ? 'primary' : 'secondary'}
@@ -409,6 +440,22 @@ function Transfers({ s, update }: { s: ManagerState; update: (n: ManagerState) =
           ))}
         </div>
       )}
+    </Card>
+  )
+}
+
+function RealSquadsHint({ onRestart }: { onRestart: () => void }) {
+  const squads = useSquads()
+  if (!squads.data?.clubs.some((c) => c.players.length >= 11)) return null
+  return (
+    <Card className="flex flex-wrap items-center gap-3 p-4 text-sm">
+      <Sparkles className="size-5 text-accent" />
+      <p className="flex-1 text-muted">
+        <b className="text-text">Jetzt mit echten Kadern:</b> Starte ein neues Spiel, um mit den echten Spielern deines Vereins zu spielen.
+      </p>
+      <Button size="sm" variant="soft" onClick={onRestart}>
+        Neues Spiel
+      </Button>
     </Card>
   )
 }
@@ -470,6 +517,8 @@ export function FootballView() {
           )}
         </div>
       </div>
+
+      {!s.realSquads && <RealSquadsHint onRestart={() => setReset(true)} />}
 
       {over && (
         <Card className="p-5">
