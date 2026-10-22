@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Bookmark, BookmarkCheck, ExternalLink, Search, Sparkles, ServerOff } from 'lucide-react'
-import { Badge, Card, Chip, EmptyState, ErrorNote, Skeleton, SourceLine } from '@/components/ui'
+import { Bookmark, BookmarkCheck, ExternalLink, Search, ServerOff } from 'lucide-react'
+import { Card, Chip, EmptyState, ErrorNote, Skeleton, SourceLine } from '@/components/ui'
 import { actions, useApp, useData } from '@/data/store'
 import type { NewsTopic } from '@/data/types'
 import { cn, matches } from '@/lib/utils'
@@ -47,9 +47,6 @@ export function NewsCard({ item, saved, compact }: { item: NewsItem; saved: bool
             <button onClick={() => toggleSaved(item)} className="inline-flex min-h-9 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-muted hover:bg-surface-2">
               {saved ? <BookmarkCheck className="size-4 text-accent" /> : <Bookmark className="size-4" />}
               {saved ? 'Gespeichert' : 'Später lesen'}
-            </button>
-            <button disabled className="ml-auto inline-flex min-h-9 items-center gap-1 rounded-lg px-2 text-sm text-faint" title="KI-Zusammenfassungen sind geplant">
-              <Sparkles className="size-4" /> KI-Zusammenfassung <Badge tone="planned">Geplant</Badge>
             </button>
           </div>
         )}

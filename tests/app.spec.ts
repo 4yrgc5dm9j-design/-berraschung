@@ -215,7 +215,7 @@ test('Spielen: Börsenspiel, Assistent, Karriere und Fußballmanager', async ({ 
   await page.getByRole('link', { name: /Börsen-Assistent/ }).click()
   await page.getByRole('button', { name: 'Prüfe mein Spieldepot' }).click()
   await expect(page.getByText(/1 Position\(en\)/)).toBeVisible()
-  await expect(page.getByText(/Klumpenrisiko/)).toBeVisible()
+  await expect(page.getByText(/⚠️ Klumpenrisiko/)).toBeVisible()
   await page.getByLabel('Frage an den Assistenten').fill('Was ist eine Dividende?')
   await page.keyboard.press('Enter')
   await expect(page.getByText(/Gewinnausschüttung/)).toBeVisible()

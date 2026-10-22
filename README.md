@@ -70,4 +70,6 @@ Es werden keine Live-Daten erfunden. Echte Daten zeigen Quelle und Aktualisierun
 1. ✅ Grundversion: Navigation, Dashboard mit 3 Ansichten & anpassbaren Widgets, Aufgaben, Notizen, Sammlungen, Schnellzugriffe, Einstellungen, Export/Import, Rückgängig.
 2. ✅ Module: Kalender & Prüfungen, Lernkarten, Fokus-Timer, Gewohnheiten, Einkaufslisten, Ausgaben & Sparziele, News, Börse (Watchlist, Depot, Sparplanrechner, Spieldepot), Sport, globale Suche.
 3. ✅ Spielen: Handelsterminal mit Spielgeld und Live-Kursen, Börsen-Assistent (ohne KI), Karriere-Simulator (Monte-Carlo, Modellannahmen), Fußballmanager (fiktive Spieler, komplette Saisons).
-4. ⏳ Geplant: Benutzerkonto & Sync, gemeinsame Sammlungen, Tippspiel, KI-Zusammenfassungen, historische Kurse, Instagram-oEmbed.
+4. ⏳ Geplant: Benutzerkonto & Sync, gemeinsame Sammlungen, Tippspiel, historische Kurse, Instagram-oEmbed.
+
+**Grundsatz:** Dailybase nutzt ausschließlich kostenlose Dienste. Kostenpflichtige Angebote (z. B. KI-Schnittstellen oder Börsendaten-Abos) werden nicht eingebunden.

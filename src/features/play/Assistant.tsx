@@ -151,15 +151,18 @@ export function Assistant() {
           </form>
         </div>
       </Card>
-      <Card className="h-fit border-dashed p-5">
-        <div className="mb-2 flex items-center gap-2">
+      <Card className="h-fit p-5">
+        <div className="mb-3 flex items-center gap-2">
           <Sparkles className="size-5 text-accent" />
-          <p className="font-display font-semibold">Echte KI (Claude)</p>
-          <Badge tone="planned">Wartet auf Freigabe</Badge>
+          <p className="font-display font-semibold">Das kann ich</p>
         </div>
-        <p className="text-sm text-muted">
-          Mit einer echten KI könntest du frei Fragen stellen, Nachrichten zu deinen Werten einordnen lassen und Strategien fürs Spieldepot besprechen. Das kostet pro Frage einen kleinen Betrag über einen eigenen API-Schlüssel – deshalb wird es erst nach deiner Zustimmung eingebaut.
-        </p>
+        <ul className="space-y-2 text-sm text-muted">
+          <li>📋 <b className="text-text">Depot-Check</b> – Streuung, Klumpenrisiko, Cash-Anteil, Gebühren</li>
+          <li>📈 <b className="text-text">Tagesbewegungen</b> – Gewinner und Verlierer (mit Live-Kursen)</li>
+          <li>💶 <b className="text-text">Sparplan</b> – was regelmäßiges Sparen bringen kann</li>
+          <li>📚 <b className="text-text">Lexikon</b> – {GLOSSARY.map((e) => e.title).join(', ')}</li>
+        </ul>
+        <p className="mt-3 text-xs text-faint">Läuft komplett auf deinem Gerät, kostenlos und ohne Weitergabe deiner Daten.</p>
       </Card>
     </div>
   )
