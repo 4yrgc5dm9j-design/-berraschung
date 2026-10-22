@@ -113,6 +113,17 @@ try {
 } catch (e) {
   status.squads = { ok: false, error: String(e.message || e) }
   console.log('Kader: Fehler', e.message)
+  // Letzten funktionierenden Stand der Webseite behalten, statt die Kader zu verlieren
+  if (process.env.SQUADS_CACHE_URL) {
+    for (const file of ['squads.json', 'squads-raw.json']) {
+      try {
+        const r = await fetch(process.env.SQUADS_CACHE_URL.replace('squads-raw.json', file))
+        if (r.ok) writeFileSync(`${OUT}/${file}`, await r.text())
+      } catch {
+        /* nichts zu retten */
+      }
+    }
+  }
 }
 
 // ---------------------------------------------------------------- CORS-Prüfung der Direktquellen

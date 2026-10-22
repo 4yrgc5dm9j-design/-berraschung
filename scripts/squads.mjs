@@ -5,7 +5,7 @@ export const norm = (x) => x.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCas
 const WD_UA = { 'User-Agent': 'Dailybase/0.1 (https://github.com/4yrgc5dm9j-design/-berraschung; persoenliche App)', Accept: 'application/json' }
 
 /** Bei Änderungen an der Abfrage erhöhen, damit alte Zwischenstände verworfen werden */
-export const RAW_VERSION = 4
+export const RAW_VERSION = 5
 
 export async function wikidataRaw(clubs) {
   // 1) Vereine in Wikidata finden: alle Suchtreffer sammeln, dann den Eintrag
@@ -28,33 +28,42 @@ export async function wikidataRaw(clubs) {
     const best = (candidates.get(c.name) || []).map((q) => ({ q, n: counts.get(q) ?? 0 })).sort((x, y) => y.n - x.n)[0]
     if (best && best.n >= 30) found.push({ ...c, qid: best.q, players: best.n })
   }
-  // 2) Aktuelle Spieler je Verein (Vereinszugehörigkeit ohne Enddatum)
-  const values = found.map((c) => `wd:${c.qid}`).join(' ')
-  // ?latest = jüngster Vereinswechsel des Spielers (nur Vereine, keine Nationalteams)
-  const query = `SELECT ?club ?player ?playerLabel ?posLabel ?dob ?start ?latest WHERE {
-    VALUES ?club { ${values} }
-    ?player p:P54 ?st . ?st ps:P54 ?club .
-    FILTER NOT EXISTS { ?st pq:P582 ?end . }
-    OPTIONAL { ?st pq:P580 ?start . }
-    ?player wdt:P106 wd:Q937857 ; wdt:P21 wd:Q6581097 .
-    OPTIONAL { ?player wdt:P413 ?pos . }
-    OPTIONAL { ?player wdt:P569 ?dob . }
-    OPTIONAL {
-      SELECT ?player (MAX(?s2) AS ?latest) WHERE {
-        ?player p:P54 ?x . ?x pq:P580 ?s2 ; ps:P54 ?c2 . ?c2 wdt:P31 wd:Q476028 .
-      } GROUP BY ?player
+  // 2) Aktuelle Spieler je Verein – eine kleine Abfrage pro Verein (große Abfragen laufen ins Zeitlimit)
+  const minYear = new Date().getFullYear() - 8
+  const sparql = async (query) => {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const r = await fetch(`https://query.wikidata.org/sparql?format=json&query=${encodeURIComponent(query)}`, { headers: { ...WD_UA, Accept: 'application/sparql-results+json' } })
+      if (r.ok) return (await r.json()).results.bindings
+      if (r.status !== 429 && r.status < 500) throw new Error(`Wikidata HTTP ${r.status}`)
+      await new Promise((res) => setTimeout(res, 3000 * (attempt + 1)))
     }
-    SERVICE wikibase:label { bd:serviceParam wikibase:language "de,en". }
-  }`
-  const r = await fetch(`https://query.wikidata.org/sparql?format=json&query=${encodeURIComponent(query)}`, { headers: { ...WD_UA, Accept: 'application/sparql-results+json' } })
-  if (!r.ok) throw new Error(`Wikidata HTTP ${r.status}`)
-  const rows = (await r.json()).results.bindings
-  return {
-    version: RAW_VERSION,
-    fetchedAt: new Date().toISOString(),
-    clubs: found,
-    rows: rows.map((b) => ({ club: b.club.value.split('/').pop(), player: b.player.value.split('/').pop(), name: b.playerLabel?.value, pos: b.posLabel?.value || '', dob: b.dob?.value || null, start: b.start?.value || null, latest: b.latest?.value || null })),
+    throw new Error('Wikidata nicht erreichbar')
   }
+  const rows = []
+  for (const c of found) {
+    const query = `SELECT ?player ?playerLabel ?posLabel ?dob ?start WHERE {
+      ?player p:P54 ?st . ?st ps:P54 wd:${c.qid} .
+      FILTER NOT EXISTS { ?st pq:P582 ?end . }
+      OPTIONAL { ?st pq:P580 ?start . }
+      FILTER(!BOUND(?start) || YEAR(?start) >= ${minYear})
+      ?player wdt:P106 wd:Q937857 ; wdt:P21 wd:Q6581097 ; wdt:P569 ?dob .
+      FILTER(YEAR(?dob) >= ${minYear - 32})
+      OPTIONAL { ?player wdt:P413 ?pos . }
+      SERVICE wikibase:label { bd:serviceParam wikibase:language "de,en". }
+    }`
+    for (const b of await sparql(query))
+      rows.push({ club: c.qid, player: b.player.value.split('/').pop(), name: b.playerLabel?.value, pos: b.posLabel?.value || '', dob: b.dob?.value || null, start: b.start?.value || null, latest: null })
+  }
+  // 3) Jüngste Vereinsstation der Kandidaten (in Paketen), um längst gewechselte Spieler zu erkennen
+  const ids = [...new Set(rows.map((r) => r.player))]
+  const latest = new Map()
+  for (let i = 0; i < ids.length; i += 150) {
+    const chunk = ids.slice(i, i + 150).map((q) => `wd:${q}`).join(' ')
+    const q = `SELECT ?player (MAX(?s) AS ?latest) WHERE { VALUES ?player { ${chunk} } ?player p:P54 ?x . ?x pq:P580 ?s ; ps:P54 ?c . ?c wdt:P31 wd:Q476028 . } GROUP BY ?player`
+    for (const b of await sparql(q)) latest.set(b.player.value.split('/').pop(), b.latest.value)
+  }
+  for (const r of rows) r.latest = latest.get(r.player) ?? null
+  return { version: RAW_VERSION, fetchedAt: new Date().toISOString(), clubs: found, rows }
 }
 
 export function mapPos(label) {
