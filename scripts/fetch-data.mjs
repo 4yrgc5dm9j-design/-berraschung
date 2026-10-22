@@ -167,6 +167,7 @@ for (const [name, url] of [
   ['finnhub', 'https://finnhub.io/api/v1/quote?symbol=AAPL'],
   ['frankfurter', 'https://api.frankfurter.dev/v1/latest?base=EUR'],
   ['stooq', 'https://stooq.com/q/l/?s=aapl.us&f=sd2t2ohlcv&h&e=csv'],
+  ['yahoo', 'https://query1.finance.yahoo.com/v8/finance/chart/SAP.DE?range=5d&interval=1d'],
 ]) {
   try {
     const r = await fetch(url, { headers: { Origin: 'https://example.github.io', 'User-Agent': UA } })
