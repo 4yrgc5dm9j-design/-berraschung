@@ -1,0 +1,29 @@
+{
+  "name": "Dailybase – deine Alltagszentrale",
+  "short_name": "Dailybase",
+  "description": "Heute, News, Börse, Sport, Sammlungen und Planung an einem Ort.",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f5f7fc",
+  "theme_color": "#4361ee",
+  "categories": ["productivity", "lifestyle", "news"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ],
+  "shortcuts": [
+    { "name": "Aufgaben", "url": "planen/aufgaben" },
+    { "name": "Sammlungen", "url": "sammlungen" },
+    { "name": "Börse", "url": "entdecken/boerse" }
+  ],
+  "share_target": {
+    "action": "teilen",
+    "method": "GET",
+    "params": { "title": "title", "text": "text", "url": "url" }
+  }
+}

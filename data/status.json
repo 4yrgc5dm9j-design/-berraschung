@@ -1,0 +1,126 @@
+{
+  "fetchedAt": "2026-10-31T13:36:00.219Z",
+  "news": [
+    {
+      "source": "tagesschau",
+      "topic": "wirtschaft",
+      "ok": true,
+      "items": 25
+    },
+    {
+      "source": "Spiegel",
+      "topic": "wirtschaft",
+      "ok": true,
+      "items": 20
+    },
+    {
+      "source": "tagesschau",
+      "topic": "finanzen",
+      "ok": true,
+      "items": 20
+    },
+    {
+      "source": "heise online",
+      "topic": "technologie",
+      "ok": true,
+      "items": 60
+    },
+    {
+      "source": "golem",
+      "topic": "technologie",
+      "ok": true,
+      "items": 40
+    },
+    {
+      "source": "tagesschau",
+      "topic": "politik",
+      "ok": true,
+      "items": 48
+    },
+    {
+      "source": "tagesschau",
+      "topic": "politik",
+      "ok": true,
+      "items": 63
+    },
+    {
+      "source": "sportschau",
+      "topic": "sport",
+      "ok": true,
+      "items": 59
+    },
+    {
+      "source": "kicker",
+      "topic": "sport",
+      "ok": true,
+      "items": 20
+    },
+    {
+      "source": "tagesschau",
+      "topic": "wissen",
+      "ok": true,
+      "items": 49
+    }
+  ],
+  "sport": [
+    {
+      "path": "getmatchdata/bl1/2026",
+      "ok": true
+    },
+    {
+      "path": "getbltable/bl1/2026",
+      "ok": true
+    },
+    {
+      "path": "getavailableteams/bl1/2026",
+      "ok": true
+    },
+    {
+      "path": "getmatchdata/bl2/2026",
+      "ok": true
+    },
+    {
+      "path": "getbltable/bl2/2026",
+      "ok": true
+    },
+    {
+      "path": "getavailableteams/bl2/2026",
+      "ok": true
+    },
+    {
+      "path": "getmatchdata/bl3/2026",
+      "ok": true
+    },
+    {
+      "path": "getbltable/bl3/2026",
+      "ok": true
+    },
+    {
+      "path": "getavailableteams/bl3/2026",
+      "ok": true
+    }
+  ],
+  "cors": {
+    "open-meteo": {
+      "status": 200,
+      "allowOrigin": "*"
+    },
+    "openligadb": {
+      "status": 200,
+      "allowOrigin": "*"
+    },
+    "finnhub": {
+      "status": 401,
+      "allowOrigin": "*"
+    },
+    "frankfurter": {
+      "status": 200,
+      "allowOrigin": "*"
+    }
+  },
+  "squads": {
+    "ok": true,
+    "clubs": 18,
+    "sizes": "Köln:15 Union Berlin:16 Mainz:13 Leverkusen:25 Dortmund:22 Gladbach:13 Frankfurt:23 Augsburg:15 Bayern:28 S04:15 HSV:25 Leipzig:23 Freiburg:11 Paderborn:1 Elversberg:3 Bremen:15 Hoffenheim:12 Stuttgart:19"
+  }
+}
