@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Dailybase</title>
+    <meta name="description" content="Deine persönliche Alltagszentrale: Heute, News, Börse, Sport, Sammlungen und Planung." />
+    <meta name="theme-color" content="#f5f7fc" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f5f7fc" media="(prefers-color-scheme: light)" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Dailybase" />
+    <link rel="manifest" href="/-berraschung/manifest.webmanifest" />
+    <link rel="icon" href="/-berraschung/icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/-berraschung/icons/apple-touch-icon.png" />
+    <script>
+      // Theme vor dem ersten Rendern setzen, damit nichts aufblitzt.
+      try {
+        var t = localStorage.getItem('dailybase-theme') || 'light'
+        var a = localStorage.getItem('dailybase-accent') || 'ozean'
+        var dark = t === 'dark' || (t === 'system' && matchMedia('(prefers-color-scheme: dark)').matches)
+        document.documentElement.classList.toggle('dark', dark)
+        document.documentElement.dataset.accent = a
+      } catch (e) {}
+    </script>
+    <script type="module" crossorigin src="/-berraschung/assets/index-DTtowZP_.js"></script>
+    <link rel="modulepreload" crossorigin href="/-berraschung/assets/ItemEditor-Bwf7V8aM.js">
+    <link rel="stylesheet" crossorigin href="/-berraschung/assets/index-D6wPdg1f.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
