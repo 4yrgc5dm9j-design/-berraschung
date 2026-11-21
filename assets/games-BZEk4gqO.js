@@ -1,0 +1,1 @@
+import{Ct as e,St as t,wt as n,xt as r}from"./ItemEditor-Bwf7V8aM.js";var i=n()(e(e=>({football:null,hydrated:!1,setFootball:t=>e({football:t})}),{name:`dailybase-games`,storage:t(()=>r),partialize:e=>({football:e.football}),onRehydrateStorage:()=>()=>i.setState({hydrated:!0})}));export{i as t};
